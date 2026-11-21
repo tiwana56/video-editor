@@ -28,6 +28,7 @@
       "type": "image/png"
     }
   ],
+  "id": "./",
   "name": "ProCut Studio",
   "orientation": "portrait",
   "scope": "./",
