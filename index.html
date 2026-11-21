@@ -360,6 +360,36 @@ ol.steps li{color:#d8e1ee}
 .btn.green{background:var(--green);border-color:var(--green);color:#04150a;font-weight:800}
 .btn.green:hover{background:#2ee06f;border-color:var(--green)}
 </style>
+<style>
+/* ===== SCREEN SIZE / FRAME BAR — preview ke bilkul neeche, sab se saaf jagah ===== */
+.frame-bar{border-top:1px solid var(--border);background:#141a26;padding:10px 12px 12px}
+.frame-label{display:block;font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--gold);margin:2px 0 8px}
+.frame-opts{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:4px}
+.frame-btn{flex:1 1 96px;min-width:0;min-height:64px;border:1.5px solid var(--border2);background:var(--panel3);color:var(--text);border-radius:12px;padding:9px 10px;font-weight:800;font-size:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.25;cursor:pointer}
+.frame-fit-row .frame-btn{flex:1 1 150px}
+.frame-btn b{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.01em}
+.frame-btn[aria-pressed="true"]{background:rgba(34,211,238,.22);border-color:var(--cyan);color:#a5f3fc;box-shadow:inset 0 0 0 1px var(--cyan)}
+.frame-btn[aria-pressed="true"] b{color:#cffafe}
+.frame-btn .fbox{display:block;border:2px solid currentColor;border-radius:3px;margin-bottom:2px}
+.fbox.f916{width:15px;height:26px}
+.fbox.f169{width:28px;height:16px}
+.fbox.f11{width:21px;height:21px}
+.fbox.f45{width:19px;height:24px}
+.fbox.forig{width:24px;height:18px;border-style:dashed}
+.frame-fit-row{margin-top:10px}
+.frame-bar .hint{margin:8px 0 0}
+/* Mobile par preview panel andar scroll ho — warna frame bar ke baad
+   Media/Trim/Text sub-tabs screen se bahar kat jate thay. */
+@media(max-width:1023px){
+  .preview-panel{flex:0 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+}
+@media(max-width:760px){
+  .frame-bar{padding:8px 10px 10px}
+  .frame-bar .hint{display:none}
+  .frame-btn{min-height:56px;font-size:14px;padding:7px 8px}
+  .frame-label{margin-bottom:6px}
+}
+</style>
 </head>
 <body>
 
@@ -422,14 +452,15 @@ ol.steps li{color:#d8e1ee}
           <div class="tool-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg><div><b>Speed</b><span>0.5× – 2× control</span></div></div>
         </div>
 
-        <span class="label">Aspect Ratio — Canvas Size</span>
+        <span class="label">Screen Size — Frame (Aspect Ratio)</span>
         <div class="seg" role="group" aria-label="Video size">
-          <button type="button" data-ratio="9:16" aria-pressed="true">9:16 Shorts</button>
-          <button type="button" data-ratio="16:9" aria-pressed="false">16:9</button>
-          <button type="button" data-ratio="1:1" aria-pressed="false">1:1</button>
+          <button type="button" data-ratio="9:16" aria-pressed="true">9:16 Shorts / TikTok</button>
+          <button type="button" data-ratio="16:9" aria-pressed="false">16:9 Long / YouTube</button>
+          <button type="button" data-ratio="1:1" aria-pressed="false">1:1 Square</button>
+          <button type="button" data-ratio="4:5" aria-pressed="false">4:5 Post</button>
           <button type="button" data-ratio="orig" aria-pressed="false">Original</button>
         </div>
-        <p class="hint">Shorts ke liye 9:16 rakhein — video beech se cover-crop ho kar frame mein fit hogi.</p>
+        <p class="hint"><b style="color:var(--text)">Short, TikTok ya Reels</b> ke liye <b style="color:var(--text)">9:16</b> chunein. <b style="color:var(--text)">Lambi (long) video / YouTube</b> ke liye <b style="color:var(--text)">16:9</b> chunein — warna horizontal video vertical frame mein side se kat jayegi. Yehi size preview ke neeche wale <b style="color:var(--text)">“📐 Screen Size / Frame”</b> bar se bhi badal sakte hain, aur wahan <b style="color:var(--text)">“Pura Video”</b> fit chunein to video ka koi hissa nahi katega (peeche dhundla background aa jayega).</p>
 
         <span class="label">Templates — 1 Tap Urdu Text</span>
         <div class="seg purple">
@@ -460,6 +491,24 @@ ol.steps li{color:#d8e1ee}
       <div class="stage-area">
         <div class="stage-empty" id="stageEmpty"><b>Canvas Khali Hai</b>Left panel se video import karein<br/><span style="font-size:12.5px;color:var(--muted)">Drag &amp; drop ki jagah mobile par Import button use karein</span></div>
         <canvas id="stage" width="720" height="1280" class="hidden"></canvas>
+      </div>
+      <div class="frame-bar" aria-label="Screen size — frame chunein">
+        <span class="frame-label">📐 Screen Size / Frame — Video Kis Size Ki Ho?</span>
+        <div class="frame-opts" role="group" aria-label="Video ka size">
+          <button type="button" class="frame-btn" data-ratio="9:16" aria-pressed="true"><span class="fbox f916" aria-hidden="true"></span>9:16<b>Shorts • TikTok • Reels</b></button>
+          <button type="button" class="frame-btn" data-ratio="16:9" aria-pressed="false"><span class="fbox f169" aria-hidden="true"></span>16:9<b>Long Video • YouTube</b></button>
+          <button type="button" class="frame-btn" data-ratio="1:1" aria-pressed="false"><span class="fbox f11" aria-hidden="true"></span>1:1<b>Square Post</b></button>
+          <button type="button" class="frame-btn" data-ratio="4:5" aria-pressed="false"><span class="fbox f45" aria-hidden="true"></span>4:5<b>Portrait Post</b></button>
+          <button type="button" class="frame-btn" data-ratio="orig" aria-pressed="false"><span class="fbox forig" aria-hidden="true"></span>Original<b>Video Jaisi Hai, Waisi</b></button>
+        </div>
+        <div class="frame-fit-row">
+          <span class="frame-label">🖼 Video Frame Mein Kaise Fit Ho?</span>
+          <div class="frame-opts" role="group" aria-label="Fit mode">
+            <button type="button" class="frame-btn" data-fit="cover" aria-pressed="true">Frame Bhar (Crop)<b>Frame poora bharega — side se kuch kat sakta hai</b></button>
+            <button type="button" class="frame-btn" data-fit="fit" aria-pressed="false">Pura Video Dikhe<b>Kuch nahi katega — peeche dhundla background</b></button>
+          </div>
+        </div>
+        <p class="hint">Misal: mobile se bani vertical clip ka <b style="color:var(--text)">Short / TikTok</b> banana ho to <b style="color:var(--text)">9:16</b> dabayein. <b style="color:var(--text)">Lambi horizontal video</b> (TV / news / bayan wali) ko poora rakhna ho to <b style="color:var(--text)">16:9</b> dabayein — ya 9:16 ke sath <b style="color:var(--text)">“Pura Video Dikhe”</b> chunein, warna video ke dono side kat jayenge. Chuna hua size preview aur Export — dono par lagega.</p>
       </div>
       <div class="transport-bar">
         <div class="transport hidden" id="transport">
@@ -759,6 +808,7 @@ ol.steps li{color:#d8e1ee}
           <dt>Export format?</dt><dd>Android Chrome par aam taur par MP4 ya WebM — dono YouTube par upload ho jate hain.</dd>
           <dt>Gemini key mehfooz hai?</dt><dd>Key aik dafa dalne par isi browser (local storage) mein save ho jati hai taake bar bar na dalni pare — kisi server par nahi jati, sirf jawab ke waqt Google ko bheji jati hai. Browser ka data clear karein to key bhi delete ho jayegi.</dd>
           <dt>Lambi video?</dt><dd>1–3 minute ki clips sab se smooth chalti hain. Lambi tilawat se Shorts ke chhote hisse trim karein.</dd>
+          <dt>Screen size / frame kahan hai — Short, TikTok ya long video?</dt><dd>Preview ke bilkul neeche bara <b>“📐 Screen Size / Frame”</b> bar hai (Editor → Media panel mein bhi wahi option hai): <b>9:16</b> = Shorts / TikTok / Reels (vertical), <b>16:9</b> = long video / YouTube (horizontal), <b>1:1</b> = square post, <b>4:5</b> = portrait post, <b>Original</b> = video jaisi hai waisi. Agar video frame se size mein mukhtalif ho aur side se kat rahi ho to usi bar mein <b>“Pura Video Dikhe”</b> chunein — kuch nahi katega, peeche dhundla background aa jayega. Chuna hua size Export par bhi wahi lagega.</dd>
           <dt>Timeline (edit bar) aagay nazar nahi aati / scroll nahi hoti?</dt><dd>Bar par ungli rakh kar left/right slide karein — timeline scroll ho jayegi; ya timeline ke upar wale ◀ Peeche / Aagay ▶ buttons dabayein. Video chalte waqt bar khud playhead ke sath aagay barhti rehti hai, is liye agla hissa chop nahi hota. Poori video aik screen par dekhni ho to “Fit” dabayein.</dd>
           <dt>Kai clips aik video mein?</dt><dd>Import mein kai clips aik sath chunein — har clip ki asal lambai khud pehchan li jati hai, is liye timeline mein sab clips apni sahi jagah par barabar nazar aate hain. Har clip ka apna trim set karein, timeline mein clip ko drag karke ya Media list ke ↑ ↓ se tartib rakhein — Export sab ko jod kar aik video bana dega. Do clips ke darmiyan khali hissa (gap) chahiye to clip select karke “Gap +1s” dabayein.</dd>
           <dt>Audio alag kaise?</dt><dd>“Audio Alag Karein” hisse se trim wala hissa ya poori video ki awaz WAV file mein download ho jati hai. Timeline mein “Audio Alag (Track)” karein to audio alag track ban jata hai — usay select karke “⬇ Ye Audio Download Karein (WAV)” se wahi hissa file mein bhi mil jata hai.</dd>
@@ -900,7 +950,7 @@ var $=function(id){return document.getElementById(id);};
 var video=$("srcVideo"), canvas=$("stage"), ctx=canvas.getContext("2d");
 var stageEmpty=$("stageEmpty"), transport=$("transport"), playBtn=$("playBtn"), seekBar=$("seekBar"), timeLabel=$("timeLabel");
 var trimStartEl=$("trimStart"), trimEndEl=$("trimEnd"), editorStatus=$("editorStatus"), exportBtn=$("exportBtn");
-var state={loaded:false,duration:0,ratio:"9:16",pos:"bottom",color:"#ffffff",band:true,bismillah:false,exporting:false,playClipOnly:false,brightness:100,contrast:100,saturation:100,zoom:1,rotation:0,flip:false,loop:false,muted:false};
+var state={loaded:false,duration:0,ratio:"9:16",fit:"cover",pos:"bottom",color:"#ffffff",band:true,bismillah:false,exporting:false,playClipOnly:false,brightness:100,contrast:100,saturation:100,zoom:1,rotation:0,flip:false,loop:false,muted:false};
 var history=[], historyIdx=-1;
 function snapshot(){return {t:$("titleText").value,s:$("subText").value,fs:$("fontSize").value,c:state.color,p:state.pos,b:state.band,bi:state.bismillah};}
 function pushHistory(){history=history.slice(0,historyIdx+1);history.push(JSON.stringify(snapshot()));if(history.length>40)history.shift();historyIdx=history.length-1;updateUndo();}
@@ -911,19 +961,31 @@ $("redoBtn").addEventListener("click",function(){if(historyIdx<history.length-1)
 document.addEventListener("keydown",function(e){if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"){e.preventDefault();$("undoBtn").click();} if(e.code==="Space"&&document.activeElement.tagName!=="INPUT"&&document.activeElement.tagName!=="TEXTAREA"&&document.activeElement.tagName!=="SELECT"){e.preventDefault();playBtn.click();}});
 function fmt(t){if(!isFinite(t)||t<0)t=0;var m=Math.floor(t/60),s=Math.floor(t%60);return m+":"+(s<10?"0":"")+s;}
 function setStatus(el,msg,cls){el.textContent=msg||"";el.className="status"+(cls?" "+cls:"");}
-function targetSize(){var q=parseInt($("qualitySel").value,10);var vw=video.videoWidth||1280,vh=video.videoHeight||720;if(state.ratio==="9:16")return q===720?{w:720,h:1280}:{w:540,h:960};if(state.ratio==="16:9")return q===720?{w:1280,h:720}:{w:854,h:480};if(state.ratio==="1:1")return q===720?{w:720,h:720}:{w:540,h:540};var scale=Math.min(1,1280/Math.max(vw,vh));return{w:Math.round(vw*scale/2)*2,h:Math.round(vh*scale/2)*2};}
+function targetSize(){var q=parseInt($("qualitySel").value,10);var vw=video.videoWidth||1280,vh=video.videoHeight||720;if(state.ratio==="9:16")return q===720?{w:720,h:1280}:{w:540,h:960};if(state.ratio==="16:9")return q===720?{w:1280,h:720}:{w:854,h:480};if(state.ratio==="1:1")return q===720?{w:720,h:720}:{w:540,h:540};if(state.ratio==="4:5")return q===720?{w:720,h:900}:{w:576,h:720};var scale=Math.min(1,1280/Math.max(vw,vh));return{w:Math.round(vw*scale/2)*2,h:Math.round(vh*scale/2)*2};}
 function applyCanvasSize(){if(!state.loaded)return;var s=targetSize();canvas.width=s.w;canvas.height=s.h;$("canvasMeta").textContent=s.w+" × "+s.h+" • "+(state.ratio==="orig"?"Original":state.ratio);drawFrame();}
 function wrapText(text,maxWidth,font){ctx.font=font;var words=text.split(/\s+/).filter(Boolean);var lines=[],line="";for(var i=0;i<words.length;i++){var test=line?line+" "+words[i]:words[i];if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=words[i];}else line=test;}if(line)lines.push(line);return lines;}
 function drawFrame(){
   if(!state.loaded)return;var W=canvas.width,H=canvas.height;ctx.save();ctx.fillStyle="#000";ctx.fillRect(0,0,W,H);ctx.restore();
   var vw=video.videoWidth,vh=video.videoHeight;
   if(vw&&vh){
-    ctx.save();
-    ctx.filter="brightness("+(state.brightness/100)+") contrast("+(state.contrast/100)+") saturate("+(state.saturation/100)+")";
-    ctx.translate(W/2,H/2);ctx.rotate(state.rotation*Math.PI/180);if(state.flip)ctx.scale(-1,1);ctx.scale(state.zoom,state.zoom);
     var rotated=(state.rotation%180!==0);
     var baseW=rotated?H:W, baseH=rotated?W:H;
-    var scale=Math.max(baseW/vw,baseH/vh);var dw=vw*scale,dh=vh*scale;
+    var adjFilter="brightness("+(state.brightness/100)+") contrast("+(state.contrast/100)+") saturate("+(state.saturation/100)+")";
+    if(state.fit==="fit"){
+      /* Pura Video mode: peeche wahi video dhundli (blur) aur gehri karke
+         cover bhar do, taake khali kala hissa na aaye aur kuch kate bhi na. */
+      ctx.save();
+      ctx.filter=adjFilter+" blur(24px)";
+      ctx.translate(W/2,H/2);ctx.rotate(state.rotation*Math.PI/180);if(state.flip)ctx.scale(-1,1);ctx.scale(state.zoom,state.zoom);
+      var bs=Math.max(baseW/vw,baseH/vh)*1.1;var bw2=vw*bs,bh2=vh*bs;
+      try{ctx.drawImage(video,-bw2/2,-bh2/2,bw2,bh2);}catch(e){}
+      ctx.restore();ctx.filter="none";
+      ctx.save();ctx.fillStyle="rgba(0,0,0,0.35)";ctx.fillRect(0,0,W,H);ctx.restore();
+    }
+    ctx.save();
+    ctx.filter=adjFilter;
+    ctx.translate(W/2,H/2);ctx.rotate(state.rotation*Math.PI/180);if(state.flip)ctx.scale(-1,1);ctx.scale(state.zoom,state.zoom);
+    var scale=(state.fit==="fit")?Math.min(baseW/vw,baseH/vh):Math.max(baseW/vw,baseH/vh);var dw=vw*scale,dh=vh*scale;
     try{ctx.drawImage(video,-dw/2,-dh/2,dw,dh);}catch(e){}
     ctx.restore();ctx.filter="none";
   }
@@ -1014,8 +1076,9 @@ trimEndEl.addEventListener("input",function(){var s=parseFloat(trimStartEl.value
 $("setStartBtn").addEventListener("click",function(){trimStartEl.value=video.currentTime;trimStartEl.dispatchEvent(new Event("input"));});
 $("setEndBtn").addEventListener("click",function(){trimEndEl.value=video.currentTime;trimEndEl.dispatchEvent(new Event("input"));});
 $("previewClipBtn").addEventListener("click",function(){if(!state.loaded)return;state.playClipOnly=true;video.currentTime=parseFloat(trimStartEl.value);video.play();playBtn.textContent="❚❚";});
-function segWire(attr,cb){document.querySelectorAll("[data-"+attr+"]").forEach(function(btn){btn.addEventListener("click",function(){document.querySelectorAll("[data-"+attr+"]").forEach(function(b){b.setAttribute("aria-pressed","false");});btn.setAttribute("aria-pressed","true");cb(btn.getAttribute("data-"+attr));pushHistory();});});}
+function segWire(attr,cb){document.querySelectorAll("[data-"+attr+"]").forEach(function(btn){btn.addEventListener("click",function(){var v=btn.getAttribute("data-"+attr);document.querySelectorAll("[data-"+attr+"]").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-"+attr)===v));});cb(v);pushHistory();});});}
 segWire("ratio",function(v){state.ratio=v;applyCanvasSize();});segWire("pos",function(v){state.pos=v;drawFrame();});
+segWire("fit",function(v){state.fit=v;drawFrame();});
 document.querySelectorAll(".swatch").forEach(function(btn){btn.addEventListener("click",function(){document.querySelectorAll(".swatch").forEach(function(b){b.setAttribute("aria-pressed","false");});btn.setAttribute("aria-pressed","true");state.color=btn.getAttribute("data-color");drawFrame();pushHistory();});});
 $("bandToggle").addEventListener("click",function(){state.band=!state.band;this.setAttribute("aria-pressed",String(state.band));drawFrame();pushHistory();});
 $("bismillahToggle").addEventListener("click",function(){state.bismillah=!state.bismillah;this.setAttribute("aria-pressed",String(state.bismillah));drawFrame();pushHistory();});
