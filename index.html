@@ -574,6 +574,7 @@ a.btn-link{display:inline-flex;align-items:center;min-height:48px;padding:10px 1
           <li>Ye page <b style="color:var(--text)">Chrome</b> mein kholein.</li>
           <li>Upar wala <b style="color:var(--text)">📲 Install App</b> button dabayein — ya Chrome ke <b style="color:var(--text)">⋮ menu → “Add to Home screen” / “Install app”</b> chunein.</li>
           <li><b style="color:var(--text)">Install</b> dabate hi ProCut Studio ka logo wala icon home screen par aa jayega — phir editor aik asli app ki tarah khulega, baghair browser bar ke.</li>
+          <li><b style="color:var(--text)">Agar install ke baad 404 aaye:</b> is ki wajah purana home-screen icon hota hai jo pehle wali ghalat link par bana tha — naya install usay khud replace nahi karta. Pehle purane ProCut icon ko home screen par <b style="color:var(--text)">long-press karke Delete / Uninstall</b> karein, phir isi page ko Chrome mein dobara khol kar phir se <b style="color:var(--text)">Install</b> karein. Manifest ki link ab durust kar di gayi hai, is liye taza install editor par hi khulna chahiye. Agar phir bhi 404 aaye to Chrome ki Settings → Site settings mein is site ka purana data clear karke dobara install karein.</li>
         </ol>
         <div class="divider"></div>
         <span class="label">Upload Se Pehle</span>
@@ -594,6 +595,7 @@ a.btn-link{display:inline-flex;align-items:center;min-height:48px;padding:10px 1
           <dt>Kai clips aik video mein?</dt><dd>Import mein kai clips aik sath chunein, har clip ka apna trim set karein, ↑ ↓ se tartib rakhein — Export sab ko jod kar aik video bana dega.</dd>
           <dt>Audio alag kaise?</dt><dd>“Audio Alag Karein” hisse se trim wala hissa ya poori video ki awaz WAV file mein download ho jati hai.</dd>
           <dt>Thumbnail?</dt><dd>Thumbnail Studio mein video ke frame se — ya Gemini AI background se — 1280×720 JPG thumbnail banta hai, Urdu text ke sath.</dd>
+          <dt>Install ke baad 404 kyun aata hai?</dt><dd>Purana home-screen icon pehle wali ghalat link par bana hota hai aur naya install usay khud nahi badalta. Usay long-press karke delete karein, phir is page ko Chrome mein khol kar dobara Install karein — manifest ki link ab durust hai, is liye taza icon editor par khulna chahiye.</dd>
         </dl>
       </div>
     </section>
@@ -702,6 +704,9 @@ document.querySelectorAll("ol.steps a").forEach(function(a){a.classList.add("btn
 var deferredPrompt=null;
 window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();deferredPrompt=e;});
 var installBtn=$("installBtn");
+window.addEventListener("appinstalled",function(){
+  if(installBtn){installBtn.textContent="✓ Installed — Home Screen Dekhein";installBtn.disabled=true;}
+});
 if(installBtn)installBtn.addEventListener("click",function(){
   if(deferredPrompt){
     var dp=deferredPrompt;deferredPrompt=null;
