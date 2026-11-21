@@ -864,6 +864,7 @@ ol.steps li{color:#d8e1ee}
           <dt>Video kaat kar chhota clip banana — sab se asan tareeqa?</dt><dd>Editor → Trim mein neeche sunehri frame wala “✂️ Video Kaato — Sirf 3 Asan Steps” khana hai. <b>Step 1:</b> video chala kar jahan se clip shuru karna hai wahan rokein aur “🟢 Yahan Se Shuru Karo” dabayein. <b>Step 2:</b> jahan khatam karna hai wahan rokein aur “🔴 Yahan Khatam Karo” dabayein — neeche wali line mein chune hue hisse ka time nazar aayega. <b>Step 3:</b> “✂️ Kaat Do” dabayein — baqi sab kat jayega, sirf wahi hissa reh jayega. Kaatne se pehle “▶ Pehle Ye Hissa Chala Kar Dekh Lo” se check bhi kar sakte hain (wo kaatega nahi, sirf dikhayega). Phone mein rakhi asal video file waisi hi rehti hai — galti ho jaye to dobara import kar lein. Neeche wale sliders sirf thora sa aage/peeche theek karne ke liye hain, aam taur par un ki zaroorat nahi.</dd>
           <dt>Kai clips aik video mein?</dt><dd>Import mein kai clips aik sath chunein — har clip ki asal lambai khud pehchan li jati hai, is liye timeline mein sab clips apni sahi jagah par barabar nazar aate hain. Har clip ka apna trim set karein, timeline mein clip ko drag karke ya Media list ke ↑ ↓ se tartib rakhein — Export sab ko jod kar aik video bana dega. Do clips ke darmiyan khali hissa (gap) chahiye to clip select karke “Gap +1s” dabayein.</dd>
           <dt>Audio alag kaise?</dt><dd>“Audio Alag Karein” hisse se trim wala hissa ya poori video ki awaz WAV file mein download ho jati hai. Timeline mein “Audio Alag (Track)” karein to audio alag track ban jata hai — usay select karke “⬇ Ye Audio Download Karein (WAV)” se wahi hissa file mein bhi mil jata hai.</dd>
+          <dt>Audio track par Split / Trim / Delete kaise?</dt><dd>Timeline ki <b>Audio wali line</b> mein track par tap karke select karein — neeche video clips jaisay hi button aa jayenge: <b>“✂️ Split (Playhead Par)”</b> = playhead wali jagah se track do hisso mein; <b>“⏮ Trim Left”</b> = playhead se pehle wala hissa kat jayega; <b>“Trim Right ⏭”</b> = playhead ke baad wala hissa kat jayega; <b>“🗑 Audio Track Delete”</b> = poora track delete. Misal: beech ka ghalat hissa nikalna ho to pehle wahan Split, phir aakhir par Split, phir beech wala hissa select karke Delete kar dein. Track ke kinare kheench kar bhi trim hota hai. Galti ho jaye to upar <b>Undo</b> dabayein — kata/delete hua hissa wapas aa jayega. (Sirf “Sab clips ki aik audio” wala combined track khud clips se banta hai, us par Split/Trim nahi lagta — kisi aik clip ki awaz kaatni ho to pehle us ka alag track banayein.)</dd>
           <dt>Teeno / sab videos ki AIK hi audio?</dt><dd>Audio hisse mein “Sab Clips Ki AIK Audio Banayein (WAV)” dabayein — timeline ki sab clips aik hi audio file mein tartib se jud jati hain (har clip ka trim wala hissa). Timeline ke project tools mein “Sab Clips Ki Aik Audio (Track)” se wahi cheez aik combined track ki surat mein bhi banti hai, wahan se bhi WAV download ho jata hai.</dd>
           <dt>Saari audio AIK file mein download karni hai — button kahan hai?</dt><dd>Neeche wale <b>Audio</b> tab mein jayein — sab se upar sunehri (gold) frame mein sab se bara button hai: “🎵 Sab Audio Merge Karein — AIK File Download (WAV)”. Wahi dabayein, saari clips ki awaz aik hi WAV file mein download ho jayegi. Alag-alag clip select karne ki zaroorat nahi — sab khud aik sath select hai.</dd>
           <dt>Poori video aik hi select / merge karni hai?</dt><dd>Editor → Trim (timeline) ke upar “✓ Sab Select Karein” dabayein — poori video (sab clips mila kar) aik hi select ho jayegi. Phir wahan “🎬 Sab Merge — AIK Video” dabayein ya upar wala Export Video button — sab clips jud kar aik hi video file ban jayegi.</dd>
@@ -1914,12 +1915,17 @@ function renderContext(){
   if(sel.type==="audio"){
     var a=audios.filter(function(x){return x.id===sel.id;})[0];if(!a){sel=null;renderContext();return;}
     label("Audio select hai — "+a.name);
+    if(!a.combined){
+      box.appendChild(ctxBtn("✂️ Split (Playhead Par)",function(){doSplitAudio(a);},true));
+      box.appendChild(ctxBtn("⏮ Trim Left (Playhead Tak)",function(){trimAudioToPlayhead(a,"l");}));
+      box.appendChild(ctxBtn("Trim Right (Playhead Tak) ⏭",function(){trimAudioToPlayhead(a,"r");}));
+    }
     box.appendChild(ctxBtn(origMuted?"🔊 Original Sound ON Karein":"🔇 Original Sound Mute Karein",function(){origMuted=!origMuted;applyMute();setStatus(origMuted?"Original video ki awaz mute hai — sirf alag audio track sunai dega.":"Original sound wapas ON hai.","ok");renderContext();hist();}));
     if(a.el)box.appendChild(ctxBtn(replaceTrack===a?"🔊 Video Ka Sound Wapas ON (Merge Khatam)":"🔇 Sirf Ye Audio — Video Ka Sound Band",function(){var turnOn=replaceTrack!==a;setReplace(turnOn?a:null);setStatus(turnOn?"Merge ON — ab preview aur export dono mein sirf is audio ki awaz chalegi, video ka apna sound band hai.":"Merge OFF — video ka apna sound wapas ON hai.","ok");renderContext();hist();},true));
     if(a.combined)box.appendChild(ctxBtn("⬇ Poori Audio Download Karein (WAV)",function(){downloadCombined();},true));
     if(a.srcFile&&!a.combined)box.appendChild(ctxBtn("⬇ Ye Audio Download Karein (WAV)",function(){downloadTrackAudio(a);},true));
     box.appendChild(ctxBtn("🗑 Audio Track Delete",function(){if(a.el)a.el.pause();if(mergeTrack===a)mergeTrack=null;if(replaceTrack===a)replaceTrack=null;audios=audios.filter(function(x){return x.id!==a.id;});sel=null;applyMute();render();renderContext();updateMergeUI();hist();}));
-    var hint=document.createElement("span");hint.className="hint";hint.style.margin="0";hint.textContent="Kinare kheench kar is track ko trim karein, drag karke jagah badlein. Download button se yehi hissa WAV file mein download ho jayega — Audio tab mein Noise Reduce ON ho to shor bhi kam hoga.";box.appendChild(hint);
+    var hint=document.createElement("span");hint.className="hint";hint.style.margin="0";hint.textContent=a.combined?"Ye combined track hai — ye sab clips ki awaz se khud banta hai, is liye is par Split/Trim nahi lagta. Kisi aik clip ki awaz kaatni ho to us clip ka alag audio track banayein (“Audio Alag (Track)”), phir usay select karke Split / Trim karein.":"Audio kaatna: playhead ko track ke beech mein le ja kar “✂️ Split” dabayein — track do hisso mein bat jayega; jo hissa na chahiye use select karke “🗑 Audio Track Delete” kar dein. “Trim Left / Trim Right” se playhead tak ka hissa aik tap mein kat jata hai. Kinare kheench kar bhi trim hota hai, drag karke jagah badalti hai. Download button se yehi hissa WAV file mein download ho jayega — Audio tab mein Noise Reduce ON ho to shor bhi kam hoga.";box.appendChild(hint);
     return;
   }
   if(sel.type==="overlay"){
@@ -1958,6 +1964,31 @@ function trimToPlayhead(side){
   else{if(src>(c.trimStart||0)&&(src<(c.trimEnd||c.duration)))c.trimEnd=src;else{setStatus("Playhead clip ke andar nahi hai.","err");return;}}
   if(E.active()===sel.index){syncTrimInputs(c);try{video.currentTime=c.trimStart;}catch(e){}}
   E.renderList();render();renderContext();setStatus("Trim ho gaya.","ok");hist();
+}
+/* ---------- audio track actions: split / trim (playhead par) ---------- */
+function doSplitAudio(a){
+  if(!a||a.combined)return;
+  var pt=projectTime(),local=pt-(a.start||0);
+  if(local<=0.15||local>=(a.dur||0)-0.15){setStatus("Split nahi hua — playhead ko audio track ke beech mein le ja kar try karein (start ya end ke bilkul paas split nahi hota).","err");return;}
+  var right={id:uid++,name:a.name,start:pt,dur:a.dur-local,srcStart:(a.srcStart||0)+local,fromClip:a.fromClip,combined:false,srcFile:a.srcFile||null,isMerge:false};
+  if(a.el){var el2=new Audio();el2.preload="auto";el2.src=a.el.src;right.el=el2;}
+  a.dur=local;
+  var idx=audios.indexOf(a);if(idx<0)idx=audios.length-1;
+  audios.splice(idx+1,0,right);
+  sel={type:"audio",id:right.id};
+  render();renderContext();
+  setStatus("Audio split ho gaya — track do hisso mein bat gaya, doosra hissa select hai. Jo hissa na chahiye use select karke “🗑 Audio Track Delete” kar dein.","ok");
+  hist();
+}
+function trimAudioToPlayhead(a,side){
+  if(!a||a.combined)return;
+  var pt=projectTime(),local=pt-(a.start||0);
+  if(local<=0.15||local>=(a.dur||0)-0.15){setStatus("Trim nahi hua — playhead ko audio track ke andar (start aur end ke beech) le ja kar try karein.","err");return;}
+  if(side==="l"){a.srcStart=(a.srcStart||0)+local;a.start=pt;a.dur=a.dur-local;}
+  else{a.dur=local;}
+  render();renderContext();
+  setStatus(side==="l"?"Audio trim ho gaya — playhead se pehle wala hissa kat gaya.":"Audio trim ho gaya — playhead ke baad wala hissa kat gaya.","ok");
+  hist();
 }
 function doDuplicate(){
   var cs=clips();if(!sel||sel.type!=="video")return;
