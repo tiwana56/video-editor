@@ -465,21 +465,30 @@ ol.steps li{color:#d8e1ee}
     <aside class="panel" aria-label="Media and tools">
       <div class="panel-head"><h2><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg> Media</h2><span style="font-size:11px;color:var(--muted2)">STEP 1</span></div>
       <div class="panel-body">
+        <button class="btn gold block" id="slideshowBtn" type="button" style="margin-bottom:10px;min-height:58px;font-size:15.5px">🖼️ Sirf Tasveeron Se Video Banayein — Slideshow (Video Ki Zaroorat NAHI)</button>
+        <p class="hint" style="margin-top:0">Koi video na ho to bhi chalega: gallery se <b style="color:var(--text)">kai tasveerein aik sath</b> chunein — har tasveer 3 second ki clip ban jayegi, phir <b style="color:var(--text)">Export</b> dabayein, tasveeron ki poori video (slideshow) ban jayegi. Awaz lagani ho to neeche wala Audio Upload button use karein.</p>
         <label class="file-pick" for="fileInput">
           <span style="font-size:26px;display:block;margin-bottom:6px">＋</span>
           <b>Import Video Clips</b>
-          <span>Tap karke gallery / files se <b>aik ya kai clips</b> chunein<br/>MP4, WebM — phone se seedha load, koi upload nahi</span>
+          <span>Tap karke gallery / files se <b>aik ya kai clips</b> chunein<br/>MP4, WebM — phone se seedha load, koi upload nahi<br/>Isi picker se <b>tasveerein bhi</b> chun sakte hain</span>
         </label>
-        <input class="hidden" type="file" id="fileInput" accept="video/*" multiple/>
+        <input class="hidden" type="file" id="fileInput" accept="video/*,image/*" multiple/>
         <p class="file-meta" id="fileMeta">No media imported — abhi koi video select nahi hui.</p>
         <button class="btn gold block" id="mediaAudioUploadBtn" type="button" style="margin-top:4px">📤 Audio File Upload Karein (MP3 / WAV)</button>
         <p class="hint">Apni audio file (naat, background awaz, apni recording) chunein — wo video mein merge ho jayegi, <b style="color:var(--text)">video ka apna sound band</b> ho jayega aur preview + export dono mein sirf is audio ki awaz chalegi. Yahi button neeche Audio tab mein bhi hai.</p>
         <button class="btn gold block" id="mediaLogoBtn" type="button" style="margin-top:10px">🏷️ Logo Lagayein — Poori Video Par Fixed</button>
         <p class="file-meta" id="mediaLogoMeta">Abhi koi logo nahi laga.</p>
         <p class="hint">Apna channel logo (PNG sab se behtar) yahin Media list se chunein — logo <b style="color:var(--text)">poori video par aik hi jagah FIXED</b> rahega: shuru se aakhir tak, na gayab hoga na agay-peeche hoga, chahe baad mein aur clips jod dein. Jagah (kona) badalni ho to neeche timeline ki <b style="color:var(--text)">Logo wali line</b> mein logo par tap karke select karein — wahan chaaron konon ke button milenge.</p>
-        <button class="btn block" id="mediaImageBtn" type="button" style="margin-top:10px;border-color:var(--cyan);color:#a5f3fc">🖼️ Images Upload Karein — Video Mein Add Karein</button>
+        <span class="label">📍 Tasveer Kahan Lage? — Pehle Jagah Chunein, Phir Tasveer</span>
+        <div class="seg" id="imgInsertSeg" role="group" aria-label="Tasveer lagane ki jagah">
+          <button type="button" data-insert="playhead" aria-pressed="true">📍 Playhead Par — Beech Mein</button>
+          <button type="button" data-insert="start" aria-pressed="false">⏮ Sab Se Shuru Mein</button>
+          <button type="button" data-insert="end" aria-pressed="false">⏭ Sab Se End Mein</button>
+        </div>
+        <p class="hint"><b style="color:var(--text)">Playhead Par (Beech Mein):</b> safed line (playhead) ko video mein jahan tasveer dikhani hai wahan le jayein, phir tasveer chunein — <b style="color:var(--text)">video usi jagah se khud do hisso mein kat (split) jayegi aur tasveer darmiyan mein lag jayegi</b>. <b style="color:var(--text)">Shuru Mein:</b> tasveer sab se pehle aayegi. <b style="color:var(--text)">End Mein:</b> tasveer sab se aakhir mein (purana tareeqa). Galat jagah lag jaye to timeline mein tasveer wale clip ko select karke “⏮ Shuru Mein” / “📍 Playhead Par” / “⏭ End Mein” buttons se jagah badal sakte hain.</p>
+        <button class="btn block" id="mediaImageBtn" type="button" style="margin-top:10px;border-color:var(--cyan);color:#a5f3fc">🖼️ Images Upload Karein — Upar Chuni Jagah Par Lagayein</button>
         <input class="hidden" type="file" id="imageInput" accept="image/*" multiple/>
-        <p class="hint">Gallery se <b style="color:var(--text)">aik ya kai tasveerein</b> chunein — har tasveer neeche wali list mein <b style="color:var(--text)">aik clip (3 second)</b> ban kar aa jayegi, bilkul video clip ki tarah: ↑ ↓ se tartib badlein, timeline mein kinare kheench kar us ki lambai (time) kam/zyada karein (zyada se zyada 10 second), phir Export dabayein — tasveerein video ke andar chalengi. Misal: shuru mein apni tasveer/intro, ya beech mein kisi jagah ki photo dikhani ho.</p>
+        <p class="hint">Gallery se <b style="color:var(--text)">aik ya kai tasveerein</b> chunein — har tasveer <b style="color:var(--text)">aik clip (3 second)</b> ban kar <b style="color:var(--text)">upar chuni hui jagah par</b> lag jayegi, bilkul video clip ki tarah: ↑ ↓ se tartib badlein, timeline mein tasveer select karke us ka time <b style="color:var(--text)">3 / 5 / 10 second</b> ke buttons se badlein ya kinare kheench kar set karein, phir Export dabayein. <b style="color:var(--text)">Sirf tasveerein hon, koi video na ho, tab bhi Export se slideshow video ban jayegi.</b></p>
         <div class="clip-list" id="clipList" aria-label="Clips ki list"></div>
         <p class="hint" id="joinHint" style="display:none"></p>
 
@@ -532,7 +541,7 @@ ol.steps li{color:#d8e1ee}
         <div class="meta"><span id="zoomLabel">Zoom 100%</span></div>
       </div>
       <div class="stage-area">
-        <div class="stage-empty" id="stageEmpty"><b>Canvas Khali Hai</b>Left panel se video import karein<br/><span style="font-size:12.5px;color:var(--muted)">Drag &amp; drop ki jagah mobile par Import button use karein</span></div>
+        <div class="stage-empty" id="stageEmpty"><b>Canvas Khali Hai</b>Left panel se video import karein — ya sirf tasveerein chun kar slideshow video banayein<br/><span style="font-size:12.5px;color:var(--muted)">Video na ho to Media panel ka sunehra “Sirf Tasveeron Se Video” button dabayein</span></div>
         <canvas id="stage" width="720" height="1280" class="hidden"></canvas>
       </div>
       <div class="frame-bar" aria-label="Screen size — frame chunein">
@@ -877,7 +886,9 @@ ol.steps li{color:#d8e1ee}
           <dt>Apni audio file video mein merge karna — video ka sound band?</dt><dd>Audio hisse ke “Merge” wale khane se apni audio file (MP3/WAV) chunein — file lagte hi video ka apna sound khud band ho jata hai aur preview + export dono mein sirf usi audio ki awaz chalti hai. Wapas video ka sound chahiye to wahi toggle OFF kar dein, ya “Merge Audio Hatayein” dabayein.</dd>
           <dt>Audio file upload karne ka button kahan hai?</dt><dd>Do jagah bara button hai: (1) <b>Editor → Media</b> panel mein video import ke neeche “📤 Audio File Upload Karein (MP3 / WAV)”, (2) <b>Audio</b> tab mein sab se upar neela button “📤 Apni Audio File Upload Karein — Video Mein Lagayein”. Koi sa bhi dabayein, phone se audio file chunein — file lagte hi video ka apna sound band ho jayega aur sirf upload ki hui audio chalegi.</dd>
           <dt>Logo kaise lagayein — aur wo agay-peeche kyun hota tha?</dt><dd><b>Editor → Media</b> panel mein sunehra button hai: “🏷️ Logo Lagayein — Poori Video Par Fixed” — wahan se apna logo (PNG) chunein. <b>Pehle</b> logo playhead wali jagah se shuru hokar usi waqt ke kul waqt par khatam ho jata tha, is liye baad mein clips jodne se wo beech mein gayab/agay-peeche ho jata tha. <b>Ab logo FIXED lagta hai:</b> poori video par shuru se aakhir tak, aik hi kone mein — chahe kitne bhi clips jod dein, na gayab hoga na hilega. Kona badalna ho to neeche timeline ki <b>Logo wali line</b> mein logo par tap karke select karein — wahan chaaron konon (Upar Right / Upar Left / Neeche Right / Neeche Left) ke button aur halka (opacity) karne ka slider milega. Delete bhi wahi se hota hai.</dd>
-          <dt>Video mein tasveerein (images) kaise add karein?</dt><dd><b>Editor → Media</b> panel mein neela button hai: “🖼️ Images Upload Karein — Video Mein Add Karein” — gallery se aik ya kai tasveerein chunein. Har tasveer media list mein <b>aik clip (3 second)</b> ban kar aa jati hai, bilkul video clip ki tarah: list ke ↑ ↓ se ya timeline mein drag karke tartib badlein, timeline mein clip ke kinare kheench kar us ka time kam/zyada karein (zyada se zyada 10 second), delete bhi wahi se. Phir <b>Export</b> dabayein — tasveerein usi tartib mein video ke andar chalengi. Misal: video ke shuru mein apni/intro ki tasveer, ya beech mein kisi jagah ki photo dikhani ho to usay sahi jagah par rakh dein.</dd>
+          <dt>Video mein tasveerein (images) kaise add karein?</dt><dd><b>Editor → Media</b> panel mein neela button hai: “🖼️ Images Upload Karein” — gallery se aik ya kai tasveerein chunein. Har tasveer media list mein <b>aik clip (3 second)</b> ban kar aa jati hai, bilkul video clip ki tarah: list ke ↑ ↓ se ya timeline mein drag karke tartib badlein, timeline mein tasveer select karke <b>3 / 5 / 10 second</b> ke buttons se us ka time badlein, delete bhi wahi se. Phir <b>Export</b> dabayein — tasveerein usi tartib mein video ke andar chalengi.</dd>
+          <dt>Tasveer video ke SHURU ya BEECH mein kaise lagayein — sirf end par kyun lagti thi?</dt><dd>Pehle tasveer hamesha list ke aakhir (end) mein judti thi. Ab Media panel mein tasveer chunne se <b>pehle</b> jagah tay karein: <b>“📍 Tasveer Kahan Lage?”</b> wale teen buttons — <b>Playhead Par (Beech Mein)</b>: pehle safed line (playhead) ko video mein wahan le jayein jahan tasveer dikhani hai, phir tasveer chunein — video usi jagah se khud split ho jayegi aur tasveer darmiyan mein lag jayegi. <b>Shuru Mein</b>: tasveer sab se pehle aayegi. <b>End Mein</b>: sab se aakhir mein. Agar tasveer pehle se lagi hui hai to timeline mein usay select karke <b>“⏮ Sab Se Shuru Mein” / “📍 Playhead Par” / “⏭ Sab Se End Mein”</b> buttons se us ki jagah kabhi bhi badal sakte hain.</dd>
+          <dt>Sirf tasveeron se video (slideshow) kaise banayein — bina kisi video ke?</dt><dd>Media panel ke sab se upar sunehra button dabayein: <b>“🖼️ Sirf Tasveeron Se Video Banayein — Slideshow”</b> — gallery se kai tasveerein aik sath chunein, har tasveer 3 second ki clip ban jayegi (time timeline mein select karke 3/5/10 second kar sakte hain). Koi video import karne ki zaroorat nahi. Phir upar wala <b>Export Video</b> dabayein — saari tasveerein jud kar aik video ban jayegi. Awaz lagani ho to “📤 Audio File Upload Karein” se apni audio (naat / awaz) lagayein — wo tasveeron par chalegi, bilkul slideshow ki tarah. Main Import wala picker bhi ab tasveerein le leta hai, wahan se bhi sirf tasveerein chun kar project shuru ho sakta hai.</dd>
           <dt>Awaz mein shor (noise) hai?</dt><dd>“Audio Alag Karein” hisse mein “Shor Kam Karein (Noise Reduce)” ON kar dein — phir jo audio file banegi us mein pankhe / AC ka halka shor kam aur awaz saaf hogi.</dd>
           <dt>Thumbnail?</dt><dd>Thumbnail Studio mein video ke frame se — ya Gemini AI background se — 1280×720 JPG thumbnail banta hai, Urdu text ke sath.</dd>
           <dt>Install ke baad 404 kyun aata hai?</dt><dd>Purana home-screen icon pehle wali ghalat link par bana hota hai aur naya install usay khud nahi badalta. Usay long-press karke delete karein, phir is page ko Chrome mein khol kar dobara Install karein — manifest ki link ab durust hai, is liye taza icon editor par khulna chahiye.</dd>
@@ -1305,40 +1316,111 @@ function probeDuration(c){
   }catch(e){}
 }
 $("fileInput").addEventListener("change",function(ev){
-  var files=ev.target.files;if(!files||!files.length)return;var firstNew=clips.length;
-  for(var i=0;i<files.length;i++){var f=files[i];clips.push({file:f,name:f.name,size:f.size,url:URL.createObjectURL(f),duration:0,trimStart:0,trimEnd:0});}
-  clips.slice(firstNew).forEach(probeDuration);
-  ev.target.value="";
-  setStatus(editorStatus,files.length+" clip(s) add ho gayi — kul "+clips.length+" clips. Har clip ko select karke trim karein, phir Export karein.","ok");
-  loadClip(firstNew);
-});
-/* ===== IMAGES UPLOAD — tasveerein bhi clips banti hain ===== */
-$("imageInput").addEventListener("change",function(ev){
-  /* FileList LIVE hoti hai: input ko khaali (value="") karte hi us ki
-     files bhi sath khaali ho jati hain. Is liye pehle chuni hui files
-     ki copy aik aam array mein lo, PHIR input reset karo. Pehle reset
-     pehle ho jata tha — loop tak files 0 reh jati theen, koi image
-     clip banta hi nahi tha: tasveer select ho jati thi lekin video
-     mein kahin nazar nahi aati thi (na shuru mein, na aakhir mein). */
+  /* FileList LIVE hoti hai — pehle copy lo, phir input reset karo.
+     Is picker se ab tasveerein bhi chun sakte hain: video files video
+     clip banti hain, image files image clip ban kar upar chuni hui
+     jagah (shuru / playhead / end) par lagti hain. Isi liye baghair
+     video ke, sirf tasveeron se bhi project shuru ho sakta hai. */
   var picked=ev.target.files?Array.prototype.slice.call(ev.target.files):[];
   ev.target.value="";
   if(!picked.length)return;
+  var vids=[],imgs=[];
+  picked.forEach(function(f){if(f.type&&f.type.indexOf("image/")===0)imgs.push(f);else vids.push(f);});
   var firstNew=clips.length;
-  for(var i=0;i<picked.length;i++){
-    (function(f){
-      var c={file:f,name:f.name,size:f.size,url:URL.createObjectURL(f),isImage:true,img:null,duration:10,trimStart:0,trimEnd:3};
-      clips.push(c);
-      var img=new Image();
-      img.onload=function(){c.img=img;renderClipList();if(clips[activeClip]===c)drawFrame();};
-      img.onerror=function(){setStatus(editorStatus,"Aik tasveer nahi khul saki ("+f.name+") — JPG/PNG try karein.","err");};
-      img.src=c.url;
-    })(picked[i]);
+  vids.forEach(function(f){clips.push({file:f,name:f.name,size:f.size,url:URL.createObjectURL(f),duration:0,trimStart:0,trimEnd:0});});
+  clips.slice(firstNew,firstNew+vids.length).forEach(probeDuration);
+  if(imgs.length)insertImageFiles(imgs);
+  else if(vids.length){setStatus(editorStatus,vids.length+" clip(s) add ho gayi — kul "+clips.length+" clips. Har clip ko select karke trim karein, phir Export karein.","ok");loadClip(firstNew);}
+});
+/* ===== IMAGES UPLOAD — tasveerein bhi clips banti hain =====
+   Tasveer hamesha END par nahi lagti: Media panel ke “📍 Tasveer
+   Kahan Lage?” wale buttons se jagah pehle se tay hoti hai —
+   Shuru Mein / Playhead Par (Beech Mein) / End Mein. Playhead wali
+   jagah par video clip khud do hisso mein split ho jata hai aur
+   tasveer darmiyan mein aa jati hai. Aur project mein koi video
+   na ho — sirf tasveerein hon — tab bhi ye clips aik slideshow
+   video ki tarah preview + export hote hain. */
+var imageInsertMode="playhead";
+document.querySelectorAll("#imgInsertSeg [data-insert]").forEach(function(btn){
+  btn.addEventListener("click",function(){
+    imageInsertMode=btn.getAttribute("data-insert");
+    document.querySelectorAll("#imgInsertSeg [data-insert]").forEach(function(b){b.setAttribute("aria-pressed",String(b===btn));});
+    var names={playhead:"📍 Playhead Par — tasveer playhead wali jagah (video ke beech) mein lagegi. Pehle playhead ko sahi jagah par le jayein.",start:"⏮ Shuru Mein — tasveer sab se pehle lagegi.",end:"⏭ End Mein — tasveer sab se aakhir mein lagegi."};
+    setStatus(editorStatus,"Tasveer ki jagah tay ho gayi: "+(names[imageInsertMode]||""),"ok");
+  });
+});
+window.__setImageInsertMode=function(m){
+  imageInsertMode=m;
+  document.querySelectorAll("#imgInsertSeg [data-insert]").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-insert")===m));});
+};
+function makeImageClip(f){
+  var c={file:f,name:f.name,size:f.size,url:URL.createObjectURL(f),isImage:true,img:null,duration:10,trimStart:0,trimEnd:3};
+  var img=new Image();
+  img.onload=function(){c.img=img;renderClipList();if(clips[activeClip]===c){applyCanvasSize();drawFrame();}};
+  img.onerror=function(){setStatus(editorStatus,"Aik tasveer nahi khul saki ("+f.name+") — JPG/PNG try karein.","err");};
+  img.src=c.url;
+  return c;
+}
+/* Playhead is waqt jis clip ke andar hai, usay wahan se split karke
+   darmiyan mein jagah banao; playhead kisi kinare par ho to us clip
+   se pehle/baad wali jagah do. Koi clip hi na ho to 0 (shuru). */
+function imageInsertIndex(){
+  if(!clips.length)return 0;
+  if(imageInsertMode==="start")return 0;
+  if(imageInsertMode==="end")return clips.length;
+  var pt=combinedNow(),acc=0;
+  for(var i=0;i<clips.length;i++){
+    var g=gapOfClip(clips[i],i);
+    if(g>0){if(pt<acc+g)return i;acc+=g;}
+    var d=clipLenOf(clips[i]);
+    if(pt<acc+d||i===clips.length-1){
+      var local=pt-acc,c=clips[i];
+      if(local>0.3&&local<d-0.3){
+        var src=(c.trimStart||0)+local;
+        var right={file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:src,trimEnd:c.trimEnd||c.duration||0,gapBefore:0,isImage:!!c.isImage,img:c.img||null};
+        c.trimEnd=src;
+        clips.splice(i+1,0,right);
+        return i+1;
+      }
+      return local<=0.3?i:i+1;
+    }
+    acc+=d;
   }
-  setStatus(editorStatus,picked.length+" tasveer(ain) media list mein clip ban kar add ho gayi — har tasveer video mein 3 second dikhegi. Tartib ↑ ↓ se badlein, lambai timeline ke kinaron se (zyada se zyada 10 second), phir Export karein.","ok");
-  loadClip(firstNew);
+  return clips.length;
+}
+function insertImageFiles(files){
+  if(!files||!files.length)return;
+  var wasEmpty=!clips.length;
+  var ins=imageInsertIndex();
+  var newClips=files.map(makeImageClip);
+  var args=[ins,0].concat(newClips);
+  clips.splice.apply(clips,args);
+  var onlyImages=clips.length&&clips.every(function(c){return c.isImage;});
+  var whereNames={playhead:"playhead wali jagah par (video ke beech mein)",start:"sab se shuru mein",end:"sab se end mein"};
+  setStatus(editorStatus,files.length+" tasveer(ain) "+(wasEmpty?"slideshow ki pehli clip(s) ban gayi":(whereNames[imageInsertMode]||""))+" — har tasveer 3 second dikhegi."+(onlyImages?" Ye SIRF tasveeron ka project hai (koi video nahi) — phir bhi Export dabane se poori slideshow video ban jayegi. Awaz chahiye to Audio File Upload se apni audio lagayein, wo in tasveeron par chalegi.":" Tartib ↑ ↓ se badlein, tasveer ka time timeline mein select karke 3/5/10 second buttons se badlein, phir Export karein."),"ok");
+  loadClip(ins);
+  pushHistory();
+}
+$("imageInput").addEventListener("change",function(ev){
+  /* FileList LIVE hoti hai: input ko khaali (value="") karte hi us ki
+     files bhi sath khaali ho jati hain. Is liye pehle chuni hui files
+     ki copy aik aam array mein lo, PHIR input reset karo. */
+  var picked=ev.target.files?Array.prototype.slice.call(ev.target.files):[];
+  ev.target.value="";
+  if(!picked.length)return;
+  insertImageFiles(picked);
 });
 var mediaImageBtn=$("mediaImageBtn");
 if(mediaImageBtn)mediaImageBtn.addEventListener("click",function(){$("imageInput").click();});
+var slideshowBtn=$("slideshowBtn");
+if(slideshowBtn)slideshowBtn.addEventListener("click",function(){
+  /* Slideshow: tasveerein tartib se aik ke baad aik — jagah End wali
+     rakho taake chuni hui tartib waisi hi lage. Project khaali ho to
+     yehi pehli clips banti hain, kisi video ki zaroorat nahi. */
+  window.__setImageInsertMode("end");
+  setStatus(editorStatus,"Slideshow mode: gallery se kai tasveerein aik sath chunein — har tasveer 3 second ki clip banegi. Phir Export dabayein, tasveeron ki video tayyar. (Tasveer ka time timeline mein select karke 3/5/10 second kar sakte hain.)","ok");
+  $("imageInput").click();
+});
 video.addEventListener("loadedmetadata",function(){state.loaded=true;state.duration=video.duration||0;stageEmpty.classList.add("hidden");canvas.classList.remove("hidden");transport.classList.remove("hidden");var ph=$("transportPlaceholder");if(ph)ph.classList.add("hidden");trimStartEl.max=state.duration;trimEndEl.max=state.duration;var c=clips[activeClip];if(c){if(!c.duration){c.duration=state.duration;}if(!c.trimEnd)c.trimEnd=state.duration;c.duration=state.duration;trimStartEl.value=c.trimStart||0;trimEndEl.value=c.trimEnd||state.duration;}else{trimStartEl.value=0;trimEndEl.value=state.duration;}updateTrimLabels();exportBtn.disabled=false;video.volume=parseFloat($("volumeSlider").value);video.playbackRate=parseFloat($("speedSel").value);applyCanvasSize();var seekT=(seekAfterLoad!==null?seekAfterLoad:(parseFloat(trimStartEl.value)||0));seekAfterLoad=null;video.currentTime=seekT;loadingClip=false;renderClipList();updateTransport();setStatus(editorStatus,clips.length>1?("Sab clips aik hi video hain — kul waqt "+fmt(combinedTotal())+". Play dabayein to poori video aik sath chalegi; kisi hisse ko trim karna ho to timeline ya list se select karein."):("Video load ho gayi — ab trim, text, filter set karke Export karein."),"ok");if(advanceWanted){advanceWanted=false;if(!state.exporting){video.play();playBtn.textContent="❚❚";}}pushHistory();drawThumbFromVideo();});
 video.addEventListener("error",function(){setStatus(editorStatus,"Ye file browser mein nahi khul saki. MP4 format try karein.","err");});
 video.addEventListener("timeupdate",function(){if(!state.exporting){updateTransport();var end=parseFloat(trimEndEl.value);if(state.playClipOnly&&video.currentTime>=end){video.pause();state.playClipOnly=false;}else if(!video.paused&&activeClip>=0&&clips[activeClip]){var ce=clips[activeClip].trimEnd||clips[activeClip].duration||0;if(ce>0&&video.currentTime>=ce-0.03){if(activeClip<clips.length-1)advanceToNext();else if(state.loop)restartCombined();else video.pause();}}}if(!rafId)drawFrame();});
@@ -1932,6 +2014,53 @@ function moveClip(i,dir){
   setStatus("Clip "+(j+1)+" number par chala gaya — clips ki tartib badal gayi.","ok");
   hist();
 }
+/* Tasveer (ya koi bhi clip) ko aik tap mein shuru / end par le jana */
+function moveClipTo(i,target){
+  var cs=clips();if(i<0||i>=cs.length)return;
+  target=Math.max(0,Math.min(cs.length-1,target));
+  if(target===i){setStatus("Clip pehle se hi wahi jagah par hai.","ok");return;}
+  var ac=cs[E.active()];
+  var it=cs.splice(i,1)[0];cs.splice(target,0,it);
+  sel={type:"video",index:target};
+  E.renderList();
+  var nai=cs.indexOf(ac);if(nai>=0&&nai!==E.active()&&ac!==it)E.loadClip(nai);else if(ac===it)E.loadClip(target);
+  render();renderContext();
+  setStatus("Clip "+(target+1)+" number par chala gaya — "+(target===0?"ab ye sab se pehle (shuru mein) aayega.":(target===cs.length-1?"ab ye sab se aakhir (end) mein aayega.":"nayi jagah tay ho gayi.")),"ok");
+  hist();
+}
+/* Clip ko playhead wali jagah par le jana — playhead kisi video ke
+   beech mein ho to wo clip wahan split ho jati hai aur ye clip us ke
+   darmiyan mein lag jata hai (tasveer video ke beech mein lagane ka
+   sab se asan tareeqa). */
+function moveClipToPlayhead(fromIdx){
+  var cs=clips();var item=cs[fromIdx];if(!item)return;
+  var pt=projectTime();
+  var loc0=locate(pt);
+  if(loc0&&loc0.index===fromIdx){setStatus("Playhead pehle se hi is clip ke andar hai — pehle playhead ko video mein wahan le jayein jahan tasveer lagani hai, phir ye button dabayein.","err");return;}
+  cs.splice(fromIdx,1);
+  var acc=0,ins=cs.length;
+  for(var i=0;i<cs.length;i++){
+    var g=gapOf(cs[i],i);
+    if(g>0){if(pt<acc+g){ins=i;break;}acc+=g;}
+    var d=cDur(cs[i]);
+    if(pt<acc+d||i===cs.length-1){
+      var local=pt-acc,c=cs[i];
+      if(local>0.3&&local<d-0.3){
+        var src=(c.trimStart||0)+local;
+        var right={file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:src,trimEnd:c.trimEnd||c.duration||0,gapBefore:0,isImage:!!c.isImage,img:c.img||null};
+        c.trimEnd=src;cs.splice(i+1,0,right);ins=i+1;
+      }else ins=local<=0.3?i:i+1;
+      break;
+    }
+    acc+=d;
+  }
+  cs.splice(ins,0,item);
+  sel={type:"video",index:ins};
+  E.renderList();E.loadClip(ins);
+  render();renderContext();
+  setStatus("Ho gaya! Tasveer playhead wali jagah par aa gayi — ab ye video ke beech mein, "+fmt(pt)+" wali jagah par dikhegi.","ok");
+  hist();
+}
 function startVideoDrag(ev,idx,el){
   var startX=ev.clientX,dx=0,moved=false;
   function move(e){
@@ -2046,6 +2175,21 @@ function renderContext(){
   if(sel.type==="video"){
     var c=cs[sel.index];if(!c){sel=null;renderContext();return;}
     label("Clip "+(sel.index+1)+" select hai — "+c.name);
+    if(c.isImage){
+      var durLab=document.createElement("span");durLab.className="hint";durLab.style.margin="0";durLab.textContent="🖼 Ye TASVEER clip hai — ab ye "+fmt(cDur(c))+" dikhegi. Time badlein:";box.appendChild(durLab);
+      [3,5,10].forEach(function(sec){
+        box.appendChild(ctxBtn("⏱ "+sec+" Second",function(){
+          c.trimEnd=Math.min(c.duration||10,(c.trimStart||0)+sec);
+          if(E.active()===sel.index)syncTrimInputs(c);
+          E.renderList();render();renderContext();E.draw();
+          setStatus("Tasveer ka time "+sec+" second ho gaya — ab ye tasveer video mein "+sec+" second dikhegi.","ok");hist();
+        },Math.abs(cDur(c)-sec)<0.05));
+      });
+      box.appendChild(ctxBtn("⏮ Sab Se Shuru Mein Le Jayein",function(){moveClipTo(sel.index,0);}));
+      box.appendChild(ctxBtn("📍 Playhead Par Le Jayein (Beech Mein)",function(){moveClipToPlayhead(sel.index);},true));
+      box.appendChild(ctxBtn("⏭ Sab Se End Mein Le Jayein",function(){moveClipTo(sel.index,cs.length-1);}));
+      var ih=document.createElement("span");ih.className="hint";ih.style.margin="0";ih.textContent="“Playhead Par” dabane se tasveer safed line (playhead) wali jagah par chali jayegi — agar playhead kisi video ke beech mein ho to wo video wahan se khud split ho jayegi aur tasveer darmiyan mein aa jayegi.";box.appendChild(ih);
+    }
     box.appendChild(ctxBtn("✂️ Split (Playhead Par)",doSplit,true));
     box.appendChild(ctxBtn("⏮ Trim Left (Playhead Tak)",function(){trimToPlayhead("l");}));
     box.appendChild(ctxBtn("Trim Right (Playhead Tak) ⏭",function(){trimToPlayhead("r");}));
