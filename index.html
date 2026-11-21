@@ -4,7 +4,15 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="color-scheme" content="dark"/>
-<link rel="icon" href="data:,"/>
+<meta name="theme-color" content="#0f1115"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="ProCut Studio"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png"/>
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png"/>
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png"/>
 <title>ProCut Studio — Free Professional Video Editor, No Watermark</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -166,12 +174,104 @@ canvas#thumbCanvas{width:100%;height:auto;display:block;border-radius:9px;border
 .kbd{font-size:11px;border:1px solid var(--border2);border-bottom-width:2px;border-radius:5px;padding:1px 5px;color:var(--muted);background:var(--panel2)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
+<style>
+/* ===== APP SHELL — professional software layout (no long page) ===== */
+html,body{height:100%}
+body{display:flex;flex-direction:column;height:100dvh;overflow:hidden}
+.topbar{flex:none;flex-wrap:nowrap;padding:8px 12px;gap:10px}
+.logo{background:none!important;width:40px;height:40px}
+.btn-install{background:var(--panel3);color:var(--text);border:1px solid var(--border2);border-radius:9px;padding:10px 14px;font-weight:700;font-size:13.5px;min-height:48px;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.btn-install:hover{border-color:var(--cyan);color:#a5f3fc}
+.btn-export{min-height:48px;padding:12px 20px;font-size:15px}
+.icon-btn-top{width:48px;height:48px;border-radius:10px}
+.select-dark{min-height:48px;font-size:14px}
+@media(max-width:760px){.badges{display:none}.brand p{display:none}.brand h1{font-size:16px}.btn-install{padding:10px 14px;font-size:13.5px}.btn-export{padding:12px 14px}
+.topbar{flex-wrap:wrap;row-gap:8px}
+.topbar .brand{flex:1 1 auto;min-width:0}
+.top-actions{order:3;flex:1 1 100%;width:100%;display:flex;gap:8px}
+.top-actions .select-dark{flex:1 1 auto;max-width:none;min-width:0}
+.top-actions .btn-export{flex:none}
+.top-actions .btn-install{flex:none}}
+.app-intro{display:none!important}
+.app{flex:1;min-height:0;display:flex;flex-direction:column;width:100%;padding:10px 12px 12px}
+.warn-box{flex:none;padding:9px 12px;font-size:12.5px;margin-bottom:10px!important}
+/* Main app navigation — big tappable tabs */
+.app-nav{flex:none;display:flex;gap:8px;padding:8px 12px;background:var(--panel);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.app-nav::-webkit-scrollbar{display:none}
+.nav-btn{flex:1 1 0;min-width:104px;min-height:54px;border:1px solid var(--border);background:var(--panel2);color:var(--muted);border-radius:12px;font-weight:700;font-size:14px;display:inline-flex;flex-direction:row;align-items:center;justify-content:center;gap:8px;padding:10px 12px;white-space:nowrap}
+.nav-btn .nav-ico{font-size:19px;line-height:1}
+.nav-btn[aria-pressed="true"]{background:rgba(34,211,238,.14);border-color:var(--cyan);color:#a5f3fc}
+.nav-btn:active{transform:scale(.98)}
+@media(max-width:760px){
+  .app-nav{order:99;border-bottom:0;border-top:1px solid var(--border);padding:8px 8px calc(8px + env(safe-area-inset-bottom));gap:6px}
+  .nav-btn{flex-direction:column;gap:3px;min-width:0;min-height:58px;font-size:11.5px;padding:8px 4px;border-radius:10px}
+  .nav-btn .nav-ico{font-size:21px}
+  .warn-box{display:none}
+}
+/* Views — only one screen at a time, like a real app */
+.view{display:none;flex:1;min-height:0;flex-direction:column}
+.view.active{display:flex}
+.view-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:2px 1px 16px}
+.view-scroll .panel{max-width:920px;margin:0 auto 12px}
+.view-scroll .bottom-grid{display:block;margin-top:0}
+/* Editor view layout */
+.workspace{flex:1;min-height:0}
+@media(min-width:1024px){
+  .workspace{display:grid;grid-template-columns:296px minmax(0,1fr) 312px;grid-template-rows:minmax(0,1fr) auto;gap:12px;height:100%;overflow:hidden}
+  .workspace>*{min-height:0;min-width:0}
+  .workspace>.panel{overflow-y:auto;min-height:0}
+  .preview-panel{overflow:hidden}
+  .preview-panel{min-height:0}
+  .stage-area{min-height:0!important}
+  canvas#stage{max-height:100%}
+  .timeline-panel{grid-column:1/-1;margin-top:0}
+  .mobile-subtabs{display:none!important}
+}
+@media(max-width:1023px){
+  .workspace{display:flex;flex-direction:column;gap:10px;height:100%}
+  .preview-panel{flex:none;order:0}
+  .stage-area{min-height:0;padding:10px}
+  canvas#stage{max-height:36vh}
+  .mobile-subtabs{order:1;flex:none;display:flex;gap:8px}
+  .workspace>.panel,.workspace>.timeline-panel{order:2;flex:1;min-height:0;overflow-y:auto;margin-top:0;display:none}
+  .workspace[data-sub="media"]>.panel-media{display:block}
+  .workspace[data-sub="props"]>.panel-props{display:block}
+  .workspace[data-sub="trim"]>.timeline-panel{display:block}
+  .transport-tools{max-height:86px;overflow-y:auto}
+}
+.subtab-btn{flex:1;min-height:52px;border:1px solid var(--border);background:var(--panel2);color:var(--muted);border-radius:12px;font-weight:700;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 8px}
+.subtab-btn[aria-pressed="true"]{background:rgba(167,139,250,.16);border-color:var(--purple);color:#ddd6fe}
+/* ===== BIG TAPPABLE BUTTONS everywhere ===== */
+.btn{min-height:48px;padding:11px 16px;font-size:14.5px;border-radius:11px}
+.btn.small{min-height:48px;padding:10px 14px;font-size:14px}
+.chip-btn{min-height:44px;padding:9px 14px;font-size:13.5px}
+.mini-select{min-height:44px;padding:9px 10px;font-size:13.5px}
+.seg button{min-height:48px;padding:11px 12px;font-size:14px}
+.tool-btn{width:100%;min-height:68px;padding:13px 12px;border-radius:12px;cursor:pointer;font:inherit;color:inherit;text-align:left}
+.tool-btn b{font-size:14px}.tool-btn span{font-size:12px}
+.tool-btn:hover{border-color:var(--cyan)}
+.tool-btn:active{transform:scale(.98);border-color:var(--cyan);background:rgba(34,211,238,.1)}
+.tool-btn:focus-visible,.nav-btn:focus-visible,.subtab-btn:focus-visible,.btn:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.file-pick{padding:24px 16px}
+.file-pick b{font-size:17px}
+.swatch{width:46px;height:46px}
+.clip-item button{width:42px;height:42px;font-size:16px;border-radius:10px}
+.clip-item{padding:10px}
+.play-main{width:56px;height:56px;font-size:19px}
+input[type="range"]{min-height:36px}
+input[type="text"],input[type="password"],input[type="url"],textarea,select{min-height:48px}
+.slider-row{grid-template-columns:92px 1fr 40px;margin-top:10px}
+#ytCheckBtn,#keyShowBtn{flex:none;min-width:96px}
+a.btn-link{display:inline-flex;align-items:center;min-height:48px;padding:10px 16px;border:1px solid var(--cyan);border-radius:11px;background:rgba(34,211,238,.1);font-weight:700}
+.timeline-panel .btn{min-height:48px}
+.view-scroll .btn{min-height:50px}
+</style>
 </head>
 <body>
 
 <header class="topbar">
   <div class="brand">
-    <div class="logo" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 6v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6"/><path d="M8 6l2-3M13 6l2-3M18 6l1.5-2.5"/><path d="M10 10.5v5l4.5-2.5z" fill="currentColor" stroke="none"/></svg></div>
+    <div class="logo" aria-hidden="true"><img src="data:image/png;base64,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" alt="" width="40" height="40" style="width:40px;height:40px;border-radius:9px;display:block"/></div>
     <div>
       <h1>ProCut <span>Studio</span></h1>
       <p>Professional Editor • Islamic Videos • Mobile First</p>
@@ -189,12 +289,13 @@ canvas#thumbCanvas{width:100%;height:auto;display:block;border-radius:9px;border
       <option value="720">Export • 720p HD</option>
       <option value="480" selected>Export • 480p Fast</option>
     </select>
+    <button class="btn-install" id="installBtn" type="button">📲 Install App</button>
     <button class="btn-export" id="exportBtn" type="button" disabled><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 21h16"/></svg> Export Video</button>
   </div>
 </header>
 
 <div class="app">
-  <p style="margin:2px 2px 12px;color:var(--muted);font-size:13.5px;max-width:900px">CapCut-style professional editor — bilkul muft, <b style="color:#86efac">koi watermark nahi</b>. Aik ya <b style="color:var(--text)">kai chhote clips load karke aik video mein jodein</b>, trim karein, Urdu title lagayein, <b style="color:var(--text)">video se audio alag karein</b>, aur <b style="color:var(--text)">Gemini AI se thumbnail banayein</b>. Sab kaam phone par hota hai, video kahin upload nahi hoti.</p>
+  <p class="app-intro" style="margin:2px 2px 12px;color:var(--muted);font-size:13.5px;max-width:900px">CapCut-style professional editor — bilkul muft, <b style="color:#86efac">koi watermark nahi</b>. Aik ya <b style="color:var(--text)">kai chhote clips load karke aik video mein jodein</b>, trim karein, Urdu title lagayein, <b style="color:var(--text)">video se audio alag karein</b>, aur <b style="color:var(--text)">Gemini AI se thumbnail banayein</b>. Sab kaam phone par hota hai, video kahin upload nahi hoti.</p>
 
   <div class="warn-box" role="note" style="margin-bottom:12px"><b>Channel ki hifazat:</b> Doosron ki tilawat / naat / bayan baghair ijazat upload karna YouTube ki reused-content policy ke khilaf hai — strike aa sakta hai. Sirf ijazat wali clips use karein, apni awaz / intro add karein aur description mein asal source ka credit dein.</div>
 
@@ -468,6 +569,14 @@ canvas#thumbCanvas{width:100%;height:auto;display:block;border-radius:9px;border
     <section class="panel" aria-labelledby="s4">
       <div class="panel-head"><h2 id="s4">✓ Upload Se Pehle Checklist</h2></div>
       <div class="panel-body">
+        <span class="label">📲 App Install Karein — Home Screen Par Logo Ke Sath</span>
+        <ol class="steps" style="margin-bottom:14px">
+          <li>Ye page <b style="color:var(--text)">Chrome</b> mein kholein.</li>
+          <li>Upar wala <b style="color:var(--text)">📲 Install App</b> button dabayein — ya Chrome ke <b style="color:var(--text)">⋮ menu → “Add to Home screen” / “Install app”</b> chunein.</li>
+          <li><b style="color:var(--text)">Install</b> dabate hi ProCut Studio ka logo wala icon home screen par aa jayega — phir editor aik asli app ki tarah khulega, baghair browser bar ke.</li>
+        </ol>
+        <div class="divider"></div>
+        <span class="label">Upload Se Pehle</span>
         <ul class="checks" style="margin-top:0">
           <li>Clip ki ijazat pakki hai — ya video apni hai, ya ijazat mili hai.</li>
           <li>Apni awaz ka intro/outro ya commentary shamil ki hai.</li>
@@ -493,6 +602,117 @@ canvas#thumbCanvas{width:100%;height:auto;display:block;border-radius:9px;border
 </div>
 
 <video id="srcVideo" class="hidden" playsinline preload="metadata"></video>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id);};
+/* ---------- Build app navigation (top on desktop, bottom bar on phone) ---------- */
+var topbar=document.querySelector(".topbar");
+var nav=document.createElement("nav");nav.className="app-nav";nav.setAttribute("aria-label","App sections");
+var tabs=[["editor","✂️","Editor"],["thumb","🖼️","Thumbnail"],["audio","🎵","Audio"],["ai","✨","AI Studio"],["help","✓","Madad"]];
+tabs.forEach(function(t,i){
+  var b=document.createElement("button");b.type="button";b.className="nav-btn";b.setAttribute("data-view",t[0]);b.setAttribute("aria-pressed",i===0?"true":"false");
+  b.innerHTML="<span class='nav-ico' aria-hidden='true'>"+t[1]+"</span>"+t[2];
+  b.addEventListener("click",function(){switchView(t[0]);});
+  nav.appendChild(b);
+});
+topbar.parentNode.insertBefore(nav,topbar.nextSibling);
+
+/* ---------- Reorganize the long page into app views ---------- */
+var app=document.querySelector(".app");
+var workspace=document.querySelector(".workspace");
+var timeline=document.querySelector(".timeline-panel");
+var grids=document.querySelectorAll(".bottom-grid");
+var thumbPanel=grids[0]?grids[0].children[0]:null;
+var audioPanel=grids[0]?grids[0].children[1]:null;
+var aiPanel=grids[1]?grids[1].children[0]:null;
+var helpPanel=grids[1]?grids[1].children[1]:null;
+var warn=document.querySelector(".warn-box");
+var footerP=app.querySelector(":scope > p:last-of-type");
+
+function makeView(id){
+  var v=document.createElement("div");v.className="view";v.id="view-"+id;
+  var s=document.createElement("div");s.className="view-scroll";v.appendChild(s);app.appendChild(v);
+  return s;
+}
+var editorView=document.createElement("div");editorView.className="view active";editorView.id="view-editor";app.appendChild(editorView);
+editorView.appendChild(workspace);
+if(timeline)workspace.appendChild(timeline);
+var thumbScroll=makeView("thumb"); if(thumbPanel)thumbScroll.appendChild(thumbPanel);
+var audioScroll=makeView("audio"); if(audioPanel)audioScroll.appendChild(audioPanel);
+var aiScroll=makeView("ai"); if(aiPanel)aiScroll.appendChild(aiPanel);
+var helpScroll=makeView("help");
+if(warn){warn.style.display="block";warn.style.marginBottom="12px";helpScroll.appendChild(warn);}
+if(helpPanel)helpScroll.appendChild(helpPanel);
+if(footerP)helpScroll.appendChild(footerP);
+if(grids[0])grids[0].remove(); if(grids[1])grids[1].remove();
+
+function switchView(name){
+  document.querySelectorAll(".view").forEach(function(v){v.classList.toggle("active",v.id==="view-"+name);});
+  document.querySelectorAll(".nav-btn").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-view")===name));});
+}
+window.__switchView=switchView;
+
+/* ---------- Mobile sub-tabs inside Editor: Media / Trim / Text ---------- */
+var asides=workspace.querySelectorAll(":scope > aside.panel");
+var mediaPanel=asides[0], propsPanel=asides[1];
+if(mediaPanel)mediaPanel.classList.add("panel-media");
+if(propsPanel)propsPanel.classList.add("panel-props");
+var subtabs=document.createElement("div");subtabs.className="mobile-subtabs";
+[["media","🎬 Media"],["trim","✂️ Trim"],["props","T Text / Rang"]].forEach(function(t,i){
+  var b=document.createElement("button");b.type="button";b.className="subtab-btn";b.setAttribute("data-sub",t[0]);b.setAttribute("aria-pressed",i===0?"true":"false");b.textContent=t[1];
+  b.addEventListener("click",function(){switchSub(t[0]);});
+  subtabs.appendChild(b);
+});
+var preview=workspace.querySelector(".preview-panel");
+if(preview&&preview.nextSibling)workspace.insertBefore(subtabs,preview.nextSibling);else workspace.appendChild(subtabs);
+workspace.setAttribute("data-sub","media");
+function switchSub(name){
+  workspace.setAttribute("data-sub",name);
+  document.querySelectorAll(".subtab-btn").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-sub")===name));});
+  var target=name==="media"?mediaPanel:(name==="props"?propsPanel:timeline);
+  if(target&&window.innerWidth<1024)target.scrollTop=0;
+}
+window.__switchSub=switchSub;
+
+/* ---------- Quick Tools: har tool ab asal tappable button hai ---------- */
+function pressSeg(selector){var b=document.querySelector(selector);if(b)b.click();}
+document.querySelectorAll(".tool-btn").forEach(function(el){
+  el.setAttribute("role","button");el.setAttribute("tabindex","0");
+  var titleEl=el.querySelector("b");var name=titleEl?titleEl.textContent.trim():"";
+  function act(){
+    if(name.indexOf("Trim")===0){switchView("editor");switchSub("trim");var r=$("trimStart");if(r)r.focus({preventScroll:true});}
+    else if(name.indexOf("Urdu")===0){switchView("editor");switchSub("props");var t=$("titleText");if(t)t.focus({preventScroll:true});}
+    else if(name.indexOf("Shorts")===0){pressSeg("[data-ratio='9:16']");switchView("editor");switchSub("media");}
+    else if(name.indexOf("Filters")===0){switchView("editor");switchSub("props");var f=$("brightnessSlider");if(f)f.focus({preventScroll:true});}
+    else if(name.indexOf("Clips")===0){switchView("editor");switchSub("media");var fi=$("fileInput");if(fi)fi.click();}
+    else if(name.indexOf("Audio")===0){switchView("audio");}
+    else if(name.indexOf("AI Thumb")===0){switchView("thumb");}
+    else if(name.indexOf("Speed")===0){switchView("editor");var s=$("speedSel");if(s)s.focus({preventScroll:true});}
+  }
+  el.addEventListener("click",act);
+  el.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();act();}});
+});
+
+/* ---------- Gemini steps link ko bara button banao ---------- */
+document.querySelectorAll("ol.steps a").forEach(function(a){a.classList.add("btn-link");});
+
+/* ---------- Install App button ---------- */
+var deferredPrompt=null;
+window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();deferredPrompt=e;});
+var installBtn=$("installBtn");
+if(installBtn)installBtn.addEventListener("click",function(){
+  if(deferredPrompt){
+    var dp=deferredPrompt;deferredPrompt=null;
+    var showPrompt=dp.prompt;
+    if(showPrompt){try{showPrompt.call(dp);}catch(e){switchView("help");}}
+    if(dp.userChoice)dp.userChoice.then(function(){},function(){});
+  }
+  else switchView("help");
+});
+})();
+</script>
 
 <script>
 (function(){
@@ -645,7 +865,7 @@ $("aiBtn").addEventListener("click",function(){
   .catch(function(err){btn.disabled=false;setStatus(aiStatus,"Internet masla — connection check karke dobara try karein. ("+err.message+")","err");});
 });
 $("copyAiBtn").addEventListener("click",function(){if(!lastAiText)return;var done=function(){setStatus(aiStatus,"Poora jawab copy ho gaya.","ok");};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(lastAiText).then(done,function(){setStatus(aiStatus,"Copy nahi ho saka — text select karke copy karein.","err");});}else setStatus(aiStatus,"Is browser mein copy support nahi — text select karke copy karein.","err");});
-$("useTitleBtn").addEventListener("click",function(){if(!lastAiTitle){setStatus(aiStatus,"Jawab mein TITLE nahi mila.","err");return;}$("titleText").value=lastAiTitle;drawFrame();pushHistory();setStatus(aiStatus,"Title video ke text mein lag gaya — upar editor mein dekhein.","ok");window.scrollTo({top:0,behavior:"smooth"});});
+$("useTitleBtn").addEventListener("click",function(){if(!lastAiTitle){setStatus(aiStatus,"Jawab mein TITLE nahi mila.","err");return;}$("titleText").value=lastAiTitle;drawFrame();pushHistory();setStatus(aiStatus,"Title video ke text mein lag gaya — Editor tab mein dekhein.","ok");if(window.__switchView)window.__switchView("editor");if(window.__switchSub)window.__switchSub("props");});
 /* ===== Join export: kai clips -> aik video ===== */
 var exportCtx=null,exportAudioDest=null;
 function exportJoined(){
@@ -770,7 +990,7 @@ $("thumbDownloadBtn").addEventListener("click",function(){var st=$("thumbStatus"
 $("thumbAiBtn").addEventListener("click",function(){
   var st=$("thumbStatus");var key=$("apiKey").value.trim();
   var topic=($("aiTopic").value.trim()||$("thumbTitleText").value.trim()||$("titleText").value.trim());
-  if(!key){setStatus(st,"Pehle neeche “Gemini AI” hisse mein apni muft Gemini API key paste karein — wahi key thumbnail ke liye bhi chalegi.","err");$("apiKey").scrollIntoView({behavior:"smooth",block:"center"});return;}
+  if(!key){setStatus(st,"Pehle neeche “Gemini AI” hisse mein apni muft Gemini API key paste karein — wahi key thumbnail ke liye bhi chalegi.","err");if(window.__switchView)window.__switchView("ai");var kf=$("apiKey");if(kf)setTimeout(function(){kf.focus();},80);return;}
   if(!topic){setStatus(st,"Video ka topic ya thumbnail text likhein — Gemini ko batana hoga ke thumbnail kis bare mein hai.","err");return;}
   var btn=this;btn.disabled=true;setStatus(st,"Gemini AI background bana raha hai… 15–40 second lag sakte hain.");
   var prompt="Create a beautiful 16:9 YouTube thumbnail BACKGROUND image (no text at all) for an Islamic video about: "+topic+". Scene: peaceful mosque silhouette at golden sunset, an open Quran with soft light, emerald green and gold colors, cinematic, high contrast, leave the lower half darker and empty for big title text. Absolutely NO text, NO letters, NO words, NO watermark, NO human faces.";
