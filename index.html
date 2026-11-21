@@ -354,6 +354,8 @@ ol.steps li{color:#d8e1ee}
 .hub-btn.gold:hover{background:#ffd95e}
 .hub-btn.green{background:var(--green);color:#04150a}
 .hub-btn.green:hover{background:#2ee06f}
+.hub-btn.cyan{background:var(--cyan);color:#04222b}
+.hub-btn.cyan:hover{background:#67e8f9}
 .hub-btn:disabled{opacity:.45;cursor:not-allowed}
 .btn.green{background:var(--green);border-color:var(--green);color:#04150a;font-weight:800}
 .btn.green:hover{background:#2ee06f;border-color:var(--green)}
@@ -403,6 +405,8 @@ ol.steps li{color:#d8e1ee}
         </label>
         <input class="hidden" type="file" id="fileInput" accept="video/*" multiple/>
         <p class="file-meta" id="fileMeta">No media imported — abhi koi video select nahi hui.</p>
+        <button class="btn gold block" id="mediaAudioUploadBtn" type="button" style="margin-top:4px">📤 Audio File Upload Karein (MP3 / WAV)</button>
+        <p class="hint">Apni audio file (naat, background awaz, apni recording) chunein — wo video mein merge ho jayegi, <b style="color:var(--text)">video ka apna sound band</b> ho jayega aur preview + export dono mein sirf is audio ki awaz chalegi. Yahi button neeche Audio tab mein bhi hai.</p>
         <div class="clip-list" id="clipList" aria-label="Clips ki list"></div>
         <p class="hint" id="joinHint" style="display:none"></p>
 
@@ -645,8 +649,9 @@ ol.steps li{color:#d8e1ee}
           <p class="hub-status" id="mergeHubStatus">Abhi koi clip nahi — pehle Editor → Media se videos load karein.</p>
           <button class="hub-btn gold" id="hubAudioBtn" type="button">🎵 Sab Audio Merge Karein — AIK File Download (WAV)</button>
           <button class="hub-btn green" id="hubVideoBtn" type="button">🎬 Sab Video Merge Karein — AIK Video Export</button>
+          <button class="hub-btn cyan" id="hubUploadBtn" type="button">📤 Apni Audio File Upload Karein — Video Mein Lagayein</button>
           <p class="status" id="hubStatus" role="status"></p>
-          <p class="hint" style="margin-bottom:0">Pehla button: <b style="color:var(--text)">saari clips ki awaz jud kar AIK hi audio file</b> download hogi. Doosra button: <b style="color:var(--text)">saari clips jud kar AIK hi video</b> export hogi. Alag-alag clip select karne ki zaroorat nahi — sab khud aik sath select hai.</p>
+          <p class="hint" style="margin-bottom:0">Pehla button: <b style="color:var(--text)">saari clips ki awaz jud kar AIK hi audio file</b> download hogi. Doosra button: <b style="color:var(--text)">saari clips jud kar AIK hi video</b> export hogi. Teesra button: <b style="color:var(--text)">apni audio file (MP3 / WAV) upload</b> karke video mein lagayein — video ka apna sound band ho jayega, sirf upload ki hui audio chalegi. Alag-alag clip select karne ki zaroorat nahi — sab khud aik sath select hai.</p>
         </div>
         <p class="subtle" style="margin-top:0">Load ki hui video / clip se sirf awaz nikaal kar alag audio file download karein — naat ya tilawat ki audio alag rakhne, ya awaz kisi doosri video mein istemal karne ke liye.</p>
         <span class="label">Tartib</span>
@@ -761,6 +766,7 @@ ol.steps li{color:#d8e1ee}
           <dt>Saari audio AIK file mein download karni hai — button kahan hai?</dt><dd>Neeche wale <b>Audio</b> tab mein jayein — sab se upar sunehri (gold) frame mein sab se bara button hai: “🎵 Sab Audio Merge Karein — AIK File Download (WAV)”. Wahi dabayein, saari clips ki awaz aik hi WAV file mein download ho jayegi. Alag-alag clip select karne ki zaroorat nahi — sab khud aik sath select hai.</dd>
           <dt>Poori video aik hi select / merge karni hai?</dt><dd>Editor → Trim (timeline) ke upar “✓ Sab Select Karein” dabayein — poori video (sab clips mila kar) aik hi select ho jayegi. Phir wahan “🎬 Sab Merge — AIK Video” dabayein ya upar wala Export Video button — sab clips jud kar aik hi video file ban jayegi.</dd>
           <dt>Apni audio file video mein merge karna — video ka sound band?</dt><dd>Audio hisse ke “Merge” wale khane se apni audio file (MP3/WAV) chunein — file lagte hi video ka apna sound khud band ho jata hai aur preview + export dono mein sirf usi audio ki awaz chalti hai. Wapas video ka sound chahiye to wahi toggle OFF kar dein, ya “Merge Audio Hatayein” dabayein.</dd>
+          <dt>Audio file upload karne ka button kahan hai?</dt><dd>Do jagah bara button hai: (1) <b>Editor → Media</b> panel mein video import ke neeche “📤 Audio File Upload Karein (MP3 / WAV)”, (2) <b>Audio</b> tab mein sab se upar neela button “📤 Apni Audio File Upload Karein — Video Mein Lagayein”. Koi sa bhi dabayein, phone se audio file chunein — file lagte hi video ka apna sound band ho jayega aur sirf upload ki hui audio chalegi.</dd>
           <dt>Awaz mein shor (noise) hai?</dt><dd>“Audio Alag Karein” hisse mein “Shor Kam Karein (Noise Reduce)” ON kar dein — phir jo audio file banegi us mein pankhe / AC ka halka shor kam aur awaz saaf hogi.</dd>
           <dt>Thumbnail?</dt><dd>Thumbnail Studio mein video ke frame se — ya Gemini AI background se — 1280×720 JPG thumbnail banta hai, Urdu text ke sath.</dd>
           <dt>Install ke baad 404 kyun aata hai?</dt><dd>Purana home-screen icon pehle wali ghalat link par bana hota hai aur naya install usay khud nahi badalta. Usay long-press karke delete karein, phir is page ko Chrome mein khol kar dobara Install karein — manifest ki link ab durust hai, is liye taza icon editor par khulna chahiye.</dd>
@@ -1820,6 +1826,11 @@ var mergeInput=$("mergeAudioInput");
 if(mergeInput)mergeInput.addEventListener("change",function(ev){
   var f=ev.target.files&&ev.target.files[0];ev.target.value="";if(!f)return;
   addUploadedAudio(f,0,true);
+});
+/* Audio upload ke bare button: Audio tab ke hub mein + Editor ke Media panel mein — dono wahi merge file picker kholte hain */
+["hubUploadBtn","mediaAudioUploadBtn"].forEach(function(id){
+  var b=$(id);if(!b)return;
+  b.addEventListener("click",function(){var mi=$("mergeAudioInput");if(mi)mi.click();});
 });
 var replaceToggleBtn=$("replaceToggle");
 if(replaceToggleBtn)replaceToggleBtn.addEventListener("click",function(){
