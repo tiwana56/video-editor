@@ -412,6 +412,20 @@ ol.steps li{color:#d8e1ee}
 .fine-box{margin-top:14px;border:1px solid var(--border2);background:var(--panel2);border-radius:10px;padding:12px}
 .slider-big-label{display:block;font-size:13px;font-weight:800;letter-spacing:.05em;color:var(--text);margin-bottom:2px}
 </style>
+<style>
+/* ===== UNDO / REDO / REFRESH — upar wale bare, naam wale buttons =====
+   Pehle ye sirf chhote icon thay aur aksar band (disabled) rehte thay,
+   is liye samajh nahi aata tha ke button hai bhi ya nahi. Ab naam ke sath
+   bare hain; jo button chal sakta hai wo cyan kinare ke sath saaf dikhta
+   hai, jo nahi chal sakta wo halka ho jata hai. */
+.hist-btn{width:auto!important;min-width:72px;padding:0 12px;gap:7px;font-size:13.5px;font-weight:800;color:var(--text)}
+.hist-btn span{line-height:1}
+.hist-btn:not(:disabled){border-color:var(--cyan);color:#a5f3fc;background:rgba(34,211,238,.14)}
+.hist-btn:not(:disabled):active{transform:scale(.96)}
+.hist-btn:disabled{opacity:.38}
+.refresh-btn:not(:disabled){border-color:var(--border2);color:var(--text);background:var(--panel3)}
+.refresh-btn.confirm{border-color:var(--danger)!important;color:#fecaca!important;background:#7f1d1d!important;min-width:150px}
+</style>
 </head>
 <body>
 
@@ -429,8 +443,9 @@ ol.steps li{color:#d8e1ee}
     <span class="badge">No Sign-up</span>
   </div>
   <div class="top-actions">
-    <button class="icon-btn-top" id="undoBtn" type="button" title="Undo (Ctrl+Z)" aria-label="Undo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
-    <button class="icon-btn-top" id="redoBtn" type="button" title="Redo" aria-label="Redo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg></button>
+    <button class="icon-btn-top hist-btn" id="undoBtn" type="button" title="Undo — pichla step wapas lein (Ctrl+Z)" aria-label="Undo — pichla step wapas lein"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg><span>Undo</span></button>
+    <button class="icon-btn-top hist-btn" id="redoBtn" type="button" title="Redo — undo kiya hua step dobara karein (Ctrl+Y)" aria-label="Redo — undo kiya hua step dobara karein"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg><span>Redo</span></button>
+    <button class="icon-btn-top hist-btn refresh-btn" id="refreshBtn" type="button" title="Page Refresh — page dobara load karein (jo editing export nahi hui, wo khatam ho jayegi)" aria-label="Page refresh karein"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg><span>Refresh</span></button>
     <select id="qualitySel" class="select-dark" aria-label="Export quality">
       <option value="720">Export • 720p HD</option>
       <option value="480" selected>Export • 480p Fast</option>
@@ -557,7 +572,7 @@ ol.steps li{color:#d8e1ee}
             <div class="vol-wrap"><span style="font-size:12px;color:var(--muted)">Vol</span><input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="1" aria-label="Volume"/></div>
           </div>
         </div>
-        <div id="transportPlaceholder" style="font-size:12.5px;color:var(--muted);text-align:center;padding:6px">Video load hone ke baad play, speed, volume, rotate aur zoom controls yahan aayenge • Shortcuts: <span class="kbd">Space</span> Play/Pause <span class="kbd">Ctrl+Z</span> Undo</div>
+        <div id="transportPlaceholder" style="font-size:12.5px;color:var(--muted);text-align:center;padding:6px">Video load hone ke baad play, speed, volume, rotate aur zoom controls yahan aayenge • Shortcuts: <span class="kbd">Space</span> Play/Pause <span class="kbd">Ctrl+Z</span> Undo <span class="kbd">Ctrl+Y</span> Redo • Galti ho to upar wale <b style="color:var(--text)">Undo</b> button se pichla step wapas lein</div>
       </div>
     </section>
 
@@ -839,6 +854,8 @@ ol.steps li{color:#d8e1ee}
         <h3 style="font-size:13.5px;margin:16px 0 2px">Aam Sawalat</h3>
         <dl class="faq" style="margin:0">
           <dt>Video kahan save hoti hai?</dt><dd>Sab editing phone ke browser ke andar hoti hai. Koi server nahi, video kahin upload nahi hoti.</dd>
+          <dt>Galti ho jaye to? Undo / Redo kaise kaam karta hai?</dt><dd>Screen ke sab se upar naam wale bare button hain: <b>Undo</b> = pichla step wapas (kaata hua hissa, delete shuda clip, split, trim, tartib, gap, frame size, rang — sab wapas aa jata hai), <b>Redo</b> = undo kiya hua step dobara. Jo button chal sakta hai wo <b>cyan kinare</b> ke sath saaf dikhta hai; halka (band) button matlab abhi us ke liye kuch hai hi nahi — pehle koi edit karein, phir Undo khul jayega. Keyboard par <b>Ctrl+Z</b> = Undo, <b>Ctrl+Y</b> = Redo. Aakhri 50 steps tak wapas ja sakte hain.</dd>
+          <dt>Page Refresh button kya karta hai?</dt><dd>Upar <b>Refresh</b> button page ko dobara load karta hai — page atak jaye ya kuch garbar lage to yehi dabayein. <b>Khayal rahe:</b> jo editing abhi Export nahi hui, refresh se wo khatam ho jayegi, is liye dabane par pehle chetawni aati hai — yaqeen ho to dobara dabayein. Phone mein rakhi asal video files ko kuch nahi hota, wo dobara import ho jayengi.</dd>
           <dt>Export format?</dt><dd>Android Chrome par aam taur par MP4 ya WebM — dono YouTube par upload ho jate hain.</dd>
           <dt>Gemini key mehfooz hai?</dt><dd>Key aik dafa dalne par isi browser (local storage) mein save ho jati hai taake bar bar na dalni pare — kisi server par nahi jati, sirf jawab ke waqt Google ko bheji jati hai. Browser ka data clear karein to key bhi delete ho jayegi.</dd>
           <dt>Lambi video?</dt><dd>1–3 minute ki clips sab se smooth chalti hain. Lambi tilawat se Shorts ke chhote hisse trim karein.</dd>
@@ -986,14 +1003,142 @@ var video=$("srcVideo"), canvas=$("stage"), ctx=canvas.getContext("2d");
 var stageEmpty=$("stageEmpty"), transport=$("transport"), playBtn=$("playBtn"), seekBar=$("seekBar"), timeLabel=$("timeLabel");
 var trimStartEl=$("trimStart"), trimEndEl=$("trimEnd"), editorStatus=$("editorStatus"), exportBtn=$("exportBtn");
 var state={loaded:false,duration:0,ratio:"9:16",fit:"cover",pos:"bottom",color:"#ffffff",band:true,bismillah:false,exporting:false,playClipOnly:false,brightness:100,contrast:100,saturation:100,zoom:1,rotation:0,flip:false,loop:false,muted:false};
-var history=[], historyIdx=-1;
-function snapshot(){return {t:$("titleText").value,s:$("subText").value,fs:$("fontSize").value,c:state.color,p:state.pos,b:state.band,bi:state.bismillah};}
-function pushHistory(){history=history.slice(0,historyIdx+1);history.push(JSON.stringify(snapshot()));if(history.length>40)history.shift();historyIdx=history.length-1;updateUndo();}
-function applySnap(json){try{var o=JSON.parse(json);$("titleText").value=o.t;$("subText").value=o.s;$("fontSize").value=o.fs;$("fontSizeOut").textContent=o.fs;state.color=o.c;state.pos=o.p;state.band=o.b;state.bismillah=o.bi;$("bandToggle").setAttribute("aria-pressed",String(o.b));$("bismillahToggle").setAttribute("aria-pressed",String(o.bi));document.querySelectorAll("[data-pos]").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-pos")===o.p));});document.querySelectorAll(".swatch").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-color")===o.c));});drawFrame();}catch(e){}}
-function updateUndo(){$("undoBtn").disabled=historyIdx<=0;$("redoBtn").disabled=historyIdx>=history.length-1;}
-$("undoBtn").addEventListener("click",function(){if(historyIdx>0){historyIdx--;applySnap(history[historyIdx]);updateUndo();}});
-$("redoBtn").addEventListener("click",function(){if(historyIdx<history.length-1){historyIdx++;applySnap(history[historyIdx]);updateUndo();}});
-document.addEventListener("keydown",function(e){if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"){e.preventDefault();$("undoBtn").click();} if(e.code==="Space"&&document.activeElement.tagName!=="INPUT"&&document.activeElement.tagName!=="TEXTAREA"&&document.activeElement.tagName!=="SELECT"){e.preventDefault();playBtn.click();}});
+/* ===== UNDO / REDO — POORI EDITING KI HISTORY =====
+   Purana masla: history mein sirf title/rang jaisi chand cheezein save
+   hoti theen — clip kaatna, split, delete, trim, tartib, gap, audio
+   track, logo, frame size kuch bhi save nahi hota tha, is liye Undo
+   button ya to band (disabled) rehta tha ya dabane se kuch badalta hi
+   nahi tha. Ab har editing step ka poora snapshot banta hai: text,
+   frame, rang ke sath saare clips (trim/gap/tartib) aur timeline ki
+   audio/logo tracks bhi. File/URL ke asal references rakhe jate hain,
+   taake delete shuda clip bhi Undo se wapas aa sake. */
+var history=[], historyIdx=-1, applyingSnap=false;
+function snapshot(){
+  var tl=null;
+  try{ if(window.__tlSnapshot) tl=window.__tlSnapshot(); }catch(e){}
+  return {
+    t:$("titleText").value, s:$("subText").value, fs:$("fontSize").value,
+    c:state.color, p:state.pos, b:state.band, bi:state.bismillah,
+    ratio:state.ratio, fit:state.fit,
+    br:state.brightness, ct:state.contrast, sa:state.saturation,
+    zoom:state.zoom, rot:state.rotation, flip:state.flip,
+    active:activeClip,
+    clips:clips.map(function(c){return {file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:c.trimStart||0,trimEnd:c.trimEnd||0,gapBefore:c.gapBefore||0};}),
+    tl:tl
+  };
+}
+function snapKey(o){
+  try{
+    var ck=o.clips.map(function(c){return c.name+"|"+c.duration+"|"+(c.trimStart||0).toFixed(2)+"|"+(c.trimEnd||0).toFixed(2)+"|"+(c.gapBefore||0);}).join(";");
+    var tk="";
+    if(o.tl){
+      tk=o.tl.audios.map(function(a){return a.id+":"+(+a.start).toFixed(2)+":"+(+a.dur).toFixed(2)+":"+(+(a.srcStart||0)).toFixed(2);}).join(";")
+        +"#"+o.tl.overlays.map(function(x){return x.id+":"+(+x.start).toFixed(2)+":"+(+x.end).toFixed(2)+":"+x.opacity;}).join(";")
+        +"#"+(o.tl.mergeId||"")+"#"+(o.tl.replaceId||"")+"#"+o.tl.origMuted+"#"+(o.tl.inPt===null?"-":(+o.tl.inPt).toFixed(2))+"#"+(o.tl.outPt===null?"-":(+o.tl.outPt).toFixed(2));
+    }
+    /* "active" jaan kar key mein NAHI rakha: sirf doosri clip par tap
+       karna ya playback ka agle clip par khud chale jana history ka
+       step nahi banna chahiye, warna Undo dabane se kuch badle baghair
+       sirf selection idhar udhar hogi. */
+    return [o.t,o.s,o.fs,o.c,o.p,o.b,o.bi,o.ratio,o.fit,o.br,o.ct,o.sa,o.zoom,o.rot,o.flip,ck,tk].join("~");
+  }catch(e){return "k"+Math.random();}
+}
+function pushHistory(){
+  if(applyingSnap)return;
+  var snap=snapshot();
+  if(historyIdx>=0&&history[historyIdx]&&snapKey(history[historyIdx])===snapKey(snap)){updateUndo();return;}
+  history=history.slice(0,historyIdx+1);
+  history.push(snap);
+  if(history.length>50)history.shift();
+  historyIdx=history.length-1;
+  updateUndo();
+}
+window.__pushHistory=pushHistory;
+function applySnap(o){
+  if(!o)return;
+  applyingSnap=true;
+  $("titleText").value=o.t||"";$("subText").value=o.s||"";
+  $("fontSize").value=o.fs||58;$("fontSizeOut").textContent=o.fs||58;
+  state.color=o.c||"#ffffff";state.pos=o.p||"bottom";state.band=!!o.b;state.bismillah=!!o.bi;
+  if(o.ratio)state.ratio=o.ratio;
+  if(o.fit)state.fit=o.fit;
+  state.brightness=(o.br==null?100:o.br);state.contrast=(o.ct==null?100:o.ct);state.saturation=(o.sa==null?100:o.sa);
+  state.zoom=o.zoom||1;state.rotation=o.rot||0;state.flip=!!o.flip;
+  $("bandToggle").setAttribute("aria-pressed",String(state.band));
+  $("bismillahToggle").setAttribute("aria-pressed",String(state.bismillah));
+  document.querySelectorAll("[data-pos]").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-pos")===state.pos));});
+  document.querySelectorAll("[data-ratio]").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-ratio")===state.ratio));});
+  document.querySelectorAll("[data-fit]").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-fit")===state.fit));});
+  document.querySelectorAll(".swatch").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-color")===state.color));});
+  $("brightnessSlider").value=state.brightness;$("contrastSlider").value=state.contrast;$("saturationSlider").value=state.saturation;
+  $("brightnessOut").textContent=state.brightness+"%";$("contrastOut").textContent=state.contrast+"%";$("saturationOut").textContent=state.saturation+"%";
+  $("zoomLabel").textContent="Zoom "+Math.round(state.zoom*100)+"%";
+  /* clips wapas lao — array wohi rakho (timeline bhi isi ko dekhti hai) */
+  clips.length=0;
+  (o.clips||[]).forEach(function(c){clips.push({file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:c.trimStart,trimEnd:c.trimEnd,gapBefore:c.gapBefore});});
+  activeClip=(typeof o.active==="number"&&o.active>=0&&o.active<clips.length)?o.active:(clips.length?0:-1);
+  state.loaded=clips.length>0;
+  exportBtn.disabled=!clips.length;
+  if(window.__tlRestore){try{window.__tlRestore(o.tl||null);}catch(e){}}
+  renderClipList();
+  if(clips.length&&activeClip>=0){
+    var ac=clips[activeClip];
+    trimStartEl.max=ac.duration||0;trimEndEl.max=ac.duration||0;
+    trimStartEl.value=ac.trimStart||0;trimEndEl.value=ac.trimEnd||ac.duration||0;
+    updateTrimLabels();
+    loadClip(activeClip);
+  }else{
+    stageEmpty.classList.remove("hidden");canvas.classList.add("hidden");transport.classList.add("hidden");
+    var ph0=$("transportPlaceholder");if(ph0)ph0.classList.remove("hidden");
+  }
+  applyCanvasSize();
+  drawFrame();
+  /* loadClip se loadedmetadata chalega — us ka pushHistory is dauran
+     band rakho, warna Undo karte hi naya step bann kar Redo khatam ho
+     jayega. */
+  setTimeout(function(){applyingSnap=false;},1400);
+}
+function updateUndo(){
+  var u=$("undoBtn"),r=$("redoBtn");if(!u||!r)return;
+  u.disabled=historyIdx<=0;
+  r.disabled=historyIdx>=history.length-1;
+  u.title=u.disabled?"Undo — abhi wapas jane ke liye kuch nahi (pehle koi edit karein)":"Undo — pichla step wapas lein (Ctrl+Z)";
+  r.title=r.disabled?"Redo — abhi aagay jane ke liye kuch nahi":"Redo — undo kiya hua step dobara karein (Ctrl+Y)";
+}
+function doUndo(){
+  if(historyIdx>0){historyIdx--;applySnap(history[historyIdx]);updateUndo();setStatus(editorStatus,"↩ Undo ho gaya — pichla step wapas aa gaya. Wapas wahi step chahiye to Redo dabayein.","ok");}
+  else setStatus(editorStatus,"Abhi Undo ke liye kuch nahi hai — pehle koi edit karein (kaatna, split, delete, trim…), phir Undo chalega.","err");
+}
+function doRedo(){
+  if(historyIdx<history.length-1){historyIdx++;applySnap(history[historyIdx]);updateUndo();setStatus(editorStatus,"↪ Redo ho gaya — step dobara lag gaya.","ok");}
+  else setStatus(editorStatus,"Abhi Redo ke liye kuch nahi hai — pehle Undo dabayein, phir Redo chalega.","err");
+}
+$("undoBtn").addEventListener("click",doUndo);
+$("redoBtn").addEventListener("click",doRedo);
+/* ===== PAGE REFRESH BUTTON — galti se dab jaye to pehle chetawni ===== */
+var refreshArmed=false,refreshTimer=null;
+$("refreshBtn").addEventListener("click",function(){
+  var btn=this,sp=btn.querySelector("span");
+  if(!clips.length){window.location.reload();return;}
+  if(!refreshArmed){
+    refreshArmed=true;btn.classList.add("confirm");if(sp)sp.textContent="Yaqeen Hai? Dobara Dabao";
+    setStatus(editorStatus,"⚠ Refresh se page dobara load hoga aur jo editing abhi export NAHI hui, wo khatam ho jayegi. Yaqeen ho to Refresh dobara dabayein — warna 4 second ruk jayein, button khud wapas ho jayega.","err");
+    refreshTimer=setTimeout(function(){refreshArmed=false;btn.classList.remove("confirm");if(sp)sp.textContent="Refresh";},4000);
+    return;
+  }
+  clearTimeout(refreshTimer);
+  window.location.reload();
+});
+document.addEventListener("keydown",function(e){
+  var ae=document.activeElement,tag=ae?ae.tagName:"";
+  var typing=(tag==="INPUT"||tag==="TEXTAREA"||tag==="SELECT");
+  if((e.ctrlKey||e.metaKey)&&!typing){
+    var k=(e.key||"").toLowerCase();
+    if(k==="z"&&!e.shiftKey){e.preventDefault();doUndo();return;}
+    if(k==="y"||(k==="z"&&e.shiftKey)){e.preventDefault();doRedo();return;}
+  }
+  if(e.code==="Space"&&!typing){e.preventDefault();playBtn.click();}
+});
 function fmt(t){if(!isFinite(t)||t<0)t=0;var m=Math.floor(t/60),s=Math.floor(t%60);return m+":"+(s<10?"0":"")+s;}
 function setStatus(el,msg,cls){el.textContent=msg||"";el.className="status"+(cls?" "+cls:"");}
 function targetSize(){var q=parseInt($("qualitySel").value,10);var vw=video.videoWidth||1280,vh=video.videoHeight||720;if(state.ratio==="9:16")return q===720?{w:720,h:1280}:{w:540,h:960};if(state.ratio==="16:9")return q===720?{w:1280,h:720}:{w:854,h:480};if(state.ratio==="1:1")return q===720?{w:720,h:720}:{w:540,h:540};if(state.ratio==="4:5")return q===720?{w:720,h:900}:{w:576,h:720};var scale=Math.min(1,1280/Math.max(vw,vh));return{w:Math.round(vw*scale/2)*2,h:Math.round(vh*scale/2)*2};}
@@ -1062,9 +1207,11 @@ function renderClipList(){
     var s=document.createElement("span");var off=combinedOffset(i);s.textContent=(c.size/1048576).toFixed(1)+" MB • aik video mein "+fmt(off)+" – "+fmt(off+clipLenOf(c))+" (kul "+fmt(combinedTotal())+")";
     name.appendChild(b);name.appendChild(s);row.appendChild(name);
     function mk(txt,title,fn){var btn=document.createElement("button");btn.type="button";btn.textContent=txt;btn.title=title;btn.setAttribute("aria-label",title);btn.addEventListener("click",function(ev){ev.stopPropagation();fn();});return btn;}
-    row.appendChild(mk("↑","Upar le jayein",function(){if(i>0){var t=clips[i-1];clips[i-1]=clips[i];clips[i]=t;if(activeClip===i)activeClip=i-1;else if(activeClip===i-1)activeClip=i;renderClipList();}}));
-    row.appendChild(mk("↓","Neeche le jayein",function(){if(i<clips.length-1){var t=clips[i+1];clips[i+1]=clips[i];clips[i]=t;if(activeClip===i)activeClip=i+1;else if(activeClip===i+1)activeClip=i;renderClipList();}}));
-    row.appendChild(mk("✕","Clip hatayein",function(){URL.revokeObjectURL(c.url);clips.splice(i,1);if(activeClip>=clips.length)activeClip=clips.length-1;renderClipList();if(clips.length&&activeClip>=0)loadClip(activeClip);else if(!clips.length){state.loaded=false;exportBtn.disabled=true;}}));
+    row.appendChild(mk("↑","Upar le jayein",function(){if(i>0){var t=clips[i-1];clips[i-1]=clips[i];clips[i]=t;if(activeClip===i)activeClip=i-1;else if(activeClip===i-1)activeClip=i;renderClipList();pushHistory();}}));
+    row.appendChild(mk("↓","Neeche le jayein",function(){if(i<clips.length-1){var t=clips[i+1];clips[i+1]=clips[i];clips[i]=t;if(activeClip===i)activeClip=i+1;else if(activeClip===i+1)activeClip=i;renderClipList();pushHistory();}}));
+    /* URL revoke NAHI karte — warna Undo se delete shuda clip wapas
+       aane par us ki file khul hi nahi sakegi. */
+    row.appendChild(mk("✕","Clip hatayein",function(){clips.splice(i,1);if(activeClip>=clips.length)activeClip=clips.length-1;renderClipList();if(clips.length&&activeClip>=0)loadClip(activeClip);else if(!clips.length){state.loaded=false;exportBtn.disabled=true;}pushHistory();}));
     row.addEventListener("click",function(){if(i!==activeClip)loadClip(i);});
     box.appendChild(row);
   });
@@ -1108,6 +1255,11 @@ seekBar.addEventListener("input",function(){var t=parseFloat(seekBar.value);if(!
 function updateTrimLabels(){var s=parseFloat(trimStartEl.value),e=parseFloat(trimEndEl.value);$("trimStartLabel").textContent=fmt(s);$("trimEndLabel").textContent=fmt(e);$("clipLen").textContent=Math.max(0,e-s).toFixed(1);updateTransport();}
 trimStartEl.addEventListener("input",function(){var s=parseFloat(trimStartEl.value),e=parseFloat(trimEndEl.value);if(s>e-0.3){trimStartEl.value=e-0.3;s=parseFloat(trimStartEl.value);}video.currentTime=s;var c=clips[activeClip];if(c){c.trimStart=s;c.trimEnd=parseFloat(trimEndEl.value);}updateTrimLabels();drawFrame();});
 trimEndEl.addEventListener("input",function(){var s=parseFloat(trimStartEl.value),e=parseFloat(trimEndEl.value);if(e<s+0.3){trimEndEl.value=s+0.3;e=parseFloat(trimEndEl.value);}video.currentTime=Math.max(s,e-0.4);var c=clips[activeClip];if(c){c.trimStart=parseFloat(trimStartEl.value);c.trimEnd=e;}updateTrimLabels();drawFrame();});
+/* Slider chhorne par (change) aik history step banta hai — taake slider
+   se ki gayi trim bhi Undo ho sake. Har chhoti harkat (input) par nahi,
+   warna Undo ki list inhi se bhar jayegi. */
+trimStartEl.addEventListener("change",pushHistory);
+trimEndEl.addEventListener("change",pushHistory);
 $("setStartBtn").addEventListener("click",function(){trimStartEl.value=video.currentTime;trimStartEl.dispatchEvent(new Event("input"));});
 $("setEndBtn").addEventListener("click",function(){trimEndEl.value=video.currentTime;trimEndEl.dispatchEvent(new Event("input"));});
 $("previewClipBtn").addEventListener("click",function(){if(!state.loaded)return;state.playClipOnly=true;video.currentTime=parseFloat(trimStartEl.value);video.play();playBtn.textContent="❚❚";});
@@ -1125,14 +1277,14 @@ $("speedSel").addEventListener("change",function(){video.playbackRate=parseFloat
 $("volumeSlider").addEventListener("input",function(){video.volume=parseFloat(this.value);video.muted=false;state.muted=false;$("muteBtn").setAttribute("aria-pressed","false");$("muteBtn").textContent="🔊 Sound";});
 $("muteBtn").addEventListener("click",function(){state.muted=!state.muted;video.muted=state.muted;this.setAttribute("aria-pressed",String(state.muted));this.textContent=state.muted?"🔇 Muted":"🔊 Sound";});
 $("loopBtn").addEventListener("click",function(){state.loop=!state.loop;this.setAttribute("aria-pressed",String(state.loop));});
-$("rotateBtn").addEventListener("click",function(){state.rotation=(state.rotation+90)%360;drawFrame();});
-$("flipBtn").addEventListener("click",function(){state.flip=!state.flip;this.setAttribute("aria-pressed",String(state.flip));drawFrame();});
+$("rotateBtn").addEventListener("click",function(){state.rotation=(state.rotation+90)%360;drawFrame();pushHistory();});
+$("flipBtn").addEventListener("click",function(){state.flip=!state.flip;this.setAttribute("aria-pressed",String(state.flip));drawFrame();pushHistory();});
 function setZoom(z){state.zoom=Math.min(3,Math.max(0.5,z));$("zoomLabel").textContent="Zoom "+Math.round(state.zoom*100)+"%";drawFrame();}
-$("zoomInBtn").addEventListener("click",function(){setZoom(state.zoom+0.25);});$("zoomOutBtn").addEventListener("click",function(){setZoom(state.zoom-0.25);});
-function bindAdj(id,out,prop){$(id).addEventListener("input",function(){state[prop]=parseInt(this.value,10);$(out).textContent=this.value+"%";drawFrame();});}
+$("zoomInBtn").addEventListener("click",function(){setZoom(state.zoom+0.25);pushHistory();});$("zoomOutBtn").addEventListener("click",function(){setZoom(state.zoom-0.25);pushHistory();});
+function bindAdj(id,out,prop){$(id).addEventListener("input",function(){state[prop]=parseInt(this.value,10);$(out).textContent=this.value+"%";drawFrame();});$(id).addEventListener("change",pushHistory);}
 bindAdj("brightnessSlider","brightnessOut","brightness");bindAdj("contrastSlider","contrastOut","contrast");bindAdj("saturationSlider","saturationOut","saturation");
 function setFilter(b,c,s){state.brightness=b;state.contrast=c;state.saturation=s;$("brightnessSlider").value=b;$("contrastSlider").value=c;$("saturationSlider").value=s;$("brightnessOut").textContent=b+"%";$("contrastOut").textContent=c+"%";$("saturationOut").textContent=s+"%";drawFrame();}
-$("filterNoneBtn").addEventListener("click",function(){setFilter(100,100,100);});$("filterWarmBtn").addEventListener("click",function(){setFilter(108,105,118);});$("filterVividBtn").addEventListener("click",function(){setFilter(105,112,145);});$("filterSoftBtn").addEventListener("click",function(){setFilter(112,92,88);});
+$("filterNoneBtn").addEventListener("click",function(){setFilter(100,100,100);pushHistory();});$("filterWarmBtn").addEventListener("click",function(){setFilter(108,105,118);pushHistory();});$("filterVividBtn").addEventListener("click",function(){setFilter(105,112,145);pushHistory();});$("filterSoftBtn").addEventListener("click",function(){setFilter(112,92,88);pushHistory();});
 var templates={tilawat:{t:"خوبصورت تلاوتِ قرآن",s:"دل کو سکون دینے والی آواز"},naat:{t:"دلکش نعتِ رسول ﷺ",s:"عقیدت و محبت کے ساتھ سنیں"},bayan:{t:"ایمان افروز بیان",s:"مکمل بیان کے لیے چینل وزٹ کریں"},dua:{t:"قبولیت کی دعا",s:"آمین لکھ کر شریک ہوں"}};
 document.querySelectorAll("[data-tpl]").forEach(function(btn){btn.addEventListener("click",function(){var tpl=templates[btn.getAttribute("data-tpl")];if(!tpl)return;$("titleText").value=tpl.t;$("subText").value=tpl.s;drawFrame();pushHistory();});});
 var ytId="";$("ytCheckBtn").addEventListener("click",function(){var url=$("ytLink").value.trim();var m=url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);var thumb=$("ytThumb"),msg=$("ytMsg");if(!m){ytId="";thumb.style.display="none";msg.textContent="Ye YouTube ka durust link nahi laga. watch ya shorts wala poora link paste karein.";return;}ytId=m[1];thumb.src="https://i.ytimg.com/vi/"+ytId+"/hqdefault.jpg";thumb.style.display="block";thumb.onerror=function(){thumb.style.display="none";};msg.textContent="Video pehchan li gayi (ID: "+ytId+"). Ab is video ki file phone mein save karke upar Import se load karein — aur Gemini helper mein topic likh kar title/tags banayein.";});
@@ -1415,7 +1567,7 @@ $("thumbAiBtn").addEventListener("click",function(){
 });
 drawThumbPlaceholder();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawFrame);
-updateUndo();
+pushHistory();
 })();
 </script>
 
@@ -1458,6 +1610,39 @@ var audios=[],overlays=[],uid=1;
 var inPt=null,outPt=null;
 var origMuted=false;
 var mergeTrack=null,replaceTrack=null;
+
+/* ---------- Undo/Redo bridge: main editor ki history ke liye ----------
+   Timeline ki apni cheezein (audio tracks, logo, In/Out points, merge
+   audio) yahan se snapshot/restore hoti hain. File/Audio/Image ke asal
+   references rakhe jate hain taake delete shuda track bhi Undo se
+   wapas aa sake. Har tabdeeli ke baad hist() chalega. */
+function hist(){try{if(window.__pushHistory)window.__pushHistory();}catch(e){}}
+window.__tlSnapshot=function(){
+  return {
+    audios:audios.map(function(a){return {id:a.id,name:a.name,start:a.start,dur:a.dur,srcStart:a.srcStart||0,fromClip:a.fromClip,combined:!!a.combined,srcFile:a.srcFile||null,el:a.el||null,isMerge:!!a.isMerge};}),
+    overlays:overlays.map(function(o){return {id:o.id,name:o.name,start:o.start,end:o.end,opacity:o.opacity,img:o.img};}),
+    inPt:inPt,outPt:outPt,origMuted:origMuted,
+    mergeId:mergeTrack?mergeTrack.id:null,replaceId:replaceTrack?replaceTrack.id:null,
+    uidNext:uid
+  };
+};
+window.__tlRestore=function(tl){
+  if(tl){
+    audios=tl.audios.map(function(a){return {id:a.id,name:a.name,start:a.start,dur:a.dur,srcStart:a.srcStart,fromClip:a.fromClip,combined:a.combined,srcFile:a.srcFile,el:a.el,isMerge:a.isMerge};});
+    overlays=tl.overlays.map(function(o){return {id:o.id,name:o.name,start:o.start,end:o.end,opacity:o.opacity,img:o.img};});
+    inPt=tl.inPt;outPt=tl.outPt;origMuted=!!tl.origMuted;
+    if(tl.uidNext)uid=tl.uidNext;
+    mergeTrack=audios.filter(function(x){return x.id===tl.mergeId;})[0]||null;
+    replaceTrack=audios.filter(function(x){return x.id===tl.replaceId;})[0]||null;
+  }else{
+    audios=[];overlays=[];inPt=null;outPt=null;origMuted=false;mergeTrack=null;replaceTrack=null;
+  }
+  sel=null;allSel=false;
+  var il=$("tlInLabel"),ol=$("tlOutLabel");
+  if(il)il.textContent=(inPt===null?"–":fmt(inPt));
+  if(ol)ol.textContent=(outPt===null?"–":fmt(outPt));
+  applyMute();updateMergeUI();render();renderContext();E.draw();
+};
 
 function clips(){return E.clips();}
 function cDur(c){return Math.max(0,((c.trimEnd||c.duration||0)-(c.trimStart||0)));}
@@ -1568,13 +1753,13 @@ function startHandleDrag(ev,side,item,kind){
     }
     fitMode=false;render();E.draw();
   }
-  function up(){window.removeEventListener("pointermove",move);window.removeEventListener("pointerup",up);renderContext();}
+  function up(){window.removeEventListener("pointermove",move);window.removeEventListener("pointerup",up);renderContext();hist();}
   window.addEventListener("pointermove",move);window.addEventListener("pointerup",up);
 }
 function startMoveDrag(ev,el,item,kind){
   var startX=ev.clientX,startPos=item.start,moved=false;
   function move(e){var dt=(e.clientX-startX)/pxPerSec;if(Math.abs(dt)>0.05)moved=true;var len=(kind==="audio")?item.dur:(item.end-item.start);var ns=Math.max(0,Math.min(Math.max(0,total()-len),startPos+dt));if(kind==="audio")item.start=ns;else{item.end=ns+len;item.start=ns;}render();}
-  function up(){window.removeEventListener("pointermove",move);window.removeEventListener("pointerup",up);if(moved)renderContext();}
+  function up(){window.removeEventListener("pointermove",move);window.removeEventListener("pointerup",up);if(moved){renderContext();hist();}}
   window.addEventListener("pointermove",move);window.addEventListener("pointerup",up);
 }
 /* Touch par clip ko pakad kar slide karne se timeline SCROLL hoti hai
@@ -1596,6 +1781,7 @@ function moveClip(i,dir){
   var nai=cs.indexOf(ac);if(nai>=0&&nai!==E.active())E.loadClip(nai);
   render();renderContext();
   setStatus("Clip "+(j+1)+" number par chala gaya — clips ki tartib badal gayi.","ok");
+  hist();
 }
 function startVideoDrag(ev,idx,el){
   var startX=ev.clientX,dx=0,moved=false;
@@ -1619,6 +1805,7 @@ function startVideoDrag(ev,idx,el){
     var nai=cs.indexOf(ac);if(nai>=0&&nai!==E.active())E.loadClip(nai);
     render();renderContext();
     setStatus("Clip drag karke "+(target+1)+" number par le jaya gaya — clips ki tartib badal gayi.","ok");
+    hist();
   }
   window.addEventListener("pointermove",move);window.addEventListener("pointerup",up);
 }
@@ -1717,8 +1904,8 @@ function renderContext(){
     box.appendChild(ctxBtn("⬅ Pehle Le Jayein",function(){moveClip(sel.index,-1);}));
     box.appendChild(ctxBtn("Baad Mein Le Jayein ➡",function(){moveClip(sel.index,1);}));
     if(sel.index>0){
-      box.appendChild(ctxBtn("⏸ Gap −1s (Ab "+fmt(c.gapBefore||0)+")",function(){c.gapBefore=Math.max(0,(c.gapBefore||0)-1);render();renderContext();setStatus("Is clip se pehle ka khali hissa (gap): "+fmt(c.gapBefore||0)+" — export mein ye hissa kali screen ke tor par aayega.","ok");}));
-      box.appendChild(ctxBtn("⏸ Gap +1s",function(){c.gapBefore=Math.min(15,(c.gapBefore||0)+1);render();renderContext();setStatus("Is clip se pehle ka khali hissa (gap): "+fmt(c.gapBefore||0)+" — export mein ye hissa kali screen ke tor par aayega.","ok");}));
+      box.appendChild(ctxBtn("⏸ Gap −1s (Ab "+fmt(c.gapBefore||0)+")",function(){c.gapBefore=Math.max(0,(c.gapBefore||0)-1);render();renderContext();setStatus("Is clip se pehle ka khali hissa (gap): "+fmt(c.gapBefore||0)+" — export mein ye hissa kali screen ke tor par aayega.","ok");hist();}));
+      box.appendChild(ctxBtn("⏸ Gap +1s",function(){c.gapBefore=Math.min(15,(c.gapBefore||0)+1);render();renderContext();setStatus("Is clip se pehle ka khali hissa (gap): "+fmt(c.gapBefore||0)+" — export mein ye hissa kali screen ke tor par aayega.","ok");hist();}));
     }
     box.appendChild(ctxBtn("🎧 Audio Alag (Track)",doExtractAudio));
     box.appendChild(ctxBtn("🗑 Delete (Gap Band Ho Jayega)",doDeleteVideo));
@@ -1727,22 +1914,23 @@ function renderContext(){
   if(sel.type==="audio"){
     var a=audios.filter(function(x){return x.id===sel.id;})[0];if(!a){sel=null;renderContext();return;}
     label("Audio select hai — "+a.name);
-    box.appendChild(ctxBtn(origMuted?"🔊 Original Sound ON Karein":"🔇 Original Sound Mute Karein",function(){origMuted=!origMuted;applyMute();setStatus(origMuted?"Original video ki awaz mute hai — sirf alag audio track sunai dega.":"Original sound wapas ON hai.","ok");renderContext();}));
-    if(a.el)box.appendChild(ctxBtn(replaceTrack===a?"🔊 Video Ka Sound Wapas ON (Merge Khatam)":"🔇 Sirf Ye Audio — Video Ka Sound Band",function(){var turnOn=replaceTrack!==a;setReplace(turnOn?a:null);setStatus(turnOn?"Merge ON — ab preview aur export dono mein sirf is audio ki awaz chalegi, video ka apna sound band hai.":"Merge OFF — video ka apna sound wapas ON hai.","ok");renderContext();},true));
+    box.appendChild(ctxBtn(origMuted?"🔊 Original Sound ON Karein":"🔇 Original Sound Mute Karein",function(){origMuted=!origMuted;applyMute();setStatus(origMuted?"Original video ki awaz mute hai — sirf alag audio track sunai dega.":"Original sound wapas ON hai.","ok");renderContext();hist();}));
+    if(a.el)box.appendChild(ctxBtn(replaceTrack===a?"🔊 Video Ka Sound Wapas ON (Merge Khatam)":"🔇 Sirf Ye Audio — Video Ka Sound Band",function(){var turnOn=replaceTrack!==a;setReplace(turnOn?a:null);setStatus(turnOn?"Merge ON — ab preview aur export dono mein sirf is audio ki awaz chalegi, video ka apna sound band hai.":"Merge OFF — video ka apna sound wapas ON hai.","ok");renderContext();hist();},true));
     if(a.combined)box.appendChild(ctxBtn("⬇ Poori Audio Download Karein (WAV)",function(){downloadCombined();},true));
     if(a.srcFile&&!a.combined)box.appendChild(ctxBtn("⬇ Ye Audio Download Karein (WAV)",function(){downloadTrackAudio(a);},true));
-    box.appendChild(ctxBtn("🗑 Audio Track Delete",function(){if(a.el)a.el.pause();if(mergeTrack===a)mergeTrack=null;if(replaceTrack===a)replaceTrack=null;audios=audios.filter(function(x){return x.id!==a.id;});sel=null;applyMute();render();renderContext();updateMergeUI();}));
+    box.appendChild(ctxBtn("🗑 Audio Track Delete",function(){if(a.el)a.el.pause();if(mergeTrack===a)mergeTrack=null;if(replaceTrack===a)replaceTrack=null;audios=audios.filter(function(x){return x.id!==a.id;});sel=null;applyMute();render();renderContext();updateMergeUI();hist();}));
     var hint=document.createElement("span");hint.className="hint";hint.style.margin="0";hint.textContent="Kinare kheench kar is track ko trim karein, drag karke jagah badlein. Download button se yehi hissa WAV file mein download ho jayega — Audio tab mein Noise Reduce ON ho to shor bhi kam hoga.";box.appendChild(hint);
     return;
   }
   if(sel.type==="overlay"){
     var o=overlays.filter(function(x){return x.id===sel.id;})[0];if(!o){sel=null;renderContext();return;}
     label("Logo select hai — "+o.name+" • "+fmt(o.start)+" → "+fmt(o.end));
-    box.appendChild(ctxBtn("↔ Poori Video Par Failayein",function(){o.start=0;o.end=total();render();renderContext();E.draw();}));
-    box.appendChild(ctxBtn("🗑 Logo Delete",function(){overlays=overlays.filter(function(x){return x.id!==o.id;});sel=null;render();renderContext();E.draw();}));
+    box.appendChild(ctxBtn("↔ Poori Video Par Failayein",function(){o.start=0;o.end=total();render();renderContext();E.draw();hist();}));
+    box.appendChild(ctxBtn("🗑 Logo Delete",function(){overlays=overlays.filter(function(x){return x.id!==o.id;});sel=null;render();renderContext();E.draw();hist();}));
     var lab=document.createElement("span");lab.className="hint";lab.style.margin="0";lab.textContent="Halka (Opacity):";box.appendChild(lab);
     var rng=document.createElement("input");rng.type="range";rng.min="20";rng.max="100";rng.value=Math.round(o.opacity*100);rng.setAttribute("aria-label","Logo opacity");
     rng.addEventListener("input",function(){o.opacity=parseInt(rng.value,10)/100;E.draw();});
+    rng.addEventListener("change",function(){hist();});
     box.appendChild(rng);
     return;
   }
@@ -1760,6 +1948,7 @@ function doSplit(){
   if(E.active()===i)syncTrimInputs(c);
   E.renderList();sel={type:"video",index:i+1};fitMode=fitMode;render();renderContext();
   setStatus("Split ho gaya — clip do hisso mein bat gaya. Jo hissa na chahiye use select karke Delete kar dein, gap khud band ho jayega.","ok");
+  hist();
 }
 function trimToPlayhead(side){
   var cs=clips();if(!sel||sel.type!=="video")return;
@@ -1768,13 +1957,13 @@ function trimToPlayhead(side){
   if(side==="l"){if(src>(c.trimStart||0)&&(src<(c.trimEnd||c.duration)))c.trimStart=src;else{setStatus("Playhead clip ke andar nahi hai.","err");return;}}
   else{if(src>(c.trimStart||0)&&(src<(c.trimEnd||c.duration)))c.trimEnd=src;else{setStatus("Playhead clip ke andar nahi hai.","err");return;}}
   if(E.active()===sel.index){syncTrimInputs(c);try{video.currentTime=c.trimStart;}catch(e){}}
-  E.renderList();render();renderContext();setStatus("Trim ho gaya.","ok");
+  E.renderList();render();renderContext();setStatus("Trim ho gaya.","ok");hist();
 }
 function doDuplicate(){
   var cs=clips();if(!sel||sel.type!=="video")return;
   var c=cs[sel.index];if(!c)return;
   cs.splice(sel.index+1,0,{file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:c.trimStart,trimEnd:c.trimEnd});
-  E.renderList();sel={type:"video",index:sel.index+1};render();renderContext();setStatus("Clip duplicate ho gaya.","ok");
+  E.renderList();sel={type:"video",index:sel.index+1};render();renderContext();setStatus("Clip duplicate ho gaya.","ok");hist();
 }
 function doDeleteVideo(){
   var cs=clips();if(!sel||sel.type!=="video")return;
@@ -1783,7 +1972,7 @@ function doDeleteVideo(){
   if(!shared)try{URL.revokeObjectURL(c.url);}catch(e){}
   cs.splice(i,1);sel=null;E.renderList();
   if(cs.length)E.loadClip(Math.min(i,cs.length-1));
-  render();renderContext();setStatus("Clip delete ho gaya — baqi clips jud kar gap band ho gaya (ripple).","ok");
+  render();renderContext();setStatus("Clip delete ho gaya — baqi clips jud kar gap band ho gaya (ripple). Galti se delete ho gaya ho to upar Undo dabayein — clip wapas aa jayega.","ok");hist();
 }
 function downloadTrackAudio(a){
   if(!a.srcFile||!E.buildWav){setStatus("Is track ki asal file nahi mili — Audio tab se WAV banayein.","err");return;}
@@ -1801,6 +1990,7 @@ function doExtractAudio(){
   sel={type:"audio",id:uid-1};
   render();renderContext();
   setStatus("Audio alag track mein aa gaya — ab ye video se alag trim / move ho sakta hai, aur “⬇ Ye Audio Download Karein (WAV)” button se is ki file bhi download ho jayegi. Original sound mute karna ho to Mute button use karein.","ok");
+  hist();
   if(window.__switchView&&false)window.__switchView("audio");
 }
 
@@ -1810,6 +2000,7 @@ function doCombinedTrack(){
   audios.push({id:uid++,name:"Sab clips ki aik audio",start:0,dur:total(),combined:true});
   sel={type:"audio",id:uid-1};render();renderContext();
   setStatus("Sab clips ki AIK combined audio track bann gaya — poori video jitna lamba, teeno videos ki awaz aik sath. Neeche “⬇ Poori Audio Download Karein (WAV)” se is ki aik hi file download ho jayegi.","ok");
+  hist();
 }
 function downloadCombined(){
   if(!E.buildCombinedWav){setStatus("Combined audio is browser mein nahi bann saka.","err");return;}
@@ -1859,7 +2050,7 @@ function addUploadedAudio(f,startAt,makeReplace){
     }
     audios.push(item);
     if(makeReplace){mergeTrack=item;setReplace(item);}
-    sel={type:"audio",id:item.id};render();renderContext();updateMergeUI();
+    sel={type:"audio",id:item.id};render();renderContext();updateMergeUI();hist();
     setStatus(makeReplace?("Audio merge ho gaya — video ka apna sound BAND hai, ab preview aur export dono mein sirf “"+f.name+"” ki awaz chalegi."):("Audio timeline mein add ho gaya ("+fmt(item.dur)+") — drag karke jagah badlein, kinare kheench kar trim karein. Video ka sound band karke sirf ye chalana ho to is track ke neeche wala “Sirf Ye Audio” button dabayein."),"ok");
   },{once:true});
   el.addEventListener("error",function(){setStatus("Ye audio file nahi khul saki.","err");},{once:true});
@@ -1893,8 +2084,10 @@ window.__mergePlay=function(pt){
 window.__mergeStop=function(){if(replaceTrack&&replaceTrack.el)replaceTrack.el.pause();};
 
 /* ---------- guided extract: sirf ye hissa rakhein ---------- */
-$("tlInBtn").addEventListener("click",function(){inPt=projectTime();$("tlInLabel").textContent=fmt(inPt);setStatus("In point lag gaya: "+fmt(inPt)+" — ab playhead ko end par le ja kar Out dabayein.","ok");});
-$("tlOutBtn").addEventListener("click",function(){outPt=projectTime();$("tlOutLabel").textContent=fmt(outPt);setStatus("Out point lag gaya: "+fmt(outPt)+" — ab “Sirf Ye Hissa Rakhein” dabayein.","ok");});
+/* In/Out par hist() thora rok kar — taake Asan Cut wala setStart/setEnd
+   wala khamosh click bhi pehle mukammal ho jaye, phir aik hi step bane. */
+$("tlInBtn").addEventListener("click",function(){inPt=projectTime();$("tlInLabel").textContent=fmt(inPt);setStatus("In point lag gaya: "+fmt(inPt)+" — ab playhead ko end par le ja kar Out dabayein.","ok");setTimeout(hist,30);});
+$("tlOutBtn").addEventListener("click",function(){outPt=projectTime();$("tlOutLabel").textContent=fmt(outPt);setStatus("Out point lag gaya: "+fmt(outPt)+" — ab “Sirf Ye Hissa Rakhein” dabayein.","ok");setTimeout(hist,30);});
 $("tlKeepBtn").addEventListener("click",function(){
   var cs=clips();if(!cs.length){setStatus("Pehle video import karein.","err");return;}
   var a=(inPt===null)?0:inPt,b=(outPt===null)?total():outPt;
@@ -1911,7 +2104,8 @@ $("tlKeepBtn").addEventListener("click",function(){
   if(!keep.length){setStatus("Is hisse mein koi clip nahi mila.","err");return;}
   cs.length=0;keep.forEach(function(c){cs.push(c);});
   sel=null;E.renderList();E.loadClip(0);render();renderContext();
-  setStatus("Ho gaya! Sirf "+fmt(b-a)+" wala hissa reh gaya — baqi sab kat gaya. Ab upar se Export kar dein.","ok");
+  setStatus("Ho gaya! Sirf "+fmt(b-a)+" wala hissa reh gaya — baqi sab kat gaya. Ab upar se Export kar dein. Galti ho gayi ho to upar Undo dabayein — kata hua hissa wapas aa jayega.","ok");
+  hist();
 });
 
 /* ---------- add audio / logo from timeline ---------- */
@@ -1936,6 +2130,7 @@ if(replaceToggleBtn)replaceToggleBtn.addEventListener("click",function(){
   var turnOn=replaceTrack!==mergeTrack;
   setReplace(turnOn?mergeTrack:null);
   setStatus(turnOn?"Merge ON — video ka apna sound band hai, preview aur export mein sirf merge audio chalega.":"Merge OFF — video ka apna sound wapas ON hai.","ok");
+  hist();
   renderContext();
 });
 var mergeRemoveBtn=$("mergeRemoveBtn");
@@ -1949,6 +2144,7 @@ if(mergeRemoveBtn)mergeRemoveBtn.addEventListener("click",function(){
   if(sel&&sel.type==="audio"&&sel.id===a.id)sel=null;
   applyMute();render();renderContext();updateMergeUI();
   setStatus("Merge audio hata diya — video ka apna sound wapas ON hai.","ok");
+  hist();
 });
 $("tlLogoInput").addEventListener("change",function(ev){
   var f=ev.target.files&&ev.target.files[0];ev.target.value="";if(!f)return;
@@ -1957,6 +2153,7 @@ $("tlLogoInput").addEventListener("change",function(ev){
     overlays.push({id:uid++,name:f.name,img:img,start:projectTime(),end:total()||projectTime()+5,opacity:0.85});
     sel={type:"overlay",id:uid-1};render();renderContext();E.draw();
     setStatus("Logo lag gaya — preview ke upar right kone mein nazar aayega. Timeline mein is ki lambai kinare kheench kar badlein, “Poori Video Par Failayein” se poori video par lag jayega.","ok");
+    hist();
   };
   img.onerror=function(){setStatus("Ye image nahi khul saki — PNG logo try karein.","err");};
   img.src=url;
