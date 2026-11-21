@@ -583,7 +583,7 @@ ol.steps li{color:#d8e1ee}
         </div>
       </div>
       <div class="trim-readout" style="margin-top:8px">
-        <span>Clip Duration: <b><span id="clipLen">0.0</span> sec</b></span>
+        <span>Is hisse ki lambai: <b><span id="clipLen">0.0</span> sec</b></span>
         <span><span id="trimStartLabel">0:00</span> → <span id="trimEndLabel">0:00</span></span>
       </div>
       <div class="row" style="margin-top:10px">
@@ -892,13 +892,23 @@ var clips=[],activeClip=-1,loadingClip=false;
 window.__editor={clips:function(){return clips;},active:function(){return activeClip;},loadClip:function(i){loadClip(i);},renderList:function(){renderClipList();},video:function(){return video;},draw:function(){drawFrame();},fmt:fmt,trimEls:function(){return{start:trimStartEl,end:trimEndEl};},updateTrimLabels:updateTrimLabels,loaded:function(){return state.loaded;}};
 window.__editor.buildWav=function(file,s,e,noise){return buildWavBlob(file,s,e,noise);};
 window.__editor.noiseOn=function(){return noiseOn;};
+/* ===== Aik hi joined video: combined time (sab clips = aik video, aik hi total time) ===== */
+var seekAfterLoad=null,advanceWanted=false;
+function clipLenOf(c){return Math.max(0,(c.trimEnd||c.duration||0)-(c.trimStart||0));}
+function gapOfClip(c,i){return i>0?Math.max(0,c.gapBefore||0):0;}
+function combinedOffset(idx){var t=0;for(var k=0;k<idx&&k<clips.length;k++)t+=clipLenOf(clips[k])+gapOfClip(clips[k+1],k+1);return t;}
+function combinedTotal(){if(!clips.length)return 0;return combinedOffset(clips.length-1)+clipLenOf(clips[clips.length-1]);}
+function combinedNow(){if(activeClip<0||!clips[activeClip])return 0;var c=clips[activeClip];return combinedOffset(activeClip)+Math.min(clipLenOf(c),Math.max(0,(video.currentTime||0)-(c.trimStart||0)));}
+function updateTransport(){var tot=combinedTotal();seekBar.max=tot>0?tot:0;seekBar.value=combinedNow();timeLabel.textContent=fmt(combinedNow())+" / "+fmt(tot);}
+function advanceToNext(){if(activeClip<0||activeClip>=clips.length-1)return;advanceWanted=true;loadClip(activeClip+1);}
+function restartCombined(){if(!clips.length)return;state.playClipOnly=false;if(activeClip===0){try{video.currentTime=clips[0].trimStart||0;}catch(e){}video.play();playBtn.textContent="❚❚";}else{seekAfterLoad=clips[0].trimStart||0;advanceWanted=true;loadClip(0);}}
 function renderClipList(){
   var box=$("clipList");box.innerHTML="";
   clips.forEach(function(c,i){
     var row=document.createElement("div");row.className="clip-item"+(i===activeClip?" active":"");
     var name=document.createElement("div");name.className="cname";
     var b=document.createElement("b");b.textContent=(i+1)+". "+c.name;
-    var s=document.createElement("span");s.textContent=(c.size/1048576).toFixed(1)+" MB"+(c.duration?" • "+fmt(c.duration):"")+(c.trimEnd&&c.duration?" • clip "+fmt(Math.max(0,(c.trimEnd||0)-(c.trimStart||0))):"");
+    var s=document.createElement("span");var off=combinedOffset(i);s.textContent=(c.size/1048576).toFixed(1)+" MB • aik video mein "+fmt(off)+" – "+fmt(off+clipLenOf(c))+" (kul "+fmt(combinedTotal())+")";
     name.appendChild(b);name.appendChild(s);row.appendChild(name);
     function mk(txt,title,fn){var btn=document.createElement("button");btn.type="button";btn.textContent=txt;btn.title=title;btn.setAttribute("aria-label",title);btn.addEventListener("click",function(ev){ev.stopPropagation();fn();});return btn;}
     row.appendChild(mk("↑","Upar le jayein",function(){if(i>0){var t=clips[i-1];clips[i-1]=clips[i];clips[i]=t;if(activeClip===i)activeClip=i-1;else if(activeClip===i-1)activeClip=i;renderClipList();}}));
@@ -911,6 +921,7 @@ function renderClipList(){
   if(clips.length>1){var tot=0;clips.forEach(function(c){tot+=Math.max(0,(c.trimEnd||c.duration||0)-(c.trimStart||0));});hint.style.display="block";hint.innerHTML="<b style='color:var(--text)'>"+clips.length+" clips</b> — Export dabane par sab aik tartib mein jud kar <b style='color:var(--text)'>aik video ("+fmt(tot)+")</b> banegi. Kisi clip par tap karke usay select / trim karein.";}
   else if(clips.length===1){hint.style.display="block";hint.textContent="Aik clip load hai. Aur clips jodne ke liye dobara Import dabakar mazeed videos chunein.";}
   else hint.style.display="none";
+  if(state.loaded)updateTransport();
 }
 function loadClip(i){
   if(i<0||i>=clips.length)return;activeClip=i;loadingClip=true;var c=clips[i];
@@ -936,14 +947,14 @@ $("fileInput").addEventListener("change",function(ev){
   setStatus(editorStatus,files.length+" clip(s) add ho gayi — kul "+clips.length+" clips. Har clip ko select karke trim karein, phir Export karein.","ok");
   loadClip(firstNew);
 });
-video.addEventListener("loadedmetadata",function(){state.loaded=true;state.duration=video.duration||0;stageEmpty.classList.add("hidden");canvas.classList.remove("hidden");transport.classList.remove("hidden");var ph=$("transportPlaceholder");if(ph)ph.classList.add("hidden");seekBar.max=state.duration;trimStartEl.max=state.duration;trimEndEl.max=state.duration;var c=clips[activeClip];if(c){if(!c.duration){c.duration=state.duration;}if(!c.trimEnd)c.trimEnd=state.duration;c.duration=state.duration;trimStartEl.value=c.trimStart||0;trimEndEl.value=c.trimEnd||state.duration;}else{trimStartEl.value=0;trimEndEl.value=state.duration;}updateTrimLabels();exportBtn.disabled=false;video.volume=parseFloat($("volumeSlider").value);video.playbackRate=parseFloat($("speedSel").value);applyCanvasSize();video.currentTime=parseFloat(trimStartEl.value)||0;loadingClip=false;renderClipList();setStatus(editorStatus,clips.length>1?("Clip "+(activeClip+1)+" load hai — is ka trim set karein, baqi clips list se select karein. Export par sab jud jayengi."):("Video load ho gayi — ab trim, text, filter set karke Export karein."),"ok");pushHistory();drawThumbFromVideo();});
+video.addEventListener("loadedmetadata",function(){state.loaded=true;state.duration=video.duration||0;stageEmpty.classList.add("hidden");canvas.classList.remove("hidden");transport.classList.remove("hidden");var ph=$("transportPlaceholder");if(ph)ph.classList.add("hidden");trimStartEl.max=state.duration;trimEndEl.max=state.duration;var c=clips[activeClip];if(c){if(!c.duration){c.duration=state.duration;}if(!c.trimEnd)c.trimEnd=state.duration;c.duration=state.duration;trimStartEl.value=c.trimStart||0;trimEndEl.value=c.trimEnd||state.duration;}else{trimStartEl.value=0;trimEndEl.value=state.duration;}updateTrimLabels();exportBtn.disabled=false;video.volume=parseFloat($("volumeSlider").value);video.playbackRate=parseFloat($("speedSel").value);applyCanvasSize();var seekT=(seekAfterLoad!==null?seekAfterLoad:(parseFloat(trimStartEl.value)||0));seekAfterLoad=null;video.currentTime=seekT;loadingClip=false;renderClipList();updateTransport();setStatus(editorStatus,clips.length>1?("Sab clips aik hi video hain — kul waqt "+fmt(combinedTotal())+". Play dabayein to poori video aik sath chalegi; kisi hisse ko trim karna ho to timeline ya list se select karein."):("Video load ho gayi — ab trim, text, filter set karke Export karein."),"ok");if(advanceWanted){advanceWanted=false;if(!state.exporting){video.play();playBtn.textContent="❚❚";}}pushHistory();drawThumbFromVideo();});
 video.addEventListener("error",function(){setStatus(editorStatus,"Ye file browser mein nahi khul saki. MP4 format try karein.","err");});
-video.addEventListener("timeupdate",function(){if(!state.exporting){seekBar.value=video.currentTime;timeLabel.textContent=fmt(video.currentTime)+" / "+fmt(state.duration);var start=parseFloat(trimStartEl.value),end=parseFloat(trimEndEl.value);if(state.playClipOnly&&video.currentTime>=end){video.pause();state.playClipOnly=false;}}if(!rafId)drawFrame();});
+video.addEventListener("timeupdate",function(){if(!state.exporting){updateTransport();var end=parseFloat(trimEndEl.value);if(state.playClipOnly&&video.currentTime>=end){video.pause();state.playClipOnly=false;}else if(!video.paused&&activeClip>=0&&clips[activeClip]){var ce=clips[activeClip].trimEnd||clips[activeClip].duration||0;if(ce>0&&video.currentTime>=ce-0.03){if(activeClip<clips.length-1)advanceToNext();else if(state.loop)restartCombined();else video.pause();}}}if(!rafId)drawFrame();});
 video.addEventListener("play",startLoop);video.addEventListener("seeked",drawFrame);
-playBtn.addEventListener("click",function(){if(!state.loaded)return;if(video.paused){var end=parseFloat(trimEndEl.value);if(video.currentTime>=end-0.05)video.currentTime=parseFloat(trimStartEl.value);video.play();playBtn.textContent="❚❚";}else{video.pause();playBtn.textContent="▶";}});
-video.addEventListener("pause",function(){playBtn.textContent="▶";});video.addEventListener("ended",function(){playBtn.textContent="▶";if(state.loop&&!state.exporting){video.currentTime=parseFloat(trimStartEl.value);video.play();}});
-seekBar.addEventListener("input",function(){video.currentTime=parseFloat(seekBar.value);drawFrame();});
-function updateTrimLabels(){var s=parseFloat(trimStartEl.value),e=parseFloat(trimEndEl.value);$("trimStartLabel").textContent=fmt(s);$("trimEndLabel").textContent=fmt(e);$("clipLen").textContent=Math.max(0,e-s).toFixed(1);}
+playBtn.addEventListener("click",function(){if(!state.loaded)return;if(video.paused){var tot=combinedTotal();if(tot>0&&combinedNow()>=tot-0.08){restartCombined();return;}var c=clips[activeClip];if(c&&(c.trimEnd||c.duration||0)>0&&video.currentTime>=(c.trimEnd||c.duration)-0.05&&activeClip<clips.length-1){advanceToNext();return;}video.play();playBtn.textContent="❚❚";}else{video.pause();playBtn.textContent="▶";}});
+video.addEventListener("pause",function(){playBtn.textContent="▶";});video.addEventListener("ended",function(){if(state.exporting){playBtn.textContent="▶";return;}if(activeClip>=0&&activeClip<clips.length-1){advanceToNext();return;}if(state.loop){restartCombined();return;}playBtn.textContent="▶";});
+seekBar.addEventListener("input",function(){var t=parseFloat(seekBar.value);if(!clips.length){video.currentTime=t;drawFrame();return;}var acc=0,target=-1,local=0;for(var i=0;i<clips.length;i++){var g=gapOfClip(clips[i],i);if(t<acc+g){target=i;local=clips[i].trimStart||0;break;}acc+=g;var d=clipLenOf(clips[i]);if(t<acc+d||i===clips.length-1){target=i;local=(clips[i].trimStart||0)+Math.min(d,Math.max(0,t-acc));break;}acc+=d;}if(target<0)return;state.playClipOnly=false;if(target===activeClip){try{video.currentTime=local;}catch(e){}}else{seekAfterLoad=local;loadClip(target);}timeLabel.textContent=fmt(Math.min(t,combinedTotal()))+" / "+fmt(combinedTotal());drawFrame();});
+function updateTrimLabels(){var s=parseFloat(trimStartEl.value),e=parseFloat(trimEndEl.value);$("trimStartLabel").textContent=fmt(s);$("trimEndLabel").textContent=fmt(e);$("clipLen").textContent=Math.max(0,e-s).toFixed(1);updateTransport();}
 trimStartEl.addEventListener("input",function(){var s=parseFloat(trimStartEl.value),e=parseFloat(trimEndEl.value);if(s>e-0.3){trimStartEl.value=e-0.3;s=parseFloat(trimStartEl.value);}video.currentTime=s;var c=clips[activeClip];if(c){c.trimStart=s;c.trimEnd=parseFloat(trimEndEl.value);}updateTrimLabels();drawFrame();});
 trimEndEl.addEventListener("input",function(){var s=parseFloat(trimStartEl.value),e=parseFloat(trimEndEl.value);if(e<s+0.3){trimEndEl.value=s+0.3;e=parseFloat(trimEndEl.value);}video.currentTime=Math.max(s,e-0.4);var c=clips[activeClip];if(c){c.trimStart=parseFloat(trimStartEl.value);c.trimEnd=e;}updateTrimLabels();drawFrame();});
 $("setStartBtn").addEventListener("click",function(){trimStartEl.value=video.currentTime;trimStartEl.dispatchEvent(new Event("input"));});
@@ -961,7 +972,7 @@ $("qualitySel").addEventListener("change",applyCanvasSize);
 $("speedSel").addEventListener("change",function(){video.playbackRate=parseFloat(this.value);});
 $("volumeSlider").addEventListener("input",function(){video.volume=parseFloat(this.value);video.muted=false;state.muted=false;$("muteBtn").setAttribute("aria-pressed","false");$("muteBtn").textContent="🔊 Sound";});
 $("muteBtn").addEventListener("click",function(){state.muted=!state.muted;video.muted=state.muted;this.setAttribute("aria-pressed",String(state.muted));this.textContent=state.muted?"🔇 Muted":"🔊 Sound";});
-$("loopBtn").addEventListener("click",function(){state.loop=!state.loop;video.loop=state.loop;this.setAttribute("aria-pressed",String(state.loop));});
+$("loopBtn").addEventListener("click",function(){state.loop=!state.loop;this.setAttribute("aria-pressed",String(state.loop));});
 $("rotateBtn").addEventListener("click",function(){state.rotation=(state.rotation+90)%360;drawFrame();});
 $("flipBtn").addEventListener("click",function(){state.flip=!state.flip;this.setAttribute("aria-pressed",String(state.flip));drawFrame();});
 function setZoom(z){state.zoom=Math.min(3,Math.max(0.5,z));$("zoomLabel").textContent="Zoom "+Math.round(state.zoom*100)+"%";drawFrame();}
@@ -1292,7 +1303,6 @@ function render(){
     var b=document.createElement("div");b.className="tl-block"+(sel&&sel.type==="video"&&sel.index===i?" sel":"");
     b.style.left=(offsetOf(i)*pxPerSec)+"px";b.style.width=Math.max(26,cDur(c)*pxPerSec)+"px";
     b.innerHTML="";var nm=document.createElement("span");nm.textContent=(i+1)+". "+c.name;b.appendChild(nm);
-    var sm=document.createElement("small");sm.textContent=fmt(cDur(c));b.appendChild(sm);
     if(sel&&sel.type==="video"&&sel.index===i){b.appendChild(mkHandle("l",c,"video"));b.appendChild(mkHandle("r",c,"video"));}
     b.addEventListener("pointerdown",function(ev){if(ev.target.classList.contains("tl-handle"))return;sel={type:"video",index:i};if(i!==E.active())E.loadClip(i);render();renderContext();var fresh=laneV.querySelectorAll(".tl-block")[i];if(fresh)startVideoDrag(ev,i,fresh);});
     laneV.appendChild(b);
