@@ -314,14 +314,14 @@ ol.steps li{color:#d8e1ee}
 .tl-zoom{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
 .tl-wrap{position:relative;overflow-x:auto;overflow-y:hidden;background:#141a26;border:1px solid var(--border2);border-radius:10px;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
 .tl-inner{position:relative;min-width:100%;padding:0 0 6px}
-.tl-ruler{position:relative;height:24px;border-bottom:1px solid var(--border);cursor:pointer;margin-left:52px}
+.tl-ruler{position:relative;height:24px;border-bottom:1px solid var(--border);cursor:pointer;margin-left:52px;touch-action:pan-y}
 .tl-tick{position:absolute;top:0;height:100%;border-left:1px solid var(--border);font-size:10px;color:var(--muted2);padding:3px 0 0 4px;font-variant-numeric:tabular-nums;pointer-events:none;white-space:nowrap}
 .tl-row{display:flex;align-items:stretch;border-bottom:1px solid rgba(62,74,97,.5)}
 .tl-row:last-of-type{border-bottom:0}
 .tl-rowlabel{flex:0 0 52px;width:52px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;justify-content:center;background:#141a26;z-index:3;text-align:center}
 .tl-row{position:relative;min-height:46px}
 .tl-lane{position:relative;flex:0 0 auto;min-height:46px}
-.tl-block{position:absolute;top:5px;height:36px;border-radius:7px;border:1.5px solid #155e75;background:linear-gradient(180deg,#0e7490,#155e75);color:#ecfeff;font-size:11px;font-weight:700;display:flex;align-items:center;padding:0 16px;overflow:hidden;white-space:nowrap;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:none}
+.tl-block{position:absolute;top:5px;height:36px;border-radius:7px;border:1.5px solid #155e75;background:linear-gradient(180deg,#0e7490,#155e75);color:#ecfeff;font-size:11px;font-weight:700;display:flex;align-items:center;padding:0 16px;overflow:hidden;white-space:nowrap;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:pan-y}
 .tl-block small{font-weight:600;opacity:.85;margin-left:6px}
 .tl-block.sel{border-color:#fff;box-shadow:0 0 0 2px var(--cyan),0 4px 14px rgba(0,0,0,.45);z-index:2}
 .tl-block.audio{background:linear-gradient(180deg,#1d6f42,#14532d);border-color:#22c55e;color:#dcfce7}
@@ -542,12 +542,14 @@ ol.steps li{color:#d8e1ee}
         <span class="tl-total" id="tlTotal">Kul waqt: 0:00</span>
         <span class="tl-pos" id="tlPos">Playhead: 0:00</span>
         <div class="tl-zoom">
+          <button class="btn small" id="tlScrollL" type="button" aria-label="Timeline peeche scroll karein">◀ Peeche</button>
+          <button class="btn small" id="tlScrollR" type="button" aria-label="Timeline aagay scroll karein">Aagay ▶</button>
           <button class="btn small" id="tlZoomOut" type="button" aria-label="Timeline zoom out">− Zoom</button>
           <button class="btn small" id="tlZoomIn" type="button" aria-label="Timeline zoom in">+ Zoom</button>
           <button class="btn small" id="tlFit" type="button">Fit</button>
         </div>
       </div>
-      <p class="hint" style="margin:2px 0 8px">Video import hote hi poori video neeche is bar mein aa jati hai. <b style="color:var(--text)">Upar wali safed line (playhead)</b> ko drag karke koi bhi jagah dekhein, kisi clip par tap karke select karein — select shuda clip ke <b style="color:var(--text)">safed kinare (handles) kheench kar trim</b> hota hai. Clip ko <b style="color:var(--text)">pakad kar aagay/peeche drag</b> karein to clips ki tartib badal jati hai. Select shuda clip ke neeche wale buttons se do clips ke darmiyan <b style="color:var(--text)">Gap (khali hissa)</b> kam ya zyada bhi kar sakte hain. Do ungliyon se pinch karke zoom bhi hota hai.</p>
+      <p class="hint" style="margin:2px 0 8px">Video import hote hi poori video neeche is bar mein aa jati hai. <b style="color:var(--text)">Upar wali safed line (playhead)</b> ko drag karke koi bhi jagah dekhein, kisi clip par tap karke select karein — select shuda clip ke <b style="color:var(--text)">safed kinare (handles) kheench kar trim</b> hota hai. Clip ko <b style="color:var(--text)">pakad kar aagay/peeche drag</b> karein to clips ki tartib badal jati hai. Select shuda clip ke neeche wale buttons se do clips ke darmiyan <b style="color:var(--text)">Gap (khali hissa)</b> kam ya zyada bhi kar sakte hain. Do ungliyon se pinch karke zoom bhi hota hai. <b style="color:var(--text)">Video lambi ho to bar par ungli rakh kar left/right slide karein — bar scroll ho jayegi</b>; upar wale <b style="color:var(--text)">◀ Peeche / Aagay ▶</b> buttons se bhi bar aagay-peeche hoti hai. Video chalte waqt bar khud playhead ke sath aagay barhti rehti hai, taake agla hissa screen se bahar na jaye.</p>
       <div class="tl-wrap" id="tlWrap">
         <div class="tl-inner" id="tlInner">
           <div class="tl-ruler" id="tlRuler"></div>
@@ -728,6 +730,7 @@ ol.steps li{color:#d8e1ee}
           <dt>Export format?</dt><dd>Android Chrome par aam taur par MP4 ya WebM — dono YouTube par upload ho jate hain.</dd>
           <dt>Gemini key mehfooz hai?</dt><dd>Key aik dafa dalne par isi browser (local storage) mein save ho jati hai taake bar bar na dalni pare — kisi server par nahi jati, sirf jawab ke waqt Google ko bheji jati hai. Browser ka data clear karein to key bhi delete ho jayegi.</dd>
           <dt>Lambi video?</dt><dd>1–3 minute ki clips sab se smooth chalti hain. Lambi tilawat se Shorts ke chhote hisse trim karein.</dd>
+          <dt>Timeline (edit bar) aagay nazar nahi aati / scroll nahi hoti?</dt><dd>Bar par ungli rakh kar left/right slide karein — timeline scroll ho jayegi; ya timeline ke upar wale ◀ Peeche / Aagay ▶ buttons dabayein. Video chalte waqt bar khud playhead ke sath aagay barhti rehti hai, is liye agla hissa chop nahi hota. Poori video aik screen par dekhni ho to “Fit” dabayein.</dd>
           <dt>Kai clips aik video mein?</dt><dd>Import mein kai clips aik sath chunein — har clip ki asal lambai khud pehchan li jati hai, is liye timeline mein sab clips apni sahi jagah par barabar nazar aate hain. Har clip ka apna trim set karein, timeline mein clip ko drag karke ya Media list ke ↑ ↓ se tartib rakhein — Export sab ko jod kar aik video bana dega. Do clips ke darmiyan khali hissa (gap) chahiye to clip select karke “Gap +1s” dabayein.</dd>
           <dt>Audio alag kaise?</dt><dd>“Audio Alag Karein” hisse se trim wala hissa ya poori video ki awaz WAV file mein download ho jati hai. Timeline mein “Audio Alag (Track)” karein to audio alag track ban jata hai — usay select karke “⬇ Ye Audio Download Karein (WAV)” se wahi hissa file mein bhi mil jata hai.</dd>
           <dt>Teeno / sab videos ki AIK hi audio?</dt><dd>Audio hisse mein “Sab Clips Ki AIK Audio Banayein (WAV)” dabayein — timeline ki sab clips aik hi audio file mein tartib se jud jati hain (har clip ka trim wala hissa). Timeline ke project tools mein “Sab Clips Ki Aik Audio (Track)” se wahi cheez aik combined track ki surat mein bhi banti hai, wahan se bhi WAV download ho jata hai.</dd>
@@ -1363,6 +1366,7 @@ function render(){
   var wrapW=Math.max(280,(wrap.clientWidth||320)-LABEL_W-4);
   if(fitMode&&tot>0)pxPerSec=Math.min(90,Math.max(6,wrapW/tot));
   var width=Math.max(wrapW,Math.ceil(tot*pxPerSec));
+  inner.style.width=(LABEL_W+width)+"px";
   ruler.style.width=width+"px";laneV.style.width=width+"px";laneA.style.width=width+"px";laneO.style.width=width+"px";
   /* ruler */
   ruler.innerHTML="";
@@ -1375,7 +1379,7 @@ function render(){
     b.style.left=(offsetOf(i)*pxPerSec)+"px";b.style.width=Math.max(26,cDur(c)*pxPerSec)+"px";
     b.innerHTML="";var nm=document.createElement("span");nm.textContent=(i+1)+". "+c.name;b.appendChild(nm);
     if(sel&&sel.type==="video"&&sel.index===i){b.appendChild(mkHandle("l",c,"video"));b.appendChild(mkHandle("r",c,"video"));}
-    b.addEventListener("pointerdown",function(ev){if(ev.target.classList.contains("tl-handle"))return;sel={type:"video",index:i};if(i!==E.active())E.loadClip(i);render();renderContext();var fresh=laneV.querySelectorAll(".tl-block")[i];if(fresh)startVideoDrag(ev,i,fresh);});
+    b.addEventListener("pointerdown",function(ev){if(ev.target.classList.contains("tl-handle"))return;sel={type:"video",index:i};if(i!==E.active())E.loadClip(i);render();renderContext();if(ev.pointerType==="touch"){startTouchScroll(ev);return;}var fresh=laneV.querySelectorAll(".tl-block")[i];if(fresh)startVideoDrag(ev,i,fresh);});
     laneV.appendChild(b);
     var gv=gapOf(c,i);
     if(gv>0){var gd=document.createElement("div");gd.className="tl-gap";gd.style.left=((offsetOf(i)-gv)*pxPerSec)+"px";gd.style.width=Math.max(10,gv*pxPerSec)+"px";var gsp=document.createElement("span");gsp.textContent="gap "+fmt(gv);gd.appendChild(gsp);laneV.appendChild(gd);}
@@ -1388,7 +1392,7 @@ function render(){
     b.innerHTML="";var nm=document.createElement("span");nm.textContent="🎵 "+a.name;b.appendChild(nm);
     var sm=document.createElement("small");sm.textContent=fmt(a.dur);b.appendChild(sm);
     if(sel&&sel.type==="audio"&&sel.id===a.id){b.appendChild(mkHandle("l",a,"audio"));b.appendChild(mkHandle("r",a,"audio"));}
-    b.addEventListener("pointerdown",function(ev){if(ev.target.classList.contains("tl-handle"))return;sel={type:"audio",id:a.id};render();renderContext();startMoveDrag(ev,b,a,"audio");});
+    b.addEventListener("pointerdown",function(ev){if(ev.target.classList.contains("tl-handle"))return;sel={type:"audio",id:a.id};render();renderContext();if(ev.pointerType==="touch"){startTouchScroll(ev);return;}startMoveDrag(ev,b,a,"audio");});
     laneA.appendChild(b);
   });
   /* overlay blocks */
@@ -1399,7 +1403,7 @@ function render(){
     b.innerHTML="";var nm=document.createElement("span");nm.textContent="🏷️ "+o.name;b.appendChild(nm);
     var sm=document.createElement("small");sm.textContent=fmt(o.end-o.start);b.appendChild(sm);
     if(sel&&sel.type==="overlay"&&sel.id===o.id){b.appendChild(mkHandle("l",o,"overlay"));b.appendChild(mkHandle("r",o,"overlay"));}
-    b.addEventListener("pointerdown",function(ev){if(ev.target.classList.contains("tl-handle"))return;sel={type:"overlay",id:o.id};render();renderContext();startMoveDrag(ev,b,o,"overlay");});
+    b.addEventListener("pointerdown",function(ev){if(ev.target.classList.contains("tl-handle"))return;sel={type:"overlay",id:o.id};render();renderContext();if(ev.pointerType==="touch"){startTouchScroll(ev);return;}startMoveDrag(ev,b,o,"overlay");});
     laneO.appendChild(b);
   });
   $("tlTotal").textContent="Kul waqt: "+fmt(tot);
@@ -1442,6 +1446,16 @@ function startMoveDrag(ev,el,item,kind){
   function up(){window.removeEventListener("pointermove",move);window.removeEventListener("pointerup",up);if(moved)renderContext();}
   window.addEventListener("pointermove",move);window.addEventListener("pointerup",up);
 }
+/* Touch par clip ko pakad kar slide karne se timeline SCROLL hoti hai
+   (lambi video ka agla hissa dekhne ke liye) — tartib badalna mouse drag
+   ya ⬅/➡ buttons se hota hai. Pehle blocks par touch-action:none tha,
+   is liye ungli ka swipe kahin nahi jata tha aur bar wahin atak jati thi. */
+function startTouchScroll(ev){
+  var startX=ev.clientX,startL=wrap.scrollLeft;
+  function move(e){wrap.scrollLeft=startL-(e.clientX-startX);}
+  function up(){window.removeEventListener("pointermove",move);window.removeEventListener("pointerup",up);window.removeEventListener("pointercancel",up);}
+  window.addEventListener("pointermove",move);window.addEventListener("pointerup",up);window.addEventListener("pointercancel",up);
+}
 function moveClip(i,dir){
   var cs=clips();var j=i+dir;if(i<0||j<0||j>=cs.length)return;
   var ac=cs[E.active()];
@@ -1481,8 +1495,16 @@ function startVideoDrag(ev,idx,el){
 /* ---------- playhead ---------- */
 function syncPlayhead(){
   var pt=projectTime();
-  ph.style.left=(LABEL_W+pt*pxPerSec)+"px";
+  var x=LABEL_W+pt*pxPerSec;
+  ph.style.left=x+"px";
   var pos=$("tlPos");if(pos)pos.textContent="Playhead: "+fmt(pt);
+  /* Playback ke dauran bar khud playhead ke sath aagay barhe — agla hissa
+     screen se bahar ja kar chop na ho. Sirf tab jab playhead nazar se bahar ho,
+     taake user ke manual scroll se ladai na ho. */
+  if(!video.paused&&!video.ended&&!scrubbing&&wrap.clientWidth){
+    var vw=wrap.clientWidth,vx=x-wrap.scrollLeft;
+    if(vx>vw-28||vx<4)wrap.scrollLeft=Math.max(0,x-vw*0.3);
+  }
 }
 function seekFromEvent(ev){
   var rect=inner.getBoundingClientRect();
@@ -1503,7 +1525,9 @@ function clearPointer(ev){delete pointers[ev.pointerId];}
 wrap.addEventListener("pointerup",clearPointer);wrap.addEventListener("pointercancel",clearPointer);
 $("tlZoomIn").addEventListener("click",function(){fitMode=false;pxPerSec=Math.min(140,pxPerSec*1.35);render();});
 $("tlZoomOut").addEventListener("click",function(){fitMode=false;pxPerSec=Math.max(5,pxPerSec/1.35);render();});
-$("tlFit").addEventListener("click",function(){fitMode=true;render();});
+$("tlFit").addEventListener("click",function(){fitMode=true;render();wrap.scrollLeft=0;});
+$("tlScrollL").addEventListener("click",function(){wrap.scrollBy({left:-Math.max(140,wrap.clientWidth*0.75),behavior:"smooth"});});
+$("tlScrollR").addEventListener("click",function(){wrap.scrollBy({left:Math.max(140,wrap.clientWidth*0.75),behavior:"smooth"});});
 
 /* ---------- context toolbar ---------- */
 function ctxBtn(label,fn,gold){
