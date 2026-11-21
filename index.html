@@ -338,6 +338,9 @@ ol.steps li{color:#d8e1ee}
 .tl-context{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
 .tl-context .ctx-label{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);width:100%}
 .tl-context input[type="range"]{flex:1;min-width:110px}
+.tl-gap{position:absolute;top:5px;height:36px;border:1.5px dashed rgba(226,232,240,.45);border-radius:7px;background:repeating-linear-gradient(45deg,rgba(226,232,240,.08) 0 6px,transparent 6px 12px);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.tl-gap span{font-size:9.5px;font-weight:700;color:var(--muted);white-space:nowrap}
+.tl-block.dragging{z-index:6;opacity:.88;box-shadow:0 8px 20px rgba(0,0,0,.55)}
 .tl-extract{margin-top:14px;border:1px solid var(--border2);background:var(--panel2);border-radius:10px;padding:12px}
 @media(max-width:760px){.tl-block{font-size:10.5px;padding:0 14px}.tl-zoom{margin-left:0}}
 </style>
@@ -544,7 +547,7 @@ ol.steps li{color:#d8e1ee}
           <button class="btn small" id="tlFit" type="button">Fit</button>
         </div>
       </div>
-      <p class="hint" style="margin:2px 0 8px">Video import hote hi poori video neeche is bar mein aa jati hai. <b style="color:var(--text)">Upar wali safed line (playhead)</b> ko drag karke koi bhi jagah dekhein, kisi clip par tap karke select karein — select shuda clip ke kinare kheench kar trim hota hai. Do ungliyon se pinch karke zoom bhi hota hai.</p>
+      <p class="hint" style="margin:2px 0 8px">Video import hote hi poori video neeche is bar mein aa jati hai. <b style="color:var(--text)">Upar wali safed line (playhead)</b> ko drag karke koi bhi jagah dekhein, kisi clip par tap karke select karein — select shuda clip ke <b style="color:var(--text)">safed kinare (handles) kheench kar trim</b> hota hai. Clip ko <b style="color:var(--text)">pakad kar aagay/peeche drag</b> karein to clips ki tartib badal jati hai. Select shuda clip ke neeche wale buttons se do clips ke darmiyan <b style="color:var(--text)">Gap (khali hissa)</b> kam ya zyada bhi kar sakte hain. Do ungliyon se pinch karke zoom bhi hota hai.</p>
       <div class="tl-wrap" id="tlWrap">
         <div class="tl-inner" id="tlInner">
           <div class="tl-ruler" id="tlRuler"></div>
@@ -589,7 +592,7 @@ ol.steps li{color:#d8e1ee}
         <button class="btn small" id="previewClipBtn" type="button" style="border-color:var(--cyan);color:#a5f3fc">▶ Sirf Clip Chalayein</button>
       </div>
       <p class="hint">Misal: 10 minute ki tilawat mein se behtareen 50 second ka Short banana ho to Start / End wahi rakhein.</p>
-      <p class="hint" style="margin-top:4px"><b style="color:var(--text)">Kai clips jodna:</b> upar Media mein kai clips aik sath select karein — har clip ko bari bari select karke us ka apna Start/End set karein, ↑ ↓ se tartib badlein. Phir upar wala bara <b style="color:#86efac">Export Video</b> button sab clips ko usi tartib mein jod kar <b>aik hi video</b> bana dega.</p>
+      <p class="hint" style="margin-top:4px"><b style="color:var(--text)">Kai clips jodna:</b> upar Media mein kai clips aik sath select karein — har clip ko bari bari select karke us ka apna Start/End set karein, timeline mein clip ko drag karke ya ↑ ↓ se tartib badlein. Phir upar wala bara <b style="color:#86efac">Export Video</b> button sab clips ko usi tartib mein jod kar <b>aik hi video</b> bana dega.</p>
     </div>
   </section>
 
@@ -626,6 +629,8 @@ ol.steps li{color:#d8e1ee}
           <button type="button" data-audiorange="full" aria-pressed="false">Poori Video</button>
         </div>
         <button class="btn gold block" id="extractAudioBtn" type="button" style="margin-top:14px">🎧 Audio File Banayein (WAV)</button>
+        <button class="btn toggle block" id="noiseBtn" type="button" aria-pressed="false" style="margin-top:8px">🔇 Shor Kam Karein (Noise Reduce): OFF</button>
+        <p class="hint">Noise Reduce ON karein to audio banate waqt halka shor — pankhe / AC ki ghun-ghun, hiss — kam ho jata hai aur awaz saaf sunai deti hai. Ye is WAV tareeqe par bhi lagta hai aur timeline ke audio track ke download par bhi.</p>
         <button class="btn block" id="extractAudioRecBtn" type="button" style="margin-top:8px">⏺ Live Record Karke Audio (WebM) — agar WAV na chale</button>
         <div class="hidden" id="audioProgressWrap" style="margin-top:10px">
           <progress id="audioProgress" max="100" value="0"></progress>
@@ -708,8 +713,9 @@ ol.steps li{color:#d8e1ee}
           <dt>Export format?</dt><dd>Android Chrome par aam taur par MP4 ya WebM — dono YouTube par upload ho jate hain.</dd>
           <dt>Gemini key mehfooz hai?</dt><dd>Key aik dafa dalne par isi browser (local storage) mein save ho jati hai taake bar bar na dalni pare — kisi server par nahi jati, sirf jawab ke waqt Google ko bheji jati hai. Browser ka data clear karein to key bhi delete ho jayegi.</dd>
           <dt>Lambi video?</dt><dd>1–3 minute ki clips sab se smooth chalti hain. Lambi tilawat se Shorts ke chhote hisse trim karein.</dd>
-          <dt>Kai clips aik video mein?</dt><dd>Import mein kai clips aik sath chunein, har clip ka apna trim set karein, ↑ ↓ se tartib rakhein — Export sab ko jod kar aik video bana dega.</dd>
-          <dt>Audio alag kaise?</dt><dd>“Audio Alag Karein” hisse se trim wala hissa ya poori video ki awaz WAV file mein download ho jati hai.</dd>
+          <dt>Kai clips aik video mein?</dt><dd>Import mein kai clips aik sath chunein — har clip ki asal lambai khud pehchan li jati hai, is liye timeline mein sab clips apni sahi jagah par barabar nazar aate hain. Har clip ka apna trim set karein, timeline mein clip ko drag karke ya Media list ke ↑ ↓ se tartib rakhein — Export sab ko jod kar aik video bana dega. Do clips ke darmiyan khali hissa (gap) chahiye to clip select karke “Gap +1s” dabayein.</dd>
+          <dt>Audio alag kaise?</dt><dd>“Audio Alag Karein” hisse se trim wala hissa ya poori video ki awaz WAV file mein download ho jati hai. Timeline mein “Audio Alag (Track)” karein to audio alag track ban jata hai — usay select karke “⬇ Ye Audio Download Karein (WAV)” se wahi hissa file mein bhi mil jata hai.</dd>
+          <dt>Awaz mein shor (noise) hai?</dt><dd>“Audio Alag Karein” hisse mein “Shor Kam Karein (Noise Reduce)” ON kar dein — phir jo audio file banegi us mein pankhe / AC ka halka shor kam aur awaz saaf hogi.</dd>
           <dt>Thumbnail?</dt><dd>Thumbnail Studio mein video ke frame se — ya Gemini AI background se — 1280×720 JPG thumbnail banta hai, Urdu text ke sath.</dd>
           <dt>Install ke baad 404 kyun aata hai?</dt><dd>Purana home-screen icon pehle wali ghalat link par bana hota hai aur naya install usay khud nahi badalta. Usay long-press karke delete karein, phir is page ko Chrome mein khol kar dobara Install karein — manifest ki link ab durust hai, is liye taza icon editor par khulna chahiye.</dd>
         </dl>
@@ -884,6 +890,8 @@ var rafId=null;function loop(){drawFrame();if(!video.paused&&!video.ended)rafId=
 /* ===== Multi-clip join ===== */
 var clips=[],activeClip=-1,loadingClip=false;
 window.__editor={clips:function(){return clips;},active:function(){return activeClip;},loadClip:function(i){loadClip(i);},renderList:function(){renderClipList();},video:function(){return video;},draw:function(){drawFrame();},fmt:fmt,trimEls:function(){return{start:trimStartEl,end:trimEndEl};},updateTrimLabels:updateTrimLabels,loaded:function(){return state.loaded;}};
+window.__editor.buildWav=function(file,s,e,noise){return buildWavBlob(file,s,e,noise);};
+window.__editor.noiseOn=function(){return noiseOn;};
 function renderClipList(){
   var box=$("clipList");box.innerHTML="";
   clips.forEach(function(c,i){
@@ -910,9 +918,20 @@ function loadClip(i){
   $("fileMeta").textContent="📹 Clip "+(i+1)+"/"+clips.length+": "+c.name+" • "+(c.size/1048576).toFixed(1)+" MB • Loaded locally (no upload)";
   renderClipList();
 }
+function probeDuration(c){
+  if(!c||c.duration>0)return;
+  try{
+    var pv=document.createElement("video");pv.preload="metadata";pv.muted=true;pv.playsInline=true;pv.src=c.url;var done=false;
+    function fin(){if(done)return;done=true;try{pv.removeAttribute("src");pv.load();}catch(e){}}
+    pv.addEventListener("loadedmetadata",function(){if(isFinite(pv.duration)&&pv.duration>0){c.duration=pv.duration;if(!c.trimEnd)c.trimEnd=pv.duration;renderClipList();}fin();});
+    pv.addEventListener("error",fin);
+    setTimeout(fin,9000);
+  }catch(e){}
+}
 $("fileInput").addEventListener("change",function(ev){
   var files=ev.target.files;if(!files||!files.length)return;var firstNew=clips.length;
   for(var i=0;i<files.length;i++){var f=files[i];clips.push({file:f,name:f.name,size:f.size,url:URL.createObjectURL(f),duration:0,trimStart:0,trimEnd:0});}
+  clips.slice(firstNew).forEach(probeDuration);
   ev.target.value="";
   setStatus(editorStatus,files.length+" clip(s) add ho gayi — kul "+clips.length+" clips. Har clip ko select karke trim karein, phir Export karein.","ok");
   loadClip(firstNew);
@@ -994,7 +1013,7 @@ var exportCtx=null,exportAudioDest=null;
 function exportJoined(){
   if(!window.MediaRecorder||!canvas.captureStream){setStatus(editorStatus,"Is browser mein export support nahi hai. Chrome mein page khol kar try karein.","err");return;}
   var mime=pickMime();if(!mime){setStatus(editorStatus,"Is phone par recording format support nahi mila. Chrome update karke try karein.","err");return;}
-  var total=0;clips.forEach(function(c){total+=Math.max(0.3,(c.trimEnd||c.duration||0)-(c.trimStart||0));});
+  var total=0;clips.forEach(function(c,i){total+=Math.max(0.3,(c.trimEnd||c.duration||0)-(c.trimStart||0));if(i>0)total+=(c.gapBefore||0);});
   var prevActive=activeClip;
   applyCanvasSize();state.exporting=true;state.playClipOnly=false;exportBtn.disabled=true;
   var wrap=$("exportProgressWrap"),prog=$("exportProgress"),estatus=$("exportStatus");wrap.classList.remove("hidden");prog.value=0;setStatus(estatus,"Join export shuru… "+clips.length+" clips jod rahe hain, page khula rakhein.");
@@ -1022,6 +1041,19 @@ function exportJoined(){
   function playNext(){
     if(finished)return;
     if(idx>=clips.length){finish();return;}
+    var c=clips[idx];var gap=(idx>0)?(c.gapBefore||0):0;
+    if(gap>0){
+      video.pause();
+      ctx.save();ctx.fillStyle="#000";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.restore();
+      setStatus(estatus,"Join ho raha hai… clip "+(idx+1)+"/"+clips.length+" se pehle "+fmt(gap)+" ka khali hissa (gap) record ho raha hai.");
+      elapsed+=gap;
+      setTimeout(function(){if(!finished)playClipNow();},gap*1000/Math.max(0.5,parseFloat($("speedSel").value)||1));
+      return;
+    }
+    playClipNow();
+  }
+  function playClipNow(){
+    if(finished)return;
     var c=clips[idx];var s=c.trimStart||0,e=c.trimEnd||c.duration||0;
     loadAndSeek(c,s,function(){
       if(finished)return;
@@ -1038,8 +1070,9 @@ function exportJoined(){
   playNext();
 }
 /* ===== Audio extract ===== */
-var audioRange="trim";
+var audioRange="trim";var noiseOn=false;
 document.querySelectorAll("[data-audiorange]").forEach(function(btn){btn.addEventListener("click",function(){document.querySelectorAll("[data-audiorange]").forEach(function(b){b.setAttribute("aria-pressed","false");});btn.setAttribute("aria-pressed","true");audioRange=btn.getAttribute("data-audiorange");});});
+$("noiseBtn").addEventListener("click",function(){noiseOn=!noiseOn;this.setAttribute("aria-pressed",String(noiseOn));this.textContent=noiseOn?"🔇 Shor Kam Karein (Noise Reduce): ON ✓":"🔇 Shor Kam Karein (Noise Reduce): OFF";setStatus($("audioStatus"),noiseOn?"Noise Reduce ON hai — ab jo audio file banegi (WAV button se ya timeline ke audio track se) us mein halka shor kam aur awaz saaf hogi.":"Noise Reduce OFF hai.","ok");});
 function wavBlobFromBuffer(buffer,startSec,endSec){
   var sr=buffer.sampleRate,start=Math.max(0,Math.floor(startSec*sr)),end=Math.min(buffer.length,Math.floor(endSec*sr)),len=Math.max(0,end-start),ch=Math.min(2,buffer.numberOfChannels);
   var bytes=44+len*ch*2,ab=new ArrayBuffer(bytes),v=new DataView(ab);
@@ -1049,21 +1082,53 @@ function wavBlobFromBuffer(buffer,startSec,endSec){
   var off=44;for(var i=0;i<len;i++){for(var c2=0;c2<ch;c2++){var s=Math.max(-1,Math.min(1,chans[c2][start+i]));v.setInt16(off,s<0?s*0x8000:s*0x7FFF,true);off+=2;}}
   return new Blob([ab],{type:"audio/wav"});
 }
+function softGate(buf){
+  var win=Math.max(256,Math.floor(buf.sampleRate*0.02));
+  for(var c=0;c<buf.numberOfChannels;c++){
+    var d=buf.getChannelData(c),g=1;
+    for(var i=0;i<d.length;i+=win){
+      var n=Math.min(win,d.length-i),sum=0,j;
+      for(j=0;j<n;j++){var v=d[i+j];sum+=v*v;}
+      var rms=Math.sqrt(sum/Math.max(1,n));
+      var target=rms<0.012?0.22:(rms<0.03?0.6:1);
+      for(j=0;j<n;j++){g+=(target-g)*0.3;d[i+j]*=g;}
+    }
+  }
+}
+function denoiseBuffer(buffer,s,e){
+  var sr=buffer.sampleRate,len=Math.max(1,Math.floor((e-s)*sr)),ch=Math.min(2,buffer.numberOfChannels);
+  var off=new OfflineAudioContext(ch,len,sr);
+  var src=off.createBufferSource();src.buffer=buffer;
+  var hp=off.createBiquadFilter();hp.type="highpass";hp.frequency.value=90;hp.Q.value=0.7;
+  var lp=off.createBiquadFilter();lp.type="lowpass";lp.frequency.value=9500;
+  var comp=off.createDynamicsCompressor();comp.threshold.value=-26;comp.knee.value=18;comp.ratio.value=5;comp.attack.value=0.004;comp.release.value=0.16;
+  src.connect(hp);hp.connect(lp);lp.connect(comp);comp.connect(off.destination);
+  src.start(0,s,Math.max(0.05,e-s));
+  return off.startRendering().then(function(rb){softGate(rb);return rb;});
+}
+function buildWavBlob(file,s,e,useNoise){
+  var AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC||!file)return Promise.reject(new Error("AudioContext nahi"));
+  var actx=new AC();
+  return file.arrayBuffer().then(function(ab){return actx.decodeAudioData(ab);}).then(function(buffer){
+    s=Math.max(0,s||0);e=(e&&e>0)?Math.min(buffer.duration,e):buffer.duration;
+    if(e-s<0.2){if(actx.close)actx.close();throw new Error("Audio ka hissa bohat chhota hai");}
+    if(useNoise&&window.OfflineAudioContext){
+      return denoiseBuffer(buffer,s,e).then(function(rb){var b=wavBlobFromBuffer(rb,0,rb.duration);if(actx.close)actx.close();return b;},function(){if(actx.close)actx.close();return wavBlobFromBuffer(buffer,s,e);});
+    }
+    var b=wavBlobFromBuffer(buffer,s,e);if(actx.close)actx.close();return b;
+  });
+}
 $("extractAudioBtn").addEventListener("click",function(){
   var c=clips[activeClip];var astatus=$("audioStatus");
   if(!c||!c.file){setStatus(astatus,"Pehle upar Media se video / clip load karein.","err");return;}
-  var btn=this;btn.disabled=true;setStatus(astatus,"Audio bann raha hai… video decode ho rahi hai, chand second lagein ge.");
-  var AC=window.AudioContext||window.webkitAudioContext;if(!AC){setStatus(astatus,"Is browser mein AudioContext nahi — neeche wala WebM tareeqa try karein.","err");btn.disabled=false;return;}
-  var actx=new AC();
-  c.file.arrayBuffer().then(function(ab){return actx.decodeAudioData(ab);}).then(function(buffer){
+  var btn=this;btn.disabled=true;setStatus(astatus,noiseOn?"Audio bann raha hai — shor bhi kam ho raha hai, chand second lagein ge.":"Audio bann raha hai… video decode ho rahi hai, chand second lagein ge.");
+  var s=audioRange==="trim"?(c.trimStart||0):0,e=audioRange==="trim"?(c.trimEnd||0):0;
+  buildWavBlob(c.file,s,e,noiseOn).then(function(blob){
     btn.disabled=false;
-    var s=audioRange==="trim"?(c.trimStart||0):0,e=audioRange==="trim"?(c.trimEnd||buffer.duration):buffer.duration;
-    if(e-s<0.3){setStatus(astatus,"Audio ka hissa bohat chhota hai — trim barha kar try karein.","err");return;}
-    var blob=wavBlobFromBuffer(buffer,s,e);
     var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(c.name.replace(/\.[^.]+$/,"")||"audio")+"-audio.wav";document.body.appendChild(a);a.click();a.remove();
-    setStatus(astatus,"Ho gaya! Audio file download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, WAV, "+fmt(e-s)+").","ok");
-    if(actx.close)actx.close();
-  }).catch(function(err){btn.disabled=false;setStatus(astatus,"WAV nahi bann saka ("+err.message+") — neeche wala “Live Record” tareeqa try karein.","err");if(actx.close)actx.close();});
+    setStatus(astatus,"Ho gaya! Audio file download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, WAV"+(noiseOn?", shor kam karke":"")+").","ok");
+  }).catch(function(err){btn.disabled=false;setStatus(astatus,"WAV nahi bann saka ("+err.message+") — neeche wala “Live Record” tareeqa try karein.","err");});
 });
 $("extractAudioRecBtn").addEventListener("click",function(){
   var astatus=$("audioStatus");
@@ -1180,8 +1245,9 @@ var origMuted=false;
 
 function clips(){return E.clips();}
 function cDur(c){return Math.max(0,((c.trimEnd||c.duration||0)-(c.trimStart||0)));}
-function total(){var t=0;clips().forEach(function(c){t+=cDur(c);});return t;}
-function offsetOf(i){var t=0;for(var k=0;k<i;k++)t+=cDur(clips()[k]);return t;}
+function gapOf(c,i){return i>0?Math.max(0,c.gapBefore||0):0;}
+function total(){var t=0;clips().forEach(function(c,i){t+=cDur(c)+gapOf(c,i);});return t;}
+function offsetOf(i){var cs=clips(),t=0;for(var k=0;k<i;k++)t+=cDur(cs[k]);for(var k=1;k<=i;k++)t+=gapOf(cs[k],k);return t;}
 function projectTime(){
   var cs=clips(),ai=E.active(); if(!cs.length||ai<0)return 0;
   var c=cs[ai]; if(!c)return 0;
@@ -1191,7 +1257,11 @@ function projectTime(){
 function fmt(t){return E.fmt(t);}
 function locate(pt){
   var cs=clips(),acc=0;
-  for(var i=0;i<cs.length;i++){var d=cDur(cs[i]);if(pt<acc+d||i===cs.length-1)return{index:i,source:(cs[i].trimStart||0)+Math.min(d,Math.max(0,pt-acc))};acc+=d;}
+  for(var i=0;i<cs.length;i++){
+    var g=gapOf(cs[i],i);
+    if(g>0){if(pt<acc+g)return{index:i,source:cs[i].trimStart||0};acc+=g;}
+    var d=cDur(cs[i]);if(pt<acc+d||i===cs.length-1)return{index:i,source:(cs[i].trimStart||0)+Math.min(d,Math.max(0,pt-acc))};acc+=d;
+  }
   return null;
 }
 var pendingSeek=null;
@@ -1223,9 +1293,11 @@ function render(){
     b.style.left=(offsetOf(i)*pxPerSec)+"px";b.style.width=Math.max(26,cDur(c)*pxPerSec)+"px";
     b.innerHTML="";var nm=document.createElement("span");nm.textContent=(i+1)+". "+c.name;b.appendChild(nm);
     var sm=document.createElement("small");sm.textContent=fmt(cDur(c));b.appendChild(sm);
-    if(sel&&sel.type==="video"&&sel.index===i){b.appendChild(mkHandle("l",i));b.appendChild(mkHandle("r",i));}
-    b.addEventListener("pointerdown",function(ev){if(ev.target.classList.contains("tl-handle"))return;sel={type:"video",index:i};if(i!==E.active())E.loadClip(i);render();renderContext();});
+    if(sel&&sel.type==="video"&&sel.index===i){b.appendChild(mkHandle("l",c,"video"));b.appendChild(mkHandle("r",c,"video"));}
+    b.addEventListener("pointerdown",function(ev){if(ev.target.classList.contains("tl-handle"))return;sel={type:"video",index:i};if(i!==E.active())E.loadClip(i);render();renderContext();var fresh=laneV.querySelectorAll(".tl-block")[i];if(fresh)startVideoDrag(ev,i,fresh);});
     laneV.appendChild(b);
+    var gv=gapOf(c,i);
+    if(gv>0){var gd=document.createElement("div");gd.className="tl-gap";gd.style.left=((offsetOf(i)-gv)*pxPerSec)+"px";gd.style.width=Math.max(10,gv*pxPerSec)+"px";var gsp=document.createElement("span");gsp.textContent="gap "+fmt(gv);gd.appendChild(gsp);laneV.appendChild(gd);}
   });
   /* audio blocks */
   laneA.innerHTML="";
@@ -1263,7 +1335,7 @@ function syncTrimInputs(c){
 function startHandleDrag(ev,side,item,kind){
   var startX=ev.clientX;
   var orig=(kind==="video")?{trimStart:item.trimStart||0,trimEnd:item.trimEnd||item.duration||0,dur:item.duration||0}
-    :(kind==="audio")?{start:item.start,dur:item.dur}
+    :(kind==="audio")?{start:item.start,dur:item.dur,srcStart:item.srcStart||0}
     :{start:item.start,end:item.end};
   function move(e){
     var dt=(e.clientX-startX)/pxPerSec;
@@ -1272,7 +1344,7 @@ function startHandleDrag(ev,side,item,kind){
       else item.trimEnd=Math.max(orig.trimStart+0.3,Math.min(orig.dur,orig.trimEnd+dt));
       var idx=clips().indexOf(item); if(idx===E.active())syncTrimInputs(item);
     }else if(kind==="audio"){
-      if(side==="l"){var nd=Math.max(0.3,orig.dur-dt);item.start=orig.start+(orig.dur-nd);item.dur=nd;}
+      if(side==="l"){var nd=Math.max(0.3,orig.dur-dt);item.start=orig.start+(orig.dur-nd);item.dur=nd;item.srcStart=orig.srcStart+(orig.dur-nd);}
       else item.dur=Math.max(0.3,orig.dur+dt);
     }else{
       if(side==="l")item.start=Math.min(orig.end-0.3,Math.max(0,orig.start+dt));
@@ -1287,6 +1359,41 @@ function startMoveDrag(ev,el,item,kind){
   var startX=ev.clientX,startPos=item.start,moved=false;
   function move(e){var dt=(e.clientX-startX)/pxPerSec;if(Math.abs(dt)>0.05)moved=true;var len=(kind==="audio")?item.dur:(item.end-item.start);var ns=Math.max(0,Math.min(Math.max(0,total()-len),startPos+dt));if(kind==="audio")item.start=ns;else{item.end=ns+len;item.start=ns;}render();}
   function up(){window.removeEventListener("pointermove",move);window.removeEventListener("pointerup",up);if(moved)renderContext();}
+  window.addEventListener("pointermove",move);window.addEventListener("pointerup",up);
+}
+function moveClip(i,dir){
+  var cs=clips();var j=i+dir;if(i<0||j<0||j>=cs.length)return;
+  var ac=cs[E.active()];
+  var t=cs[i];cs[i]=cs[j];cs[j]=t;
+  sel={type:"video",index:j};
+  E.renderList();
+  var nai=cs.indexOf(ac);if(nai>=0&&nai!==E.active())E.loadClip(nai);
+  render();renderContext();
+  setStatus("Clip "+(j+1)+" number par chala gaya — clips ki tartib badal gayi.","ok");
+}
+function startVideoDrag(ev,idx,el){
+  var startX=ev.clientX,dx=0,moved=false;
+  function move(e){
+    dx=e.clientX-startX;
+    if(Math.abs(dx)>6){moved=true;el.classList.add("dragging");el.style.transform="translateX("+dx+"px)";}
+  }
+  function up(){
+    window.removeEventListener("pointermove",move);window.removeEventListener("pointerup",up);
+    el.classList.remove("dragging");el.style.transform="";
+    if(!moved)return;
+    var cs=clips();var c=cs[idx];if(!c){render();return;}
+    var center=offsetOf(idx)+cDur(c)/2+dx/pxPerSec;
+    var acc=0,target=cs.length-1;
+    for(var k=0;k<cs.length;k++){acc+=gapOf(cs[k],k);var d=cDur(cs[k]);if(center<acc+d||k===cs.length-1){target=k;break;}acc+=d;}
+    if(target===idx){render();return;}
+    var ac=cs[E.active()];
+    var it=cs.splice(idx,1)[0];cs.splice(target,0,it);
+    sel={type:"video",index:target};
+    E.renderList();
+    var nai=cs.indexOf(ac);if(nai>=0&&nai!==E.active())E.loadClip(nai);
+    render();renderContext();
+    setStatus("Clip drag karke "+(target+1)+" number par le jaya gaya — clips ki tartib badal gayi.","ok");
+  }
   window.addEventListener("pointermove",move);window.addEventListener("pointerup",up);
 }
 
@@ -1343,6 +1450,12 @@ function renderContext(){
     box.appendChild(ctxBtn("⏮ Trim Left (Playhead Tak)",function(){trimToPlayhead("l");}));
     box.appendChild(ctxBtn("Trim Right (Playhead Tak) ⏭",function(){trimToPlayhead("r");}));
     box.appendChild(ctxBtn("⧉ Duplicate",doDuplicate));
+    box.appendChild(ctxBtn("⬅ Pehle Le Jayein",function(){moveClip(sel.index,-1);}));
+    box.appendChild(ctxBtn("Baad Mein Le Jayein ➡",function(){moveClip(sel.index,1);}));
+    if(sel.index>0){
+      box.appendChild(ctxBtn("⏸ Gap −1s (Ab "+fmt(c.gapBefore||0)+")",function(){c.gapBefore=Math.max(0,(c.gapBefore||0)-1);render();renderContext();setStatus("Is clip se pehle ka khali hissa (gap): "+fmt(c.gapBefore||0)+" — export mein ye hissa kali screen ke tor par aayega.","ok");}));
+      box.appendChild(ctxBtn("⏸ Gap +1s",function(){c.gapBefore=Math.min(15,(c.gapBefore||0)+1);render();renderContext();setStatus("Is clip se pehle ka khali hissa (gap): "+fmt(c.gapBefore||0)+" — export mein ye hissa kali screen ke tor par aayega.","ok");}));
+    }
     box.appendChild(ctxBtn("🎧 Audio Alag (Track)",doExtractAudio));
     box.appendChild(ctxBtn("🗑 Delete (Gap Band Ho Jayega)",doDeleteVideo));
     return;
@@ -1351,8 +1464,9 @@ function renderContext(){
     var a=audios.filter(function(x){return x.id===sel.id;})[0];if(!a){sel=null;renderContext();return;}
     label("Audio select hai — "+a.name);
     box.appendChild(ctxBtn(origMuted?"🔊 Original Sound ON Karein":"🔇 Original Sound Mute Karein",function(){origMuted=!origMuted;video.muted=origMuted;setStatus(origMuted?"Original video ki awaz mute hai — sirf alag audio track sunai dega.":"Original sound wapas ON hai.","ok");renderContext();}));
+    if(a.srcFile)box.appendChild(ctxBtn("⬇ Ye Audio Download Karein (WAV)",function(){downloadTrackAudio(a);},true));
     box.appendChild(ctxBtn("🗑 Audio Track Delete",function(){audios=audios.filter(function(x){return x.id!==a.id;});sel=null;render();renderContext();}));
-    var hint=document.createElement("span");hint.className="hint";hint.style.margin="0";hint.textContent="Is audio ko WAV file mein download karna ho to neeche Audio tab mein “Audio File Banayein” use karein — wahi trim wahan bhi lagta hai.";box.appendChild(hint);
+    var hint=document.createElement("span");hint.className="hint";hint.style.margin="0";hint.textContent="Kinare kheench kar is track ko trim karein, drag karke jagah badlein. Download button se yehi hissa WAV file mein download ho jayega — Audio tab mein Noise Reduce ON ho to shor bhi kam hoga.";box.appendChild(hint);
     return;
   }
   if(sel.type==="overlay"){
@@ -1405,13 +1519,22 @@ function doDeleteVideo(){
   if(cs.length)E.loadClip(Math.min(i,cs.length-1));
   render();renderContext();setStatus("Clip delete ho gaya — baqi clips jud kar gap band ho gaya (ripple).","ok");
 }
+function downloadTrackAudio(a){
+  if(!a.srcFile||!E.buildWav){setStatus("Is track ki asal file nahi mili — Audio tab se WAV banayein.","err");return;}
+  setStatus("Audio file bann rahi hai… chand second lagein ge.");
+  var useNoise=!!(E.noiseOn&&E.noiseOn());
+  E.buildWav(a.srcFile,a.srcStart||0,(a.srcStart||0)+Math.max(0.3,a.dur),useNoise).then(function(blob){
+    var link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download=((a.name.replace(/[^\w\- ]+/g,"").trim().slice(0,40))||"audio")+".wav";document.body.appendChild(link);link.click();link.remove();
+    setStatus("Ho gaya! Audio download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, WAV"+(useNoise?", shor kam karke":"")+").","ok");
+  }).catch(function(err){setStatus("Audio download nahi ho saka ("+err.message+").","err");});
+}
 function doExtractAudio(){
   var cs=clips();var i=(sel&&sel.type==="video")?sel.index:E.active();
   var c=cs[i];if(!c){setStatus("Pehle koi clip select karein.","err");return;}
-  audios.push({id:uid++,name:c.name.replace(/\.[^.]+$/,"")+" (audio)",start:offsetOf(i),dur:cDur(c),fromClip:i});
+  audios.push({id:uid++,name:c.name.replace(/\.[^.]+$/,"")+" (audio)",start:offsetOf(i),dur:cDur(c),fromClip:i,srcFile:c.file,srcStart:c.trimStart||0});
   sel={type:"audio",id:uid-1};
   render();renderContext();
-  setStatus("Audio alag track mein aa gaya — ab ye video se alag trim / move ho sakta hai. File download karni ho to Audio tab se WAV banayein; original sound mute karna ho to audio select karke Mute button use karein.","ok");
+  setStatus("Audio alag track mein aa gaya — ab ye video se alag trim / move ho sakta hai, aur “⬇ Ye Audio Download Karein (WAV)” button se is ki file bhi download ho jayegi. Original sound mute karna ho to Mute button use karein.","ok");
   if(window.__switchView&&false)window.__switchView("audio");
 }
 
@@ -1423,8 +1546,8 @@ $("tlKeepBtn").addEventListener("click",function(){
   var a=(inPt===null)?0:inPt,b=(outPt===null)?total():outPt;
   if(b-a<0.3){setStatus("In aur Out mein kam az kam 1 second ka farq rakhein.","err");return;}
   var acc=0,keep=[];
-  cs.forEach(function(c){
-    var d=cDur(c),s=acc,e=acc+d;acc=e;
+  cs.forEach(function(c,i){
+    var segStart=acc+gapOf(c,i),d=cDur(c),s=segStart,e=segStart+d;acc=e;
     var os=Math.max(a,s),oe=Math.min(b,e);
     if(oe-os>=0.2){
       var nc={file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:(c.trimStart||0)+(os-s),trimEnd:(c.trimStart||0)+(oe-s)};
@@ -1442,7 +1565,7 @@ $("tlAudioInput").addEventListener("change",function(ev){
   var f=ev.target.files&&ev.target.files[0];ev.target.value="";if(!f)return;
   var url=URL.createObjectURL(f);var au=new Audio();au.preload="metadata";au.src=url;
   au.addEventListener("loadedmetadata",function(){
-    audios.push({id:uid++,name:f.name,start:projectTime(),dur:au.duration||5,file:true});
+    audios.push({id:uid++,name:f.name,start:projectTime(),dur:au.duration||5,file:true,srcFile:f,srcStart:0});
     sel={type:"audio",id:uid-1};render();renderContext();
     setStatus("Audio timeline mein add ho gaya ("+fmt(au.duration||5)+") — use drag karke jagah badal sakte hain, kinare kheench kar trim kar sakte hain.","ok");
   },{once:true});
@@ -1473,7 +1596,7 @@ window.__drawOverlays=function(ctx,W,H){
 
 /* ---------- keep timeline in sync ---------- */
 var lastSig="";
-function sig(){var s=clips().length+"|"+E.active()+"|";clips().forEach(function(c){s+=(c.trimStart||0).toFixed(2)+"-"+(c.trimEnd||0).toFixed(2)+",";});return s;}
+function sig(){var s=clips().length+"|"+E.active()+"|";clips().forEach(function(c){s+=(c.trimStart||0).toFixed(2)+"-"+(c.trimEnd||0).toFixed(2)+"/"+(c.duration||0).toFixed(1)+"g"+(c.gapBefore||0)+",";});return s;}
 function loopSync(){
   var s=sig();
   if(s!==lastSig){lastSig=s;render();renderContext();}
