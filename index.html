@@ -390,6 +390,28 @@ ol.steps li{color:#d8e1ee}
   .frame-label{margin-bottom:6px}
 }
 </style>
+<style>
+/* ===== ASAN CUT — 3 Steps wala khana (bachon ke liye saaf aur bara) ===== */
+.cut-box{border:2px solid var(--gold);background:linear-gradient(180deg,rgba(243,201,75,.10),rgba(243,201,75,.03));padding:14px}
+.cut-box .label{color:var(--gold);font-size:13px}
+.cut-intro{font-size:14.5px;color:var(--text);line-height:1.6;margin:0 0 4px}
+.cut-step{border:1.5px solid var(--border2);background:var(--panel3);border-radius:12px;padding:12px;margin-top:10px}
+.cut-step.done{border-color:var(--green);background:rgba(34,197,94,.10)}
+.cut-step.ready{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.cut-step-head{display:flex;gap:10px;align-items:flex-start}
+.step-num{flex:none;width:34px;height:34px;border-radius:50%;background:var(--cyan);color:#06202a;font-weight:800;font-size:17px;display:flex;align-items:center;justify-content:center}
+.cut-step.done .step-num{background:var(--green);color:#04150a}
+.cut-step-head b{font-size:15.5px;display:block;line-height:1.35}
+.cut-step-head span{font-size:13px;color:var(--muted);display:block;margin-top:2px;line-height:1.45}
+.cut-btn{width:100%;min-height:58px;font-size:16px;font-weight:800;margin-top:10px;border-radius:12px}
+.cut-range{margin:12px 0 0;background:#141a26;border:1.5px dashed var(--border2);border-radius:10px;padding:11px 12px;font-size:15px;font-weight:700;color:var(--text);text-align:center;line-height:1.5}
+.cut-range.ok{border-style:solid;border-color:var(--green);color:#bbf7d0}
+.cut-preview{width:100%;min-height:52px;margin-top:10px;border-color:var(--cyan);color:#a5f3fc;font-weight:700;font-size:15px}
+.cut-example{font-size:13.5px;color:var(--muted);line-height:1.6;margin:12px 0 0;background:rgba(34,211,238,.07);border:1px solid rgba(34,211,238,.3);border-radius:10px;padding:10px 12px}
+.cut-example b{color:var(--text)}
+.fine-box{margin-top:14px;border:1px solid var(--border2);background:var(--panel2);border-radius:10px;padding:12px}
+.slider-big-label{display:block;font-size:13px;font-weight:800;letter-spacing:.05em;color:var(--text);margin-bottom:2px}
+</style>
 </head>
 <body>
 
@@ -632,38 +654,50 @@ ol.steps li{color:#d8e1ee}
       <div class="tl-context" id="tlContext" aria-label="Timeline tools"></div>
       <input class="hidden" type="file" id="tlAudioInput" accept="audio/*"/>
       <input class="hidden" type="file" id="tlLogoInput" accept="image/*"/>
-      <div class="tl-extract">
-        <span class="label" style="margin-top:0">✂️ Bari Video Se Chhota Clip Nikalein — Asan Tareeqa</span>
-        <p class="hint" style="margin:0 0 8px">Playhead ko clip ke <b style="color:var(--text)">start</b> par le ja kar In dabayein, phir <b style="color:var(--text)">end</b> par le ja kar Out dabayein, phir “Sirf Ye Hissa Rakhein” — baqi sab kat jayega, sirf wahi hissa reh jayega (professional tareeqa: do jagah split + baqi delete, ye button wahi kaam aik tap mein karta hai).</p>
-        <div class="row">
-          <button class="btn small" id="tlInBtn" type="button">⏮ In Point — <span id="tlInLabel">–</span></button>
-          <button class="btn small" id="tlOutBtn" type="button">Out Point ⏭ — <span id="tlOutLabel">–</span></button>
-          <button class="btn small gold" id="tlKeepBtn" type="button">✂️ Sirf Ye Hissa Rakhein</button>
+      <div class="tl-extract cut-box">
+        <span class="label" style="margin-top:0">✂️ Video Kaato — Chhota Clip Banao (Sirf 3 Asan Steps)</span>
+        <p class="cut-intro">Bari video mein se sirf <b>acha wala hissa</b> rakhna hai? Bas ye 3 kaam bari bari karo — pehle Step 1, phir Step 2, phir Step 3. Is ke ilawa kuch dabane ki zaroorat nahi.</p>
+        <div class="cut-step" id="cutStep1">
+          <div class="cut-step-head"><span class="step-num" aria-hidden="true">1</span><div><b>Video chalao — jahan se clip SHURU karna hai, wahan roko</b><span>Upar wala ▶ Play dabao. Acha hissa jahan se shuru hota hai, video wahan rok (pause) kar neeche wala button dabao.</span></div></div>
+          <button class="btn cut-btn" id="tlInBtn" type="button">🟢 Yahan Se Shuru Karo — <span id="tlInLabel">–</span></button>
+        </div>
+        <div class="cut-step" id="cutStep2">
+          <div class="cut-step-head"><span class="step-num" aria-hidden="true">2</span><div><b>Phir video aagay chalao — jahan clip KHATAM karna hai, wahan roko</b><span>Acha hissa jahan khatam hota hai, video wahan rok kar ye button dabao.</span></div></div>
+          <button class="btn cut-btn" id="tlOutBtn" type="button">🔴 Yahan Khatam Karo — <span id="tlOutLabel">–</span></button>
+        </div>
+        <p class="cut-range" id="cutRangeInfo" role="status">Abhi koi hissa nahi chuna — pehle Step 1 dabao.</p>
+        <button class="btn cut-preview" id="previewClipBtn" type="button">▶ Pehle Ye Hissa Chala Kar Dekh Lo — ye kaatega NAHI, sirf dikhayega</button>
+        <div class="cut-step" id="cutStep3">
+          <div class="cut-step-head"><span class="step-num" aria-hidden="true">3</span><div><b>Ab kaat do!</b><span>Upar chuna hua hissa reh jayega, baqi sab kat jayega. Kaatne se pehle upar “Dekh Lo” wala button dabakar check kar lo.</span></div></div>
+          <button class="btn gold cut-btn" id="tlKeepBtn" type="button">✂️ Kaat Do — Sirf Ye Hissa Rakho</button>
         </div>
         <p class="status" id="tlStatus" role="status"></p>
+        <p class="cut-example"><b>Asan misal:</b> Video 10 minute ki hai aur tumhe sirf beech wala 1 minute chahiye — video chala kar us hisse ke <b>shuru</b> par rok kar Step 1 dabao, hisse ke <b>aakhir</b> par rok kar Step 2 dabao, phir Step 3 “Kaat Do”. Bas! Aur fikar na karo: <b>phone mein rakhi asal video file waisi ki waisi rehti hai</b> — galti ho jaye to wahi video dobara import kar lo.</p>
       </div>
       <div class="track-visual" aria-hidden="true" style="display:none"><div class="track-bar"></div></div>
-      <div class="row" style="align-items:start">
-        <div>
-          <label for="trimStart" style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">▶ Start</label>
-          <input type="range" id="trimStart" min="0" max="0" step="0.1" value="0"/>
+      <div class="fine-box">
+        <span class="label" style="margin-top:0">🎚 Sliders — Thora Sa Aage / Peeche Theek Karna Ho To</span>
+        <p class="hint" style="margin:0 0 8px">Ye do lambi lines (sliders) sirf <b style="color:var(--text)">select ki hui aik clip</b> ke liye hain: pehli line ungli se kheenchna = clip kahan se <b style="color:var(--text)">shuru</b> ho, doosri line = kahan <b style="color:var(--text)">khatam</b> ho. Aam taur par in ki zaroorat nahi parti — upar wale <b style="color:var(--text)">3 Steps</b> hi kafi hain.</p>
+        <div class="row" style="align-items:start">
+          <div>
+            <label for="trimStart" class="slider-big-label">🟢 SHURU — clip yahan se chalegi</label>
+            <input type="range" id="trimStart" min="0" max="0" step="0.1" value="0"/>
+          </div>
+          <div>
+            <label for="trimEnd" class="slider-big-label">🔴 KHATAM — clip yahan rukegi</label>
+            <input type="range" id="trimEnd" min="0" max="0" step="0.1" value="0"/>
+          </div>
         </div>
-        <div>
-          <label for="trimEnd" style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">End ◀</label>
-          <input type="range" id="trimEnd" min="0" max="0" step="0.1" value="0"/>
+        <div class="trim-readout" style="margin-top:8px">
+          <span>✂️ Chuna hua hissa: <b><span id="clipLen">0.0</span> sec</b></span>
+          <span><span id="trimStartLabel">0:00</span> → <span id="trimEndLabel">0:00</span></span>
+        </div>
+        <div class="hidden" aria-hidden="true">
+          <button id="setStartBtn" type="button">Playhead se Start</button>
+          <button id="setEndBtn" type="button">Playhead par End</button>
         </div>
       </div>
-      <div class="trim-readout" style="margin-top:8px">
-        <span>Is hisse ki lambai: <b><span id="clipLen">0.0</span> sec</b></span>
-        <span><span id="trimStartLabel">0:00</span> → <span id="trimEndLabel">0:00</span></span>
-      </div>
-      <div class="row" style="margin-top:10px">
-        <button class="btn small" id="setStartBtn" type="button">⌖ Playhead se Start</button>
-        <button class="btn small" id="setEndBtn" type="button">⌖ Playhead par End</button>
-        <button class="btn small" id="previewClipBtn" type="button" style="border-color:var(--cyan);color:#a5f3fc">▶ Sirf Clip Chalayein</button>
-      </div>
-      <p class="hint">Misal: 10 minute ki tilawat mein se behtareen 50 second ka Short banana ho to Start / End wahi rakhein.</p>
-      <p class="hint" style="margin-top:4px"><b style="color:var(--text)">Kai clips jodna:</b> upar Media mein kai clips aik sath select karein — har clip ko bari bari select karke us ka apna Start/End set karein, timeline mein clip ko drag karke ya ↑ ↓ se tartib badlein. Phir upar wala bara <b style="color:#86efac">Export Video</b> button sab clips ko usi tartib mein jod kar <b>aik hi video</b> bana dega.</p>
+      <p class="hint" style="margin-top:10px"><b style="color:var(--text)">Kai clips jodna:</b> upar Media mein kai clips aik sath select karein — har clip ko bari bari select karke upar wale 3 Steps ya sliders se us ka hissa set karein, timeline mein clip ko drag karke ya ↑ ↓ se tartib badlein. Phir upar wala bara <b style="color:#86efac">Export Video</b> button sab clips ko usi tartib mein jod kar <b>aik hi video</b> bana dega.</p>
     </div>
   </section>
 
@@ -810,6 +844,7 @@ ol.steps li{color:#d8e1ee}
           <dt>Lambi video?</dt><dd>1–3 minute ki clips sab se smooth chalti hain. Lambi tilawat se Shorts ke chhote hisse trim karein.</dd>
           <dt>Screen size / frame kahan hai — Short, TikTok ya long video?</dt><dd>Preview ke bilkul neeche bara <b>“📐 Screen Size / Frame”</b> bar hai (Editor → Media panel mein bhi wahi option hai): <b>9:16</b> = Shorts / TikTok / Reels (vertical), <b>16:9</b> = long video / YouTube (horizontal), <b>1:1</b> = square post, <b>4:5</b> = portrait post, <b>Original</b> = video jaisi hai waisi. Agar video frame se size mein mukhtalif ho aur side se kat rahi ho to usi bar mein <b>“Pura Video Dikhe”</b> chunein — kuch nahi katega, peeche dhundla background aa jayega. Chuna hua size Export par bhi wahi lagega.</dd>
           <dt>Timeline (edit bar) aagay nazar nahi aati / scroll nahi hoti?</dt><dd>Bar par ungli rakh kar left/right slide karein — timeline scroll ho jayegi; ya timeline ke upar wale ◀ Peeche / Aagay ▶ buttons dabayein. Video chalte waqt bar khud playhead ke sath aagay barhti rehti hai, is liye agla hissa chop nahi hota. Poori video aik screen par dekhni ho to “Fit” dabayein.</dd>
+          <dt>Video kaat kar chhota clip banana — sab se asan tareeqa?</dt><dd>Editor → Trim mein neeche sunehri frame wala “✂️ Video Kaato — Sirf 3 Asan Steps” khana hai. <b>Step 1:</b> video chala kar jahan se clip shuru karna hai wahan rokein aur “🟢 Yahan Se Shuru Karo” dabayein. <b>Step 2:</b> jahan khatam karna hai wahan rokein aur “🔴 Yahan Khatam Karo” dabayein — neeche wali line mein chune hue hisse ka time nazar aayega. <b>Step 3:</b> “✂️ Kaat Do” dabayein — baqi sab kat jayega, sirf wahi hissa reh jayega. Kaatne se pehle “▶ Pehle Ye Hissa Chala Kar Dekh Lo” se check bhi kar sakte hain (wo kaatega nahi, sirf dikhayega). Phone mein rakhi asal video file waisi hi rehti hai — galti ho jaye to dobara import kar lein. Neeche wale sliders sirf thora sa aage/peeche theek karne ke liye hain, aam taur par un ki zaroorat nahi.</dd>
           <dt>Kai clips aik video mein?</dt><dd>Import mein kai clips aik sath chunein — har clip ki asal lambai khud pehchan li jati hai, is liye timeline mein sab clips apni sahi jagah par barabar nazar aate hain. Har clip ka apna trim set karein, timeline mein clip ko drag karke ya Media list ke ↑ ↓ se tartib rakhein — Export sab ko jod kar aik video bana dega. Do clips ke darmiyan khali hissa (gap) chahiye to clip select karke “Gap +1s” dabayein.</dd>
           <dt>Audio alag kaise?</dt><dd>“Audio Alag Karein” hisse se trim wala hissa ya poori video ki awaz WAV file mein download ho jati hai. Timeline mein “Audio Alag (Track)” karein to audio alag track ban jata hai — usay select karke “⬇ Ye Audio Download Karein (WAV)” se wahi hissa file mein bhi mil jata hai.</dd>
           <dt>Teeno / sab videos ki AIK hi audio?</dt><dd>Audio hisse mein “Sab Clips Ki AIK Audio Banayein (WAV)” dabayein — timeline ki sab clips aik hi audio file mein tartib se jud jati hain (har clip ka trim wala hissa). Timeline ke project tools mein “Sab Clips Ki Aik Audio (Track)” se wahi cheez aik combined track ki surat mein bhi banti hai, wahan se bhi WAV download ho jata hai.</dd>
@@ -1994,6 +2029,39 @@ vBtn.addEventListener("click",function(){
   setTimeout(function(){var eb=$("exportBtn");if(eb&&!eb.disabled)eb.click();},120);
 });
 refresh();setInterval(refresh,700);
+})();
+</script>
+
+<script>
+/* ===== ASAN CUT — 3 Steps ki madad: Step 1/2 dabane par clip ke Start/End
+   sliders bhi sath set ho jate hain (taake "Dekh Lo" wala preview bhi wahi
+   hissa dikhaye), aur neeche wali line mein saaf alfaz mein hisse ka time
+   aur agli hidayat nazar aati hai. ===== */
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id);};
+var inBtn=$("tlInBtn"),outBtn=$("tlOutBtn"),inL=$("tlInLabel"),outL=$("tlOutLabel");
+var info=$("cutRangeInfo"),s1=$("cutStep1"),s2=$("cutStep2"),s3=$("cutStep3");
+if(!inBtn||!outBtn||!info)return;
+inBtn.addEventListener("click",function(){var b=$("setStartBtn");if(b)b.click();});
+outBtn.addEventListener("click",function(){var b=$("setEndBtn");if(b)b.click();});
+function parse(t){if(!t)return null;t=String(t).trim();if(!t||t==="–"||t==="-")return null;var p=t.split(":");if(p.length!==2)return null;var m=parseInt(p[0],10),s=parseInt(p[1],10);if(isNaN(m)||isNaN(s))return null;return m*60+s;}
+function fmt(sec){sec=Math.max(0,Math.round(sec));var m=Math.floor(sec/60),s=sec%60;return m+":"+(s<10?"0":"")+s;}
+function refresh(){
+  var a=parse(inL?inL.textContent:""),b=parse(outL?outL.textContent:"");
+  if(s1)s1.classList.toggle("done",a!==null);
+  if(s2)s2.classList.toggle("done",b!==null);
+  if(s3)s3.classList.toggle("ready",a!==null&&b!==null&&b-a>=0.3);
+  info.classList.remove("ok");
+  if(a!==null&&b!==null){
+    if(b-a>=0.3){info.textContent="✔ Hissa tayyar hai: "+fmt(a)+" se "+fmt(b)+" tak — kul "+fmt(b-a)+" ("+Math.round(b-a)+" second). Pehle “Dekh Lo” dabao, phir Step 3 “Kaat Do”!";info.classList.add("ok");}
+    else info.textContent="⚠ Khatam wala time Shuru wale se peeche hai — video ko Shuru se aagay le ja kar Step 2 dobara dabao.";
+  }
+  else if(a!==null)info.textContent="🟢 Shuru lag gaya: "+fmt(a)+" — ab video ko aagay chala kar jahan hissa khatam karna hai wahan roko aur Step 2 dabao.";
+  else if(b!==null)info.textContent="🔴 Khatam lag gaya: "+fmt(b)+" — ab video ko us se peeche le ja kar Step 1 dabao (shuru wala time khatam se pehle hona chahiye).";
+  else info.textContent="Abhi koi hissa nahi chuna — pehle Step 1 dabao.";
+}
+refresh();setInterval(refresh,500);
 })();
 </script>
 </body>
