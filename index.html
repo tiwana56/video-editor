@@ -471,6 +471,25 @@ ol.steps li{color:#d8e1ee}
 .jadoo details p,.jadoo details li{font-size:13px;color:#ddd2b2;line-height:1.65}
 .jadoo .vo-grid2{display:grid;grid-template-columns:1fr;gap:10px}
 @media(min-width:640px){.jadoo .vo-grid2{grid-template-columns:1fr 1fr}}
+/* ===== CAPTION VIDEO (تجرباتی — OPTIONAL, default OFF) ===== */
+.cap-toggle-wrap{display:flex;align-items:center;gap:14px;width:100%;min-height:68px;padding:12px 14px;border:2px solid var(--jgold);border-radius:14px;background:rgba(0,0,0,.35);cursor:pointer}
+.cap-toggle-wrap input{position:absolute;opacity:0;width:1px;height:1px}
+.cap-track{flex:none;width:74px;height:40px;border-radius:999px;background:#3f3f46;border:2px solid rgba(255,255,255,.35);position:relative;transition:background .2s}
+.cap-track::after{content:"";position:absolute;top:3px;inset-inline-start:4px;width:30px;height:30px;border-radius:50%;background:#fff;transition:transform .2s}
+.cap-toggle-wrap input:checked + .cap-track{background:var(--green-d)}
+.cap-toggle-wrap input:checked + .cap-track::after{transform:translateX(-34px)}
+.cap-toggle-wrap input:focus-visible + .cap-track{outline:3px solid var(--jgold2);outline-offset:2px}
+.cap-toggle-text{flex:1;min-width:0}
+.cap-toggle-text b{display:block;font-size:17px;color:#fff;line-height:1.4}
+.cap-toggle-text span{font-size:13px;color:#ddd2b2;line-height:1.5;display:block}
+.cap-state{flex:none;font-weight:800;font-size:14px;padding:8px 14px;border-radius:999px;background:#3f3f46;color:#fff;border:1px solid rgba(255,255,255,.35)}
+.cap-toggle-wrap input:checked ~ .cap-state{background:var(--green-d)}
+#capCanvas{display:block;margin:12px auto 0;width:min(300px,86vw);aspect-ratio:9/16;height:auto;background:#04150d;border:1.5px solid rgba(201,162,39,.7);border-radius:14px}
+.jadoo .cap-seg{display:flex;flex-wrap:wrap;gap:7px}
+.jadoo .cap-seg button{flex:1 1 100px;min-height:54px;border:1.5px solid rgba(201,162,39,.55);background:#082a1f;color:var(--sand);border-radius:11px;font-weight:700;font-size:14px;padding:10px 8px;line-height:1.45;cursor:pointer}
+.jadoo .cap-seg button[aria-pressed="true"]{background:var(--jgold2);border-color:var(--jgold2);color:#231a00}
+.cap-result video{width:min(300px,86vw);display:block;margin:10px auto;border-radius:14px;border:1.5px solid rgba(201,162,39,.7);background:#000}
+.jadoo .cap-err{border:1px solid #f87171;background:rgba(127,29,29,.4);color:#fecaca;border-radius:10px;padding:12px;font-size:14px;line-height:1.65;margin-top:12px;display:none;white-space:pre-wrap;word-break:break-word}
 </style>
 </head>
 <body>
@@ -1109,9 +1128,73 @@ ol.steps li{color:#d8e1ee}
             <ul style="margin:6px 0 0;padding-inline-start:20px">
               <li class="jx" data-ur="بغیر نیٹ ورک کے جانچا گیا: متن کی تقسیم (حصے)، دورانیے کا اندازہ، زبان بدلنے پر متن/آواز/انداز کا محفوظ رہنا، key کے save/clear کے بٹن، WAV جوڑنے کا طریقہ۔" data-en="Tested without network: script chunking, duration estimate, language toggle keeping script/voice/style, key save/clear controls, WAV joining method.">بغیر نیٹ ورک کے جانچا گیا: متن کی تقسیم (حصے)، دورانیے کا اندازہ، زبان بدلنے پر متن/آواز/انداز کا محفوظ رہنا، key کے save/clear کے بٹن، WAV جوڑنے کا طریقہ۔</li>
               <li class="jx" data-ur="آپ کی key کے بغیر اصل آواز نہیں بنائی جا سکتی — یہ دعویٰ نہیں کیا گیا۔ پہلی اصل جانچ آپ کا آڈیشن ہوگا: اوپر والا چھوٹا متن بنائیں اور تلفظ خود سنیں۔" data-en="Real speech cannot be generated without your key — no such success is claimed. Your first real test is the audition above: generate the short script and judge the pronunciation yourself.">آپ کی key کے بغیر اصل آواز نہیں بنائی جا سکتی — یہ دعویٰ نہیں کیا گیا۔ پہلی اصل جانچ آپ کا آڈیشن ہوگا: اوپر والا چھوٹا متن بنائیں اور تلفظ خود سنیں۔</li>
-              <li class="jx" data-ur="فائل Share کا اصل تجربہ آپ کے فون پر ہوگا (جہاں system share sheet موجود ہو)۔ کپشن ویڈیو (تجرباتی حصہ) اس نسخے میں شامل نہیں — پہلے آواز کا کام مکمل ہے۔" data-en="Real file sharing must be tested on your phone (where the system share sheet exists). The experimental caption video is not in this version — the audio workflow comes first.">فائل Share کا اصل تجربہ آپ کے فون پر ہوگا (جہاں system share sheet موجود ہو)۔ کپشن ویڈیو (تجرباتی حصہ) اس نسخے میں شامل نہیں — پہلے آواز کا کام مکمل ہے۔</li>
+              <li class="jx" data-ur="فائل Share کا اصل تجربہ آپ کے فون پر ہوگا (جہاں system share sheet موجود ہو)۔ کپشن ویڈیو (تجرباتی) نیچے حصہ 6 میں شامل ہے — مکمل اختیاری، پہلے سے بند (OFF)؛ ON کرنے پر ہی بنتی ہے۔" data-en="Real file sharing must be tested on your phone (where the system share sheet exists). The experimental caption video is in section 6 below — fully optional and OFF by default; it is made only when switched ON.">فائل Share کا اصل تجربہ آپ کے فون پر ہوگا (جہاں system share sheet موجود ہو)۔ کپشن ویڈیو (تجرباتی) نیچے حصہ 6 میں شامل ہے — مکمل اختیاری، پہلے سے بند (OFF)؛ ON کرنے پر ہی بنتی ہے۔</li>
             </ul>
           </details>
+        </div>
+
+        <!-- 6 — CAPTION VIDEO (تجرباتی, OPTIONAL — default OFF) -->
+        <div class="vo-sec" id="capSec">
+          <h3 class="vo-sec-title"><span class="vo-num">6</span><span class="jx" data-ur="کپشن ویڈیو — تجرباتی (آپ کی مرضی)" data-en="Caption Video — Experimental (Your Choice)">کپشن ویڈیو — تجرباتی (آپ کی مرضی)</span></h3>
+          <p class="hint jx" style="margin-top:0" data-ur="یہ حصہ مکمل طور پر اختیاری (optional) ہے۔ نیچے والا بڑا سوئچ ON کریں گے تب ہی کپشن ویڈیو بنے گی — OFF ہو تو کوئی کپشن ویڈیو نہیں بنتی، نہ کسی export میں آتی ہے؛ صرف اوپر والی آواز (وائس اوور) کا کام چلتا ہے۔" data-en="This part is completely optional. The caption video is made only when you turn the big switch below ON — while it is OFF, no caption video is made and none appears in any export; only the voice over above works.">یہ حصہ مکمل طور پر اختیاری (optional) ہے۔ نیچے والا بڑا سوئچ ON کریں گے تب ہی کپشن ویڈیو بنے گی — OFF ہو تو کوئی کپشن ویڈیو نہیں بنتی، نہ کسی export میں آتی ہے؛ صرف اوپر والی آواز (وائس اوور) کا کام چلتا ہے۔</p>
+          <label class="cap-toggle-wrap" for="capEnable">
+            <input type="checkbox" id="capEnable"/>
+            <span class="cap-track" aria-hidden="true"></span>
+            <span class="cap-toggle-text"><b class="jx" data-ur="کپشن ویڈیو بنانا ہے؟" data-en="Make a caption video?">کپشن ویڈیو بنانا ہے؟</b><span class="jx" data-ur="اپنی مرضی سے ON / OFF کریں — پہلے سے یہ بند (OFF) ہے۔" data-en="Turn it ON / OFF as you wish — it starts OFF by default.">اپنی مرضی سے ON / OFF کریں — پہلے سے یہ بند (OFF) ہے۔</span></span>
+            <span class="cap-state" id="capState">OFF</span>
+          </label>
+          <p class="hint jx" id="capOffNote" data-ur="ابھی کپشن ویڈیو بند ہے — صرف وائس اوور چلے گا۔ کپشن ویڈیو چاہیے تو اوپر والا سوئچ ON کر دیں۔" data-en="Caption video is OFF right now — only the voice over will run. If you want a caption video, turn the switch above ON.">ابھی کپشن ویڈیو بند ہے — صرف وائس اوور چلے گا۔ کپشن ویڈیو چاہیے تو اوپر والا سوئچ ON کر دیں۔</p>
+
+          <div id="capControls" class="hidden">
+            <p class="hint jx" data-ur="کپشن ویڈیو اسی وائس اوور کی آواز اور اوپر والے متن (حصہ 2) سے بنتی ہے — پہلے حصہ 4 میں آواز بنا لیں۔ لفظوں کا وقت آواز کی کل لمبائی سے اندازے سے لگایا جاتا ہے — یہ aligned transcription نہیں؛ لمبی تحریر میں وقت آگے پیچھے (drift) ہو سکتا ہے۔ سارے اوقات آواز کی لمبائی کے اندر ہی رکھے جاتے ہیں۔" data-en="The caption video is built from this same voice over audio and the script above (section 2) — generate the voice in section 4 first. Word timing is estimated from the total recording length — it is not an aligned transcription; long scripts can drift. All timings are kept inside the audio duration.">کپشن ویڈیو اسی وائس اوور کی آواز اور اوپر والے متن (حصہ 2) سے بنتی ہے — پہلے حصہ 4 میں آواز بنا لیں۔ لفظوں کا وقت آواز کی کل لمبائی سے اندازے سے لگایا جاتا ہے — یہ aligned transcription نہیں؛ لمبی تحریر میں وقت آگے پیچھے (drift) ہو سکتا ہے۔ سارے اوقات آواز کی لمبائی کے اندر ہی رکھے جاتے ہیں۔</p>
+
+            <span class="label jx" data-ur="متن کی حرکت — لفظ کیسے چلیں؟ (پہلے سے: سادہ / ٹھہرا ہوا)" data-en="Text movement — how should the words move? (default: simple / still)">متن کی حرکت — لفظ کیسے چلیں؟ (پہلے سے: سادہ / ٹھہرا ہوا)</span>
+            <div class="cap-seg" id="capMoveSeg" role="group" aria-label="Caption text movement">
+              <button type="button" data-move="static" aria-pressed="true">🧍 <span class="jx" data-ur="سادہ — لفظ اپنی جگہ ٹھہرے" data-en="Simple — words stay in place">سادہ — لفظ اپنی جگہ ٹھہرے</span></button>
+              <button type="button" data-move="up" aria-pressed="false">⬆️ <span class="jx" data-ur="نیچے سے اوپر" data-en="Bottom to top">نیچے سے اوپر</span></button>
+              <button type="button" data-move="side" aria-pressed="false">↔️ <span class="jx" data-ur="ایک سائیڈ سے دوسری سائیڈ" data-en="One side to the other side">ایک سائیڈ سے دوسری سائیڈ</span></button>
+            </div>
+            <div id="capSideDirWrap" class="hidden">
+              <span class="label jx" data-ur="سائیڈ والی حرکت کی سمت" data-en="Direction for the side movement">سائیڈ والی حرکت کی سمت</span>
+              <div class="cap-seg" id="capSideSeg" role="group" aria-label="Side movement direction">
+                <button type="button" data-side="rtl" aria-pressed="true"><span class="jx" data-ur="دائیں سے بائیں (اردو کے لیے)" data-en="Right to left (for Urdu)">دائیں سے بائیں (اردو کے لیے)</span></button>
+                <button type="button" data-side="ltr" aria-pressed="false"><span class="jx" data-ur="بائیں سے دائیں" data-en="Left to right">بائیں سے دائیں</span></button>
+              </div>
+            </div>
+            <p class="hint jx" data-ur="حرکت بھی آپ کی مرضی ہے: جب تک آپ کوئی حرکت نہ چنیں، متن سادہ اور ٹھہرا ہوا رہتا ہے۔ جو حرکت چنیں گے، Preview اور Download دونوں میں وہی چلے گی۔" data-en="Movement is also your choice: until you pick a movement, the text stays simple and still. Whichever movement you choose is what plays in both Preview and Download.">حرکت بھی آپ کی مرضی ہے: جب تک آپ کوئی حرکت نہ چنیں، متن سادہ اور ٹھہرا ہوا رہتا ہے۔ جو حرکت چنیں گے، Preview اور Download دونوں میں وہی چلے گی۔</p>
+
+            <span class="label jx" data-ur="ویڈیو سائز (Portrait)" data-en="Video size (portrait)">ویڈیو سائز (Portrait)</span>
+            <div class="cap-seg" id="capResSeg" role="group" aria-label="Caption video size">
+              <button type="button" data-res="720" aria-pressed="true">720 × 1280 • 24 fps</button>
+              <button type="button" data-res="1080" aria-pressed="false">1080 × 1920 • 30 fps</button>
+            </div>
+
+            <canvas id="capCanvas" width="720" height="1280" aria-label="Caption video preview canvas"></canvas>
+            <div class="vo-counts">
+              <span class="vo-chip"><span class="jx" data-ur="وقت:" data-en="Time:">وقت:</span> <span id="capTimer">0:00 / 0:00</span></span>
+              <span class="vo-chip" id="capFormatChip">—</span>
+              <span class="vo-chip"><span class="jx" data-ur="لفظوں کا وقت: اندازے سے" data-en="Word timing: estimated">لفظوں کا وقت: اندازے سے</span></span>
+            </div>
+            <button class="btn gold vo-big" id="capPreviewBtn" type="button" style="margin-top:12px">▶️ <span class="jx" data-ur="پری ویو ویڈیو دیکھیں" data-en="Preview Video">پری ویو ویڈیو دیکھیں</span></button>
+            <button class="btn vo-big" id="capStopBtn" type="button" disabled style="margin-top:8px"><span class="jx" data-ur="پری ویو روکیں" data-en="Stop Preview">پری ویو روکیں</span></button>
+            <button class="btn gold vo-big" id="capDownloadBtn" type="button" style="margin-top:8px">⬇ <span class="jx" data-ur="ویڈیو ڈاؤن لوڈ بنائیں" data-en="Download Video">ویڈیو ڈاؤن لوڈ بنائیں</span></button>
+            <p class="hint jx" data-ur="ڈاؤن لوڈ والی ویڈیو اصل وقت میں بنتی ہے — جتنی لمبی آواز، اتنا ہی وقت لگے گا؛ اس دوران یہ ٹیب آگے (foreground) رکھیں اور اسکرین بند نہ کریں۔ تیز (faster-than-real-time) export کا وعدہ نہیں کیا جاتا۔ فارمیٹ خود منتخب ہوتا ہے: جہاں MP4 (AAC آواز کے ساتھ) چل سکے وہی، ورنہ اصل WebM فارمیٹ اسی نام سے ملے گا — WebM کو MP4 کہہ کر نہیں دیا جائے گا۔" data-en="The download video renders in real time — the longer the audio, the longer it takes; keep this tab in the foreground and do not lock the screen meanwhile. Faster-than-real-time export is not promised. The format is chosen automatically: MP4 (with AAC audio) where supported, otherwise the actual WebM format under its real name — a WebM will never be renamed as MP4.">ڈاؤن لوڈ والی ویڈیو اصل وقت میں بنتی ہے — جتنی لمبی آواز، اتنا ہی وقت لگے گا؛ اس دوران یہ ٹیب آگے (foreground) رکھیں اور اسکرین بند نہ کریں۔ تیز (faster-than-real-time) export کا وعدہ نہیں کیا جاتا۔ فارمیٹ خود منتخب ہوتا ہے: جہاں MP4 (AAC آواز کے ساتھ) چل سکے وہی، ورنہ اصل WebM فارمیٹ اسی نام سے ملے گا — WebM کو MP4 کہہ کر نہیں دیا جائے گا۔</p>
+            <div class="hidden" id="capProgWrap" style="margin-top:10px">
+              <progress id="capProgress" max="100" value="0"></progress>
+              <p class="status" id="capGenStatus" role="status"></p>
+            </div>
+            <p class="status" id="capStatus" role="status"></p>
+            <div class="cap-err" id="capError" role="alert"></div>
+            <div class="cap-result hidden" id="capResultBox">
+              <video id="capResultVideo" controls playsinline preload="metadata"></video>
+              <div class="vo-counts">
+                <span class="vo-chip"><span class="jx" data-ur="اصل فائل سائز:" data-en="Actual file size:">اصل فائل سائز:</span> <span id="capFileSize">—</span></span>
+                <span class="vo-chip"><span class="jx" data-ur="فارمیٹ:" data-en="Format:">فارمیٹ:</span> <span id="capFileFormat">—</span></span>
+              </div>
+              <a class="btn gold vo-big" id="capDlLink" href="#" download="caption-video.webm" style="margin-top:10px">⬇ <span class="jx" data-ur="کپشن ویڈیو ڈاؤن لوڈ کریں" data-en="Download the Caption Video">کپشن ویڈیو ڈاؤن لوڈ کریں</span></a>
+              <p class="hint" id="capVerifyNote"></p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -3177,6 +3260,391 @@ function sendToEditor(inputId,okMsg){
 }
 $("voUseReplaceBtn").addEventListener("click",function(){sendToEditor("mergeAudioInput",T("وائس اوور ویڈیو میں لگ گیا — ویڈیو کی اصل آواز بند ہے، اب صرف یہ وائس اوور چلے گا (preview اور export دونوں میں)۔ ٹائم لائن کی Audio لائن میں ٹریک دیکھیں۔","Voice over added to the video — the original video sound is muted, only this voice over will play (in preview and export). See the track in the timeline Audio lane."));});
 $("voUseTrackBtn").addEventListener("click",function(){sendToEditor("tlAudioInput",T("وائس اوور ٹائم لائن میں الگ آڈیو ٹریک بن گیا — ٹائم لائن کی Audio لائن میں اسے کھینچ کر جگہ بدل سکتے ہیں۔","Voice over added as a separate timeline audio track — drag it in the timeline Audio lane to move it."));});
+
+/* ---------- CAPTION VIDEO (تجرباتی, OPTIONAL — default OFF, user ki marzi) ----------
+   OFF ho to kuch nahi banta aur kisi export mein nahi aata.
+   ON ho tab hi Preview / Download banta hai — usi wavBlob + usi voScript se. */
+var capEnable=$("capEnable"),capControls=$("capControls"),capOffNote=$("capOffNote"),capStateEl=$("capState");
+var capCanvas=$("capCanvas"),capCtx2d=capCanvas.getContext("2d");
+var capMove="static",capSideDir="rtl",capResSel=720;
+var capBuffer=null,capBufferFor=null,capPeaks=null,capWords=null,capSentences=[],capLinesCache=null;
+var capPlaying=false,capAudioEl=null,capRAF=0,capExporting=false,capResultUrl=null;
+function capSetStatus(m,c){setV($("capStatus"),m,c);}
+function capShowError(m){var b=$("capError");b.textContent=m;b.style.display="block";}
+function capHideError(){$("capError").style.display="none";}
+function capDims(){return capResSel===1080?{w:1080,h:1920,fps:30}:{w:720,h:1280,fps:24};}
+function capBuildWords(){
+  var text=(voScript.value||"").trim();
+  var words=text?text.split(/\s+/).filter(Boolean):[];
+  var dur=wavDuration||0,total=0,i;
+  for(i=0;i<words.length;i++)total+=Math.max(2,words[i].length);
+  var t=0;
+  capWords=words.map(function(w){var d=total?dur*(Math.max(2,w.length)/total):0;var o={w:w,start:t,end:Math.min(dur,t+d)};t+=d;return o;});
+  if(capWords.length)capWords[capWords.length-1].end=dur;
+  capSentences=[];var wi=0;
+  var parts=text.match(/[^۔؟.!?\n]+[۔؟.!?\n]*/g)||[];
+  parts.forEach(function(p){var pw=p.trim()?p.trim().split(/\s+/).filter(Boolean):[];if(pw.length){capSentences.push({text:p.trim(),from:wi,to:wi+pw.length-1});wi+=pw.length;}});
+  if(!capSentences.length&&words.length)capSentences=[{text:text,from:0,to:words.length-1}];
+  capLinesCache=null;
+}
+function capCurrentIdx(t){
+  if(!capWords||!capWords.length)return -1;
+  for(var i=0;i<capWords.length;i++){if(t<capWords[i].end)return i;}
+  return capWords.length-1;
+}
+function capBuildPeaks(buf){
+  var data=buf.getChannelData(0),buckets=240,block=Math.max(1,Math.floor(data.length/buckets));
+  capPeaks=[];
+  for(var b=0;b<buckets;b++){var sum=0,n=0,off=b*block;for(var i=0;i<block&&off+i<data.length;i+=7){var v=data[off+i];sum+=v*v;n++;}capPeaks.push(n?Math.min(1,Math.sqrt(sum/n)*3.2):0);}
+}
+function capEnsureData(){
+  if(!wavBlob)return Promise.reject(new Error("noaudio"));
+  if(capBuffer&&capBufferFor===wavBlob)return Promise.resolve(capBuffer);
+  var fonts=(document.fonts&&document.fonts.load)?Promise.all([document.fonts.load('700 60px "Noto Nastaliq Urdu"'),document.fonts.load('600 40px "Montserrat"')]).catch(function(){}):Promise.resolve();
+  return fonts.then(function(){return wavBlob.arrayBuffer();}).then(function(ab){return getCtx().decodeAudioData(ab);}).then(function(buf){
+    capBuffer=buf;capBufferFor=wavBlob;wavDuration=buf.duration;capBuildPeaks(buf);capBuildWords();return buf;
+  });
+}
+var capStatic=null,capStaticKey="";
+function capStaticLayer(w,h){
+  var key=w+"x"+h;
+  if(capStatic&&capStaticKey===key)return capStatic;
+  var c=document.createElement("canvas");c.width=w;c.height=h;var x=c.getContext("2d");
+  var g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,"#0e4634");g.addColorStop(.55,"#07271d");g.addColorStop(1,"#04150d");
+  x.fillStyle=g;x.fillRect(0,0,w,h);
+  x.strokeStyle="rgba(201,162,39,.8)";x.lineWidth=Math.max(3,w*0.006);
+  var m=w*0.045;x.strokeRect(m,m,w-2*m,h-2*m);
+  x.strokeStyle="rgba(201,162,39,.3)";x.lineWidth=1.5;x.strokeRect(m+10,m+10,w-2*m-20,h-2*m-20);
+  /* exact Urdu Ai wordmark — Urdu safed, Ai sunehra (#FFBE0B), Montserrat */
+  var fs=w*0.085;x.font="600 "+fs+"px Montserrat, sans-serif";x.textBaseline="middle";x.direction="ltr";
+  var wU=x.measureText("Urdu").width,wA=x.measureText("Ai").width,gap=fs*0.28,total=wU+gap+wA,sx=(w-total)/2,sy=h*0.075;
+  x.textAlign="left";x.fillStyle="#ffffff";x.fillText("Urdu",sx,sy);
+  x.fillStyle="#FFBE0B";x.fillText("Ai",sx+wU+gap,sy);
+  x.font="600 "+(w*0.028)+"px Montserrat, sans-serif";x.fillStyle="rgba(243,233,210,.65)";x.textAlign="center";
+  x.fillText("C A P T I O N   V I D E O",w/2,h*0.115);
+  capStatic=c;capStaticKey=key;return c;
+}
+function capWordAlpha(dist){return Math.max(.3,1-dist*.13);}
+function capDrawWave(x,w,h,t,dur){
+  if(!capPeaks||!dur)return;
+  var N=42,areaW=w*0.84,x0=(w-areaW)/2,baseY=h*0.885,maxH=h*0.055,bw=areaW/N;
+  var center=Math.floor((t/dur)*(capPeaks.length-1));
+  for(var i=0;i<N;i++){
+    var pi=Math.max(0,Math.min(capPeaks.length-1,center+(i-Math.floor(N/2))));
+    var bh=Math.max(3,capPeaks[pi]*maxH);
+    x.fillStyle=i<=Math.floor(N/2)?"rgba(255,190,11,.95)":"rgba(243,233,210,.4)";
+    x.fillRect(x0+i*bw+2,baseY-bh,bw-4,bh);
+  }
+  x.fillStyle="rgba(243,233,210,.55)";x.fillRect(x0,baseY+8,areaW,2);
+}
+function capWrapLines(x,idxs,maxW){
+  var lines=[],cur=[],curW=0,space=x.measureText(" ").width;
+  idxs.forEach(function(ix){
+    var ww=x.measureText(capWords[ix].w).width;
+    if(cur.length&&(curW+space+ww)>maxW){lines.push(cur);cur=[];curW=0;}
+    cur.push(ix);curW+=(cur.length>1?space:0)+ww;
+  });
+  if(cur.length)lines.push(cur);
+  return lines;
+}
+function capDrawLine(x,line,cx,y,idx,baseFont){
+  var space=x.measureText(" ").width,total=0,widths={};
+  line.forEach(function(ix){var f=ix===idx?("700 "+(baseFont*1.14)+"px \"Noto Nastaliq Urdu\", serif"):("700 "+baseFont+"px \"Noto Nastaliq Urdu\", serif");x.font=f;var ww=x.measureText(capWords[ix].w).width;widths[ix]=ww;total+=ww;});
+  total+=space*(line.length-1);
+  var cursor=cx+total/2; /* RTL: pehla lafz sab se dayein */
+  line.forEach(function(ix){
+    var isCur=ix===idx;
+    x.font=isCur?("700 "+(baseFont*1.14)+"px \"Noto Nastaliq Urdu\", serif"):("700 "+baseFont+"px \"Noto Nastaliq Urdu\", serif");
+    cursor-=widths[ix];
+    x.globalAlpha=isCur?1:capWordAlpha(Math.abs(ix-idx));
+    x.fillStyle=isCur?"#FFBE0B":"#f3e9d2";
+    if(isCur){x.shadowColor="rgba(255,190,11,.65)";x.shadowBlur=22;}else x.shadowBlur=0;
+    x.fillText(capWords[ix].w,cursor,y);
+    x.shadowBlur=0;cursor-=space;
+  });
+  x.globalAlpha=1;
+}
+function capGetAllLines(x,w,baseFont){
+  var key=w+"|"+baseFont+"|"+(capWords?capWords.length:0);
+  if(capLinesCache&&capLinesCache.key===key)return capLinesCache.lines;
+  x.font="700 "+baseFont+"px \"Noto Nastaliq Urdu\", serif";
+  var idxs=capWords.map(function(_,i){return i;});
+  var lines=capWrapLines(x,idxs,w*0.82);
+  capLinesCache={key:key,lines:lines};return lines;
+}
+function capDraw(t){
+  var d=capDims(),w=d.w,h=d.h,x=capCtx2d;
+  if(capCanvas.width!==w||capCanvas.height!==h){capCanvas.width=w;capCanvas.height=h;}
+  x.drawImage(capStaticLayer(w,h),0,0);
+  var dur=wavDuration||(capBuffer?capBuffer.duration:0);
+  x.direction="rtl";x.textAlign="left";x.textBaseline="middle";
+  if(!capWords||!capWords.length){
+    x.font="700 "+(w*0.062)+"px \"Noto Nastaliq Urdu\", serif";x.fillStyle="#f3e9d2";x.textAlign="center";
+    x.fillText(wavBlob?"لفظ تیار ہو رہے ہیں…":"پہلے اوپر آواز بنائیں",w/2,h*0.45);
+    x.textAlign="left";
+  }else{
+    var idx=capCurrentIdx(t);
+    /* context line — maujooda jumla, halka rang */
+    var sent=null;
+    for(var s=0;s<capSentences.length;s++){if(idx>=capSentences[s].from&&idx<=capSentences[s].to){sent=capSentences[s];break;}}
+    if(sent){
+      x.font="400 "+(w*0.036)+"px \"Noto Nastaliq Urdu\", serif";x.fillStyle="rgba(243,233,210,.6)";x.textAlign="center";
+      var ctext=sent.text;if(x.measureText(ctext).width>w*0.86){while(ctext.length>4&&x.measureText(ctext+"…").width>w*0.86)ctext=ctext.slice(0,-1);ctext+="…";}
+      x.fillText(ctext,w/2,h*0.165);x.textAlign="left";
+    }
+    var baseFont=w*0.075,lineH=baseFont*2.05;
+    if(capMove==="up"){
+      var lines=capGetAllLines(x,w,baseFont),totalH=lines.length*lineH;
+      var top=h*0.2,bottom=h*0.78,p=dur?Math.min(1,t/dur):0;
+      x.save();x.beginPath();x.rect(w*0.06,top,w*0.88,bottom-top);x.clip();
+      lines.forEach(function(line,li){
+        var y=bottom-p*(totalH+(bottom-top))+li*lineH+lineH*0.5;
+        if(y<top-lineH||y>bottom+lineH)return;
+        var hasCur=line.indexOf(idx)>=0;
+        x.globalAlpha=hasCur?1:.82;
+        capDrawLine(x,line,w/2,y,idx,baseFont);
+      });
+      x.restore();x.globalAlpha=1;
+    }else if(capMove==="side"){
+      x.font="700 "+baseFont+"px \"Noto Nastaliq Urdu\", serif";
+      var space=x.measureText(" ").width,totalW=0,widths=[];
+      capWords.forEach(function(o){var ww=x.measureText(o.w).width;widths.push(ww);totalW+=ww+space;});
+      totalW-=space;
+      var p2=dur?Math.min(1,t/dur):0,travel=totalW+w,y=h*0.46,cursor,i2;
+      if(capSideDir==="rtl"){cursor=w-p2*travel+totalW-(totalW);cursor=w-p2*travel; /* pehle lafz ka dayaan kinara */
+        /* draw: pehla lafz sab se dayein, baqi us ke bayein */
+        var cxr=cursor+totalW; /* asal shuru (p=0 par poora mutan dayein bahar se aata hai) */
+        cxr=w+totalW-p2*travel;
+        var cur=cxr;
+        for(i2=0;i2<capWords.length;i2++){cur-=widths[i2];if(cur<w&&cur+widths[i2]>0){var isC=i2===idx;x.font=isC?("700 "+(baseFont*1.14)+"px \"Noto Nastaliq Urdu\", serif"):("700 "+baseFont+"px \"Noto Nastaliq Urdu\", serif");var cen=cur+widths[i2]/2;x.globalAlpha=isC?1:Math.max(.25,1-Math.abs(cen-w/2)/(w*.75));x.fillStyle=isC?"#FFBE0B":"#f3e9d2";if(isC){x.shadowColor="rgba(255,190,11,.65)";x.shadowBlur=22;}x.fillText(capWords[i2].w,cur,y);x.shadowBlur=0;}cur-=space;}
+        x.globalAlpha=1;
+      }else{
+        var startL=-totalW+p2*travel,cur2=startL;
+        for(i2=0;i2<capWords.length;i2++){if(cur2<w&&cur2+widths[i2]>0){var isC2=i2===idx;x.font=isC2?("700 "+(baseFont*1.14)+"px \"Noto Nastaliq Urdu\", serif"):("700 "+baseFont+"px \"Noto Nastaliq Urdu\", serif");var cen2=cur2+widths[i2]/2;x.globalAlpha=isC2?1:Math.max(.25,1-Math.abs(cen2-w/2)/(w*.75));x.fillStyle=isC2?"#FFBE0B":"#f3e9d2";if(isC2){x.shadowColor="rgba(255,190,11,.65)";x.shadowBlur=22;}x.fillText(capWords[i2].w,cur2,y);x.shadowBlur=0;}cur2+=widths[i2]+space;}
+        x.globalAlpha=1;
+      }
+    }else{
+      /* static — maujooda lafz beech mein, aas paas ke lafz halke */
+      var from=Math.max(0,idx-7),to=Math.min(capWords.length-1,idx+7),idxs=[];
+      for(var k=from;k<=to;k++)idxs.push(k);
+      x.font="700 "+baseFont+"px \"Noto Nastaliq Urdu\", serif";
+      var slines=capWrapLines(x,idxs,w*0.84);
+      var startY=h*0.46-((slines.length-1)*lineH)/2;
+      slines.forEach(function(line,li){capDrawLine(x,line,w/2,startY+li*lineH,idx,baseFont);});
+    }
+    /* andaza label + waveform + timer */
+    x.font="400 "+(w*0.03)+"px \"Noto Nastaliq Urdu\", serif";x.fillStyle="rgba(243,233,210,.65)";x.textAlign="center";
+    x.fillText("لفظوں کا وقت اندازے سے ہے",w/2,h*0.8);x.textAlign="left";
+    capDrawWave(x,w,h,t,dur);
+    x.fillStyle="rgba(0,0,0,.45)";x.fillRect(w*0.08,h*0.915,w*0.84,h*0.012);
+    x.fillStyle="#FFBE0B";x.fillRect(w*0.08,h*0.915,(w*0.84)*(dur?Math.min(1,t/dur):0),h*0.012);
+    x.direction="ltr";x.font="600 "+(w*0.034)+"px Inter, sans-serif";x.fillStyle="#f3e9d2";x.textAlign="center";
+    x.fillText(fmtD(t)+" / "+fmtD(dur),w/2,h*0.95);x.direction="rtl";x.textAlign="left";
+  }
+  $("capTimer").textContent=fmtD(t)+" / "+fmtD(dur);
+}
+/* --- Toggle: default OFF --- */
+capEnable.addEventListener("change",function(){
+  var on=capEnable.checked;
+  capStateEl.textContent=on?"ON":"OFF";
+  capControls.classList.toggle("hidden",!on);
+  capOffNote.classList.toggle("hidden",on);
+  if(on){
+    capHideError();
+    if(wavBlob){capEnsureData().then(function(){capDraw(0);}).catch(function(){capDraw(0);});}
+    else{capWords=null;capDraw(0);capSetStatus(T("کپشن ویڈیو ON ہے — پہلے حصہ 4 میں وائس اوور بنائیں، پھر Preview / Download چلیں گے۔","Caption video is ON — generate the voice over in section 4 first, then Preview / Download will work."),"err");}
+    capUpdateAvail();
+  }else{
+    capStopPreview();
+    capSetStatus("");
+  }
+});
+function capSegWire(id,attr,fn){
+  var seg=$(id);if(!seg)return;
+  seg.querySelectorAll("button").forEach(function(b){
+    b.addEventListener("click",function(){
+      seg.querySelectorAll("button").forEach(function(o){o.setAttribute("aria-pressed","false");});
+      b.setAttribute("aria-pressed","true");fn(b.getAttribute(attr));
+      if(capWords&&capWords.length)capDraw(capAudioEl&&capPlaying?capAudioEl.currentTime:0);
+    });
+  });
+}
+capSegWire("capMoveSeg","data-move",function(v){capMove=v;$("capSideDirWrap").classList.toggle("hidden",v!=="side");});
+capSegWire("capSideSeg","data-side",function(v){capSideDir=v;});
+capSegWire("capResSeg","data-res",function(v){capResSel=parseInt(v,10);capStatic=null;});
+function capUpdateAvail(){
+  var dis=!wavBlob||capExporting;
+  $("capPreviewBtn").disabled=dis;$("capDownloadBtn").disabled=dis;
+}
+setInterval(function(){
+  if(capBufferFor&&capBufferFor!==wavBlob){capBuffer=null;capPeaks=null;}
+  if(capEnable&&capEnable.checked)capUpdateAvail();
+},800);
+/* --- Preview --- */
+function capStopPreview(){
+  if(capAudioEl)capAudioEl.pause();
+  capPlaying=false;cancelAnimationFrame(capRAF);
+  $("capStopBtn").disabled=true;if(!capExporting)$("capPreviewBtn").disabled=!wavBlob;
+}
+$("capStopBtn").addEventListener("click",capStopPreview);
+$("capPreviewBtn").addEventListener("click",function(){
+  if(capExporting)return;
+  capHideError();
+  if(!wavBlob){capSetStatus(T("پہلے وائس اوور بنائیں۔","Generate the voice over first."),"err");return;}
+  capEnsureData().then(function(){
+    capStopPreview();
+    if(!capAudioEl)capAudioEl=new Audio();
+    capAudioEl.src=wavUrl;capPlaying=true;
+    $("capPreviewBtn").disabled=true;$("capStopBtn").disabled=false;
+    capSetStatus(T("پری ویو چل رہا ہے — آواز کے ساتھ لفظ دیکھیں۔","Preview playing — watch the words with the voice."),"ok");
+    function loop(){
+      if(!capPlaying)return;
+      capDraw(capAudioEl.currentTime||0);
+      $("capProgress").value=wavDuration?Math.round((capAudioEl.currentTime/wavDuration)*100):0;
+      if(!capAudioEl.ended&&!capAudioEl.paused)capRAF=requestAnimationFrame(loop);
+      else capStopPreview();
+    }
+    var pr=capAudioEl.play();if(pr&&pr.catch)pr.catch(function(){capStopPreview();capSetStatus(T("آواز نہیں چل سکی — دوبارہ کوشش کریں۔","Audio could not play — try again."),"err");});
+    loop();
+  }).catch(function(){capShowError(T("آواز پڑھی نہیں جا سکی — وائس اوور دوبارہ بنا کر کوشش کریں۔","The audio could not be decoded — regenerate the voice over and try again."));});
+});
+/* --- Download / Export: asal waqt (real-time) recording, format khud muntakhib --- */
+function capPickMime(preferWebm){
+  var list=[
+    {mime:'video/mp4;codecs="avc1.640028,mp4a.40.2"',ext:"mp4",label:"MP4 (H.264 + AAC)"},
+    {mime:"video/mp4",ext:"mp4",label:"MP4"},
+    {mime:"video/webm;codecs=vp9,opus",ext:"webm",label:"WebM (VP9 + Opus)"},
+    {mime:"video/webm;codecs=vp8,opus",ext:"webm",label:"WebM (VP8 + Opus)"},
+    {mime:"video/webm",ext:"webm",label:"WebM"}
+  ];
+  if(preferWebm)list=list.slice(2).concat(list.slice(0,2));
+  if(!window.MediaRecorder)return null;
+  for(var i=0;i<list.length;i++){try{if(MediaRecorder.isTypeSupported(list[i].mime))return list[i];}catch(e){}}
+  return {mime:"",ext:"webm",label:"WebM"};
+}
+function capSegmentPeaks(){
+  if(!capPeaks||!capPeaks.length)return [0,0,0];
+  function mx(a,b){var m=0;for(var i=a;i<b&&i<capPeaks.length;i++)if(capPeaks[i]>m)m=capPeaks[i];return m;}
+  var n=capPeaks.length;
+  return [mx(0,Math.floor(n*.15)),mx(Math.floor(n*.45),Math.floor(n*.6)),mx(Math.floor(n*.85),n)];
+}
+function capRecordOnce(item){
+  return new Promise(function(resolve,reject){
+    var d=capDims();capCanvas.width=d.w;capCanvas.height=d.h;
+    var actx=getCtx();if(actx.state==="suspended")actx.resume();
+    var dest=actx.createMediaStreamDestination();
+    var src=actx.createBufferSource();src.buffer=capBuffer;src.connect(dest);
+    var hadAudio=dest.stream.getAudioTracks().length>0;
+    var vstream=capCanvas.captureStream?capCanvas.captureStream(d.fps):null;
+    if(!vstream||!vstream.getVideoTracks().length){reject(new Error("captureStream unsupported"));return;}
+    var combined=new MediaStream([vstream.getVideoTracks()[0]].concat(dest.stream.getAudioTracks()));
+    var rec;
+    try{
+      var opts={videoBitsPerSecond:d.w>720?8000000:4500000,audioBitsPerSecond:128000};
+      if(item.mime)opts.mimeType=item.mime;
+      rec=new MediaRecorder(combined,opts);
+    }catch(e){reject(e);return;}
+    var chunks=[];
+    rec.ondataavailable=function(e){if(e.data&&e.data.size)chunks.push(e.data);};
+    rec.onstop=function(){resolve({blob:new Blob(chunks,{type:item.mime||"video/webm"}),hadAudio:hadAudio});};
+    rec.onerror=function(e){reject((e&&e.error)||new Error("recorder error"));};
+    var startT=actx.currentTime+0.2,raf=0,stopped=false;
+    function loop(){
+      var t=actx.currentTime-startT;
+      if(t>=0){
+        capDraw(Math.min(Math.max(t,0),capBuffer.duration));
+        $("capProgress").value=Math.round(Math.min(1,Math.max(t,0)/capBuffer.duration)*100);
+        setV($("capGenStatus"),T("ویڈیو بن رہی ہے… "+Math.max(0,Math.round(Math.min(t,capBuffer.duration)))+" / "+Math.round(capBuffer.duration)+" سیکنڈ — ٹیب آگے رکھیں، اسکرین بند نہ کریں۔","Making the video… "+Math.max(0,Math.round(Math.min(t,capBuffer.duration)))+" / "+Math.round(capBuffer.duration)+" sec — keep the tab in front, do not lock the screen."));
+      }
+      if(!stopped)raf=requestAnimationFrame(loop);
+    }
+    try{rec.start(250);src.start(startT);}catch(e){reject(e);return;}
+    loop();
+    src.onended=function(){
+      setTimeout(function(){
+        stopped=true;cancelAnimationFrame(raf);
+        try{src.disconnect();}catch(e){}
+        try{rec.stop();}catch(e){resolve({blob:new Blob(chunks,{type:item.mime||"video/webm"}),hadAudio:hadAudio});}
+      },400);
+    };
+  });
+}
+function capVerifyVideo(blob){
+  return new Promise(function(resolve){
+    var url=URL.createObjectURL(blob),v=document.createElement("video");
+    v.muted=true;v.playsInline=true;v.preload="auto";v.src=url;
+    var done=false;
+    function fin(ok,info){if(done)return;done=true;try{URL.revokeObjectURL(url);}catch(e){}resolve({ok:ok,info:info||{}});}
+    v.addEventListener("loadedmetadata",function(){
+      var info={w:v.videoWidth,h:v.videoHeight,dur:v.duration};
+      if(v.videoWidth>0&&isFinite(v.duration)&&v.duration>0){
+        try{v.currentTime=Math.min(.4,v.duration/2);}catch(e){fin(true,info);}
+        v.addEventListener("seeked",function(){fin(true,info);});
+        setTimeout(function(){fin(true,info);},2600);
+      }else fin(false,info);
+    });
+    v.addEventListener("error",function(){fin(false,{});});
+    setTimeout(function(){fin(false,{timeout:true});},9000);
+  });
+}
+$("capDownloadBtn").addEventListener("click",function(){
+  if(capExporting)return;
+  capHideError();$("capResultBox").classList.add("hidden");
+  if(!wavBlob){capSetStatus(T("پہلے وائس اوور بنائیں۔","Generate the voice over first."),"err");return;}
+  if(!window.MediaRecorder||!capCanvas.captureStream){
+    capShowError(T("اس browser میں ویڈیو ریکارڈنگ (MediaRecorder) کی سہولت نہیں — Chrome آزمائیں۔ آپ کی آواز محفوظ ہے: اوپر سے WAV ڈاؤن لوڈ کر لیں۔","This browser has no video recording (MediaRecorder) support — try Chrome. Your audio is safe: download the WAV above."));
+    return;
+  }
+  capStopPreview();
+  capEnsureData().then(function(){
+    var segs=capSegmentPeaks();
+    if(Math.max(segs[0],segs[1],segs[2])<0.01){
+      capShowError(T("آواز میں سگنل نہیں ملا (خاموش لگتی ہے) — خاموش ویڈیو کامیاب نہیں دی جائے گی۔ وائس اوور دوبارہ بنائیں؛ موجودہ آواز اوپر WAV میں محفوظ ہے اور ڈاؤن لوڈ ہو سکتی ہے۔","No signal was found in the audio (it seems silent) — a silent video will not be offered as a success. Regenerate the voice over; the current audio is kept above as a downloadable WAV."));
+      return;
+    }
+    capExporting=true;capUpdateAvail();
+    $("capProgWrap").classList.remove("hidden");$("capProgress").value=0;
+    var webcodecsNote=("VideoEncoder" in window)?T("WebCodecs موجود ہے، مگر اس فون کے لیے محفوظ ریکارڈنگ راستہ استعمال ہو رہا ہے۔","WebCodecs is present, but the safer recording route is used on this phone."):T("WebCodecs موجود نہیں — ریکارڈنگ والا راستہ استعمال ہو رہا ہے (اصل وقت لگے گا)۔","WebCodecs is not available — the recording route is used (it takes real time).");
+    setV($("capGenStatus"),webcodecsNote);
+    var item=capPickMime(false);
+    $("capFormatChip").textContent=item.label;
+    capRecordOnce(item).then(function(r1){
+      return capVerifyVideo(r1.blob).then(function(v1){
+        if(v1.ok&&r1.hadAudio&&r1.blob.size>=8000)return {rec:r1,ver:v1,item:item,retried:false};
+        /* ایک بار دوسرے supported راستے سے دوبارہ */
+        setV($("capGenStatus"),T("پہلی فائل کی جانچ ٹھیک نہیں ہوئی — ایک بار دوسرے فارمیٹ سے دوبارہ بنایا جا رہا ہے…","The first file did not pass checks — retrying once with another supported format…"));
+        var item2=capPickMime(item.ext==="mp4");
+        if(item2.ext===item.ext&&item2.mime===item.mime)item2=capPickMime(true);
+        $("capFormatChip").textContent=item2.label;
+        return capRecordOnce(item2).then(function(r2){
+          return capVerifyVideo(r2.blob).then(function(v2){return {rec:r2,ver:v2,item:item2,retried:true};});
+        });
+      });
+    }).then(function(res){
+      capExporting=false;capUpdateAvail();$("capProgWrap").classList.add("hidden");
+      if(!res.ver.ok||!res.rec.hadAudio||res.rec.blob.size<8000){
+        capShowError(T("ویڈیو نہیں بن سکی یا اس کی جانچ ناکام رہی — خاموش / خراب ویڈیو کامیاب کہہ کر نہیں دی جائے گی۔ دوبارہ کوشش کریں۔ آپ کی آواز ضائع نہیں ہوئی: اوپر حصہ 5 سے WAV ڈاؤن لوڈ کر لیں۔","The video could not be made or failed verification — a silent or broken video will not be offered as a success. Please try again. Your audio is not lost: download the WAV from section 5 above."));
+        return;
+      }
+      if(capResultUrl)URL.revokeObjectURL(capResultUrl);
+      capResultUrl=URL.createObjectURL(res.rec.blob);
+      var ext=res.item.ext,fname="urdu-ai-caption-video."+ext;
+      $("capResultVideo").src=capResultUrl;
+      var dl=$("capDlLink");dl.href=capResultUrl;dl.setAttribute("download",fname);
+      $("capFileSize").textContent=(res.rec.blob.size/1048576).toFixed(2)+" MB";
+      $("capFileFormat").textContent=res.item.label+" • "+res.ver.info.w+"×"+res.ver.info.h+" • "+fmtD(res.ver.info.dur);
+      $("capFormatChip").textContent=res.item.label;
+      var segTxt=capSegmentPeaks().map(function(v){return Math.round(v*100)+"%";}).join(" / ");
+      $("capVerifyNote").textContent=T("جانچ: فائل decode ہوئی ✓ • آواز والا ٹریک موجود ✓ • شروع / درمیان / آخر کے سگنل: "+segTxt+" (خاموش نہیں) ✓"+(res.retried?" • دوسری کوشش پر بنی":"")+"۔ پھر بھی خود سن کر ضرور پرکھیں — سگنل کی جانچ سننے کا بدل نہیں۔ اصل سائز اوپر لکھا ہے؛ compression کا کوئی طے شدہ وعدہ نہیں۔","Checks: file decoded ✓ • audio track present ✓ • signal at start / middle / end: "+segTxt+" (not silent) ✓"+(res.retried?" • made on the retry":"")+". Still listen yourself — signal detection is not a substitute for listening. The actual size is shown above; no fixed compression is promised.");
+      $("capResultBox").classList.remove("hidden");
+      capSetStatus(T("کپشن ویڈیو تیار ہے ("+res.item.label+", "+(res.rec.blob.size/1048576).toFixed(2)+" MB) — نیچے سے چلا کر سنیں، پھر ڈاؤن لوڈ کریں۔","Caption video is ready ("+res.item.label+", "+(res.rec.blob.size/1048576).toFixed(2)+" MB) — play and listen below, then download."),"ok");
+      capDraw(0);
+    }).catch(function(err){
+      capExporting=false;capUpdateAvail();$("capProgWrap").classList.add("hidden");
+      capShowError(T("ویڈیو بنانے میں خرابی آئی — دوبارہ کوشش کریں۔ آپ کی آواز محفوظ ہے: اوپر حصہ 5 سے WAV ڈاؤن لوڈ کر لیں۔","Something went wrong while making the video — please try again. Your audio is safe: download the WAV from section 5 above."));
+    });
+  }).catch(function(){capShowError(T("آواز پڑھی نہیں جا سکی — وائس اوور دوبارہ بنا کر کوشش کریں۔","The audio could not be decoded — regenerate the voice over and try again."));});
+});
 
 applyLang();updateCounts();
 })();
