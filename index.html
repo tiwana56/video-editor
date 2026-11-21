@@ -16,7 +16,7 @@
 <title>ProCut Studio — Free Professional Video Editor, No Watermark</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap" rel="stylesheet"/>
 <style>
 :root{
   --bg:#0c0f16; --panel:#1c222e; --panel2:#252d3c; --panel3:#313b4e;
@@ -425,6 +425,52 @@ ol.steps li{color:#d8e1ee}
 .hist-btn:disabled{opacity:.38}
 .refresh-btn:not(:disabled){border-color:var(--border2);color:var(--text);background:var(--panel3)}
 .refresh-btn.confirm{border-color:var(--danger)!important;color:#fecaca!important;background:#7f1d1d!important;min-width:150px}
+</style>
+<style>
+/* ===== JADOO VOICE — Voice Over tab (gehra sabz, ret/sand, sunehra) ===== */
+.jadoo{--jg:#0b3d2e;--jg-deep:#06231a;--sand:#f3e9d2;--sand2:#e6d5a8;--jgold:#c9a227;--jgold2:#ffbe0b;background:linear-gradient(180deg,#0e4634,#07271d);border:1.5px solid rgba(201,162,39,.65);color:var(--sand)}
+.jadoo .panel-head{background:rgba(0,0,0,.28);border-bottom:1px solid rgba(201,162,39,.45);align-items:center}
+.jadoo .panel-head h2{color:var(--sand);font-size:13px}
+.jadoo-wordmark{font-family:"Montserrat",sans-serif;font-weight:600;font-size:21px;line-height:1;background:transparent;white-space:nowrap}
+.jadoo-wordmark .wm-u{color:#ffffff}
+.jadoo-wordmark .wm-a{color:#FFBE0B}
+.jadoo .panel-body{padding:16px 14px 18px}
+.jadoo .label{color:var(--sand2);font-size:12px}
+.jadoo .hint{color:#ddd2b2;font-size:13px;line-height:1.65}
+.jadoo .subtle{color:#e9dfc2}
+.jadoo[data-lang="ur"] .jx,.jadoo[data-lang="ur"] h3,.jadoo[data-lang="ur"] .vo-sec-title{font-family:"Noto Nastaliq Urdu",serif;line-height:2}
+.jadoo[data-lang="en"] .jx{font-family:var(--font)}
+.jadoo .vo-sec{border:1px solid rgba(201,162,39,.4);background:rgba(255,255,255,.045);border-radius:14px;padding:14px;margin-top:14px}
+.jadoo .vo-sec:first-of-type{margin-top:4px}
+.jadoo .vo-sec-title{font-size:16.5px;font-weight:700;color:#fff;margin:0 0 4px;display:flex;align-items:center;gap:9px}
+.jadoo .vo-num{flex:none;width:30px;height:30px;border-radius:50%;background:var(--jgold);color:#231a00;font-family:var(--font);font-weight:800;font-size:15px;display:inline-flex;align-items:center;justify-content:center;line-height:1}
+.jadoo input[type="text"],.jadoo input[type="password"],.jadoo textarea,.jadoo select{background:#082a1f;border:1px solid rgba(201,162,39,.55);color:#fff;min-height:52px}
+.jadoo input:focus,.jadoo textarea:focus,.jadoo select:focus{outline:2px solid rgba(255,190,11,.55);border-color:var(--jgold2)}
+.jadoo textarea#voScript{font-family:"Noto Nastaliq Urdu",serif;font-size:19px;line-height:2.15;min-height:160px;text-align:start}
+.jadoo textarea#voDirection{font-size:14.5px;line-height:1.7;min-height:74px}
+.jadoo .btn{background:#14532d;border-color:rgba(201,162,39,.6);color:#fff;min-height:52px}
+.jadoo .btn:hover{background:#1a6a3b;border-color:var(--jgold2)}
+.jadoo .btn.gold{background:var(--jgold2);border-color:var(--jgold2);color:#231a00}
+.jadoo .btn.gold:hover{background:#ffd34d}
+.jadoo .btn:disabled{opacity:.45;cursor:not-allowed}
+.jadoo .vo-big{width:100%;min-height:62px;font-size:17px;font-weight:800;border-radius:12px}
+.jadoo .vo-counts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.jadoo .vo-chip{background:rgba(0,0,0,.3);border:1px solid rgba(201,162,39,.45);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:700;color:var(--sand);font-variant-numeric:tabular-nums}
+.jadoo .vo-warn{border:1px solid #b45309;background:rgba(120,53,15,.35);color:#fde68a;border-radius:10px;padding:10px 12px;font-size:13.5px;line-height:1.6;margin-top:10px;display:none}
+.jadoo .vo-err{border:1px solid #f87171;background:rgba(127,29,29,.4);color:#fecaca;border-radius:10px;padding:12px;font-size:14px;line-height:1.65;margin-top:12px;display:none;white-space:pre-wrap;word-break:break-word}
+.jadoo .vo-ok{color:#86efac}
+.jadoo progress::-webkit-progress-value{background:var(--jgold2)}
+.jadoo progress::-moz-progress-bar{background:var(--jgold2)}
+.jadoo audio{width:100%;margin-top:6px}
+.jadoo a{color:var(--jgold2)}
+.jadoo .vo-check{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:#e9dfc2;line-height:1.6;margin-top:10px;cursor:pointer}
+.jadoo .vo-check input{width:22px;height:22px;flex:none;accent-color:var(--jgold2);margin-top:2px;min-height:0}
+.jadoo .ltr{direction:ltr;unicode-bidi:isolate}
+.jadoo details{margin-top:12px;border:1px dashed rgba(201,162,39,.45);border-radius:10px;padding:10px 12px}
+.jadoo summary{cursor:pointer;font-weight:700;color:var(--sand);min-height:32px}
+.jadoo details p,.jadoo details li{font-size:13px;color:#ddd2b2;line-height:1.65}
+.jadoo .vo-grid2{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:640px){.jadoo .vo-grid2{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -896,6 +942,180 @@ ol.steps li{color:#d8e1ee}
       </div>
     </section>
   </div>
+  <div class="bottom-grid" id="voiceGrid">
+    <!-- JADOO VOICE — Urdu Voice Over (apni Gemini key se) -->
+    <section class="panel jadoo" id="voicePanel" dir="rtl" data-lang="ur" aria-labelledby="voHead">
+      <div class="panel-head">
+        <h2 id="voHead">🎙️ <span class="jx" data-ur="جادو وائس — اردو وائس اوور" data-en="Jadoo Voice — Urdu Voice Over">جادو وائس — اردو وائس اوور</span></h2>
+        <span class="jadoo-wordmark" dir="ltr" aria-label="Urdu Ai"><span class="wm-u">Urdu</span> <span class="wm-a">Ai</span></span>
+      </div>
+      <div class="panel-body">
+        <div class="row" style="margin-bottom:4px">
+          <p class="hint jx" style="margin:0;flex:1" data-ur="اپنی Gemini key سے اردو متن کو آواز بنائیں، پھر وہی آواز ایک ٹیپ میں اپنی ویڈیو میں لگا دیں۔ نوٹ: Gemini 3.8 کی سرکاری زبانوں کی فہرست میں اردو واضح طور پر درج نہیں — اس لیے پہلے چھوٹا آڈیشن سنیں اور تلفظ خود پرکھیں، لمبی ریکارڈنگ بعد میں بنائیں۔" data-en="Turn Urdu text into speech with your own Gemini key, then put that voice into your video with one tap. Note: Urdu is not explicitly listed in the official Gemini 3.8 language table — listen to a short audition first and judge the pronunciation yourself before making longer recordings.">اپنی Gemini key سے اردو متن کو آواز بنائیں، پھر وہی آواز ایک ٹیپ میں اپنی ویڈیو میں لگا دیں۔ نوٹ: Gemini 3.8 کی سرکاری زبانوں کی فہرست میں اردو واضح طور پر درج نہیں — اس لیے پہلے چھوٹا آڈیشن سنیں اور تلفظ خود پرکھیں، لمبی ریکارڈنگ بعد میں بنائیں۔</p>
+          <button class="btn fixed" id="voLangBtn" type="button" aria-label="Language — Urdu / English">English</button>
+        </div>
+
+        <!-- 1 — KEY -->
+        <div class="vo-sec">
+          <h3 class="vo-sec-title"><span class="vo-num">1</span><span class="jx" data-ur="آپ کی Gemini Key" data-en="Your Gemini API Key">آپ کی Gemini Key</span></h3>
+          <p class="hint jx" style="margin-top:0" data-ur="یہ key اور آپ کا لکھا ہوا متن آواز بنانے کے لیے Google کو بھیجا جاتا ہے۔ Key کسی اور سرور پر نہیں جاتی۔ AI Studio والے ٹیب میں پہلے سے save شدہ key یہاں خود آ جاتی ہے۔" data-en="This key and the script you type are sent to Google to generate the audio. The key goes to no other server. A key already saved in the AI Studio tab appears here automatically.">یہ key اور آپ کا لکھا ہوا متن آواز بنانے کے لیے Google کو بھیجا جاتا ہے۔ Key کسی اور سرور پر نہیں جاتی۔ AI Studio والے ٹیب میں پہلے سے save شدہ key یہاں خود آ جاتی ہے۔</p>
+          <span class="label jx" data-ur="Gemini API Key" data-en="Gemini API Key">Gemini API Key</span>
+          <div class="row">
+            <input type="password" id="voKey" dir="ltr" placeholder="AIza… paste your key" autocomplete="off"/>
+            <button class="btn fixed" id="voKeyShowBtn" type="button">Show</button>
+          </div>
+          <label class="vo-check"><input type="checkbox" id="voSaveKey"/><span class="jx" data-ur="Key اسی browser میں save کریں (صرف سہولت کے لیے — یہ کوئی حفاظتی ضمانت نہیں؛ browser کا data صاف کرنے سے key مٹ جائے گی)۔ بغیر save کیے key صرف اسی session کے لیے رہے گی اور اگلی بار دوبارہ لکھنی ہوگی۔" data-en="Save the key in this browser (a convenience only — not a security guarantee; clearing browser data deletes it). Without saving, the key lasts only for this session and must be entered again next time.">Key اسی browser میں save کریں (صرف سہولت کے لیے — یہ کوئی حفاظتی ضمانت نہیں؛ browser کا data صاف کرنے سے key مٹ جائے گی)۔ بغیر save کیے key صرف اسی session کے لیے رہے گی اور اگلی بار دوبارہ لکھنی ہوگی۔</span></label>
+          <div class="row" style="margin-top:10px">
+            <button class="btn" id="voKeyTestBtn" type="button"><span class="jx" data-ur="Key جانچیں" data-en="Test Key">Key جانچیں</span></button>
+            <button class="btn" id="voKeyClearBtn" type="button"><span class="jx" data-ur="Key صاف کریں" data-en="Clear Key">Key صاف کریں</span></button>
+          </div>
+          <p class="status" id="voKeyStatus" role="status"></p>
+          <p class="hint"><span class="jx" data-ur="Key صاف کرنے سے صرف اس آلے کی کاپی مٹتی ہے — Google والی key ختم نہیں ہوتی۔ Key بنانا / ختم کرنا:" data-en="Clearing removes only the copy on this device — it does not revoke the Google credential. Create or revoke keys:">Key صاف کرنے سے صرف اس آلے کی کاپی مٹتی ہے — Google والی key ختم نہیں ہوتی۔ Key بنانا / ختم کرنا:</span> <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" dir="ltr">Google AI Studio — API Keys</a></p>
+        </div>
+
+        <!-- 2 — SCRIPT -->
+        <div class="vo-sec">
+          <h3 class="vo-sec-title"><span class="vo-num">2</span><span class="jx" data-ur="متن — جو بولنا ہے" data-en="Script — What Will Be Spoken">متن — جو بولنا ہے</span></h3>
+          <span class="label jx" data-ur="اردو متن یہاں لکھیں یا paste کریں" data-en="Write or paste the Urdu script here">اردو متن یہاں لکھیں یا paste کریں</span>
+          <textarea id="voScript" dir="auto" lang="ur">السلام علیکم! آج ہم اردو میں اپنا پہلا وائس اوور بنا رہے ہیں۔ پہلے ایک چھوٹا سا متن آزمائیں، پھر آواز سن کر اگلا قدم اٹھائیں۔</textarea>
+          <div class="vo-counts">
+            <span class="vo-chip"><span class="jx" data-ur="حروف:" data-en="Characters:">حروف:</span> <span id="voCharCount">0</span></span>
+            <span class="vo-chip"><span class="jx" data-ur="حصے:" data-en="Chunks:">حصے:</span> <span id="voChunkCount">1</span></span>
+            <span class="vo-chip"><span class="jx" data-ur="اندازاً دورانیہ:" data-en="Rough duration:">اندازاً دورانیہ:</span> <span id="voEstDur">0:00</span></span>
+          </div>
+          <p class="hint jx" data-ur="دورانیہ صرف موٹا اندازہ ہے — اصل دورانیہ آواز بننے کے بعد نتیجے میں دکھے گا۔ حروف کی تعداد سے آواز کی لمبائی کی ضمانت نہیں دی جا سکتی۔" data-en="The duration is only a rough estimate — the real duration appears in the result after generation. A character count never guarantees an exact audio length.">دورانیہ صرف موٹا اندازہ ہے — اصل دورانیہ آواز بننے کے بعد نتیجے میں دکھے گا۔ حروف کی تعداد سے آواز کی لمبائی کی ضمانت نہیں دی جا سکتی۔</p>
+          <div class="vo-warn" id="voLongWarn" role="note"></div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn" id="voAuditionBtn" type="button"><span class="jx" data-ur="آڈیشن متن لگائیں" data-en="Use Audition Script">آڈیشن متن لگائیں</span></button>
+            <button class="btn" id="voClearTextBtn" type="button"><span class="jx" data-ur="متن صاف کریں" data-en="Clear Script">متن صاف کریں</span></button>
+          </div>
+        </div>
+
+        <!-- 3 — VOICE / STYLE -->
+        <div class="vo-sec">
+          <h3 class="vo-sec-title"><span class="vo-num">3</span><span class="jx" data-ur="آواز اور انداز" data-en="Voice and Style">آواز اور انداز</span></h3>
+          <span class="label">Model <span class="ltr">(LTR)</span></span>
+          <select id="voModel" dir="ltr">
+            <option value="gemini-3.8-flash-tts" selected>gemini-3.8-flash-tts</option>
+            <option value="gemini-3.8-flash-lite-tts">gemini-3.8-flash-lite-tts (Lite — explicit choice)</option>
+          </select>
+          <span class="label jx" data-ur="آواز چنیں (نام Google کے اصل voice ID ہیں)" data-en="Choose a voice (names are Google's exact voice IDs)">آواز چنیں (نام Google کے اصل voice ID ہیں)</span>
+          <select id="voVoice" dir="ltr">
+            <option value="Kore" selected>Kore — firm</option>
+            <option value="Zephyr">Zephyr — bright</option>
+            <option value="Puck">Puck — upbeat</option>
+            <option value="Charon">Charon — informative</option>
+            <option value="Fenrir">Fenrir — excitable</option>
+            <option value="Leda">Leda — youthful</option>
+            <option value="Orus">Orus — firm</option>
+            <option value="Aoede">Aoede — breezy</option>
+            <option value="Callirrhoe">Callirrhoe — easy-going</option>
+            <option value="Autonoe">Autonoe — bright</option>
+            <option value="Enceladus">Enceladus — breathy</option>
+            <option value="Iapetus">Iapetus — clear</option>
+            <option value="Umbriel">Umbriel — easy-going</option>
+            <option value="Algieba">Algieba — smooth</option>
+            <option value="Despina">Despina — smooth</option>
+            <option value="Erinome">Erinome — clear</option>
+            <option value="Algenib">Algenib — gravelly</option>
+            <option value="Rasalgethi">Rasalgethi — informative</option>
+            <option value="Laomedeia">Laomedeia — upbeat</option>
+            <option value="Achernar">Achernar — soft</option>
+            <option value="Alnilam">Alnilam — firm</option>
+            <option value="Schedar">Schedar — even</option>
+            <option value="Gacrux">Gacrux — mature</option>
+            <option value="Pulcherrima">Pulcherrima — forward</option>
+            <option value="Achird">Achird — friendly</option>
+            <option value="Zubenelgenubi">Zubenelgenubi — casual</option>
+            <option value="Vindemiatrix">Vindemiatrix — gentle</option>
+            <option value="Sadachbia">Sadachbia — lively</option>
+            <option value="Sadaltager">Sadaltager — knowledgeable</option>
+            <option value="Sulafat">Sulafat — warm</option>
+          </select>
+          <p class="hint jx" data-ur="آواز کے ساتھ لکھے انگریزی لفظ اس ایپ کی اپنی وضاحت ہیں — Google کی تصدیق شدہ جنس یا عمر کی شناخت نہیں۔" data-en="The English words beside each voice are this app's own descriptions — not verified gender or age identities from Google.">آواز کے ساتھ لکھے انگریزی لفظ اس ایپ کی اپنی وضاحت ہیں — Google کی تصدیق شدہ جنس یا عمر کی شناخت نہیں۔</p>
+          <div class="vo-grid2">
+            <div>
+              <span class="label jx" data-ur="جذبات / انداز (Expression)" data-en="Expression">جذبات / انداز (Expression)</span>
+              <select id="voExpr">
+                <option value="natural, warm and clear" selected>Natural — قدرتی</option>
+                <option value="cheerful and friendly">Happy — خوشگوار</option>
+                <option value="serious and respectful">Serious — سنجیدہ</option>
+                <option value="calm and gentle">Calm — پرسکون</option>
+                <option value="energetic and lively">Energetic — جوشیلا</option>
+                <option value="soft and sad">Sad — اداس</option>
+                <option value="like a clear news reader">News — خبرنامہ انداز</option>
+              </select>
+            </div>
+            <div>
+              <span class="label jx" data-ur="رفتار (Pace)" data-en="Pace">رفتار (Pace)</span>
+              <select id="voPace">
+                <option value="slow and easy">Slow — آہستہ</option>
+                <option value="normal, natural pace" selected>Normal — درمیانی</option>
+                <option value="slightly fast">Slightly fast — ذرا تیز</option>
+                <option value="fast but clear">Fast — تیز مگر صاف</option>
+              </select>
+            </div>
+          </div>
+          <span class="label jx" data-ur="لہجہ (Accent) — درخواست ہے، ضمانت نہیں" data-en="Accent — requested, not guaranteed">لہجہ (Accent) — درخواست ہے، ضمانت نہیں</span>
+          <select id="voAccent">
+            <option value="Pakistani Urdu" selected>Pakistani Urdu — پاکستانی اردو</option>
+            <option value="standard Urdu">Standard Urdu — معیاری اردو</option>
+            <option value="Urdu with a gentle Hindi mix">Urdu / Hindi mix</option>
+          </select>
+          <span class="label jx" data-ur="اپنی ہدایت — آزادانہ لکھیں (یہ متن بولا نہیں جائے گا، صرف آواز کی ہدایت ہے)" data-en="Your direction — free text (guidance only, never spoken)">اپنی ہدایت — آزادانہ لکھیں (یہ متن بولا نہیں جائے گا، صرف آواز کی ہدایت ہے)</span>
+          <textarea id="voDirection" dir="auto">واضح پاکستانی اردو میں بولیں، لہجہ قدرتی اور دوستانہ ہو، جملوں کے درمیان مناسب وقفہ دیں۔</textarea>
+          <p class="hint jx" data-ur="ہدایت متن سے الگ بھیجی جاتی ہے (speech style annotation) — یہ الفاظ آواز میں بولے نہیں جائیں گے۔ پوری ریکارڈنگ میں ایک ہی آواز اور ایک ہی ہدایت رہے گی۔" data-en="Direction is sent separately from the transcript (as a speech style annotation) — these words will not be spoken. One voice and one direction stay the same across all chunks.">ہدایت متن سے الگ بھیجی جاتی ہے (speech style annotation) — یہ الفاظ آواز میں بولے نہیں جائیں گے۔ پوری ریکارڈنگ میں ایک ہی آواز اور ایک ہی ہدایت رہے گی۔</p>
+        </div>
+
+        <!-- 4 — GENERATION -->
+        <div class="vo-sec">
+          <h3 class="vo-sec-title"><span class="vo-num">4</span><span class="jx" data-ur="آواز بنائیں" data-en="Generate">آواز بنائیں</span></h3>
+          <button class="btn gold vo-big" id="voGenBtn" type="button">🎙️ <span class="jx" data-ur="آواز بنائیں" data-en="Generate Voice">آواز بنائیں</span></button>
+          <button class="btn vo-big" id="voCancelBtn" type="button" disabled style="margin-top:8px"><span class="jx" data-ur="روک دیں (Cancel)" data-en="Cancel">روک دیں (Cancel)</span></button>
+          <div class="hidden" id="voProgWrap" style="margin-top:12px">
+            <progress id="voProgress" max="100" value="0"></progress>
+            <p class="status" id="voGenStatus" role="status"></p>
+          </div>
+          <div class="vo-err" id="voError" role="alert"></div>
+          <p class="hint jx" data-ur="لمبا متن جملوں کی سرحدوں پر تقریباً 1800 حروف کے حصوں میں بٹتا ہے۔ ہر حصہ اور ہر دوبارہ کوشش آپ کے Google quota سے کٹ سکتی ہے۔ جو حصے بن جائیں وہ محفوظ رہتے ہیں — دوبارہ بنانے پر وہ پھر سے نہیں بنتے۔ Quota اور billing آپ کے منتخب project/model کے مطابق لگتے ہیں؛ اسی project کی نئی key سے quota نہیں بڑھتا۔ Billing کبھی خودکار آن نہیں ہوتی۔" data-en="Long scripts split at sentence boundaries into chunks of about 1,800 characters. Every chunk and retry may consume your Google quota. Finished chunks are kept — regenerating does not redo them. Quota and billing follow your selected project/model; a new key in the same project does not increase quota. Billing is never enabled automatically.">لمبا متن جملوں کی سرحدوں پر تقریباً 1800 حروف کے حصوں میں بٹتا ہے۔ ہر حصہ اور ہر دوبارہ کوشش آپ کے Google quota سے کٹ سکتی ہے۔ جو حصے بن جائیں وہ محفوظ رہتے ہیں — دوبارہ بنانے پر وہ پھر سے نہیں بنتے۔ Quota اور billing آپ کے منتخب project/model کے مطابق لگتے ہیں؛ اسی project کی نئی key سے quota نہیں بڑھتا۔ Billing کبھی خودکار آن نہیں ہوتی۔</p>
+          <p class="hint"><a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener" dir="ltr">Gemini API Pricing</a> • <a href="https://ai.google.dev/gemini-api/docs/rate-limits" target="_blank" rel="noopener" dir="ltr">Rate Limits</a> • <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" dir="ltr">AI Studio — Your Keys &amp; Limits</a></p>
+        </div>
+
+        <!-- 5 — RESULT -->
+        <div class="vo-sec">
+          <h3 class="vo-sec-title"><span class="vo-num">5</span><span class="jx" data-ur="نتیجہ — سنیں، ڈاؤن لوڈ کریں، ویڈیو میں لگائیں" data-en="Result — Listen, Download, Use in Video">نتیجہ — سنیں، ڈاؤن لوڈ کریں، ویڈیو میں لگائیں</span></h3>
+          <div id="voResultEmpty">
+            <p class="hint jx" style="margin:0" data-ur="ابھی کوئی آواز نہیں بنی۔ پہلے چھوٹا آڈیشن بنائیں، پوری ریکارڈنگ غور سے سنیں — خودکار جانچ یہ نہیں بتا سکتی کہ ہر لفظ بولا گیا ہے یا نہیں۔" data-en="No voice generated yet. Make a short audition first, then listen to the complete recording carefully — automatic checks cannot prove every word was spoken.">ابھی کوئی آواز نہیں بنی۔ پہلے چھوٹا آڈیشن بنائیں، پوری ریکارڈنگ غور سے سنیں — خودکار جانچ یہ نہیں بتا سکتی کہ ہر لفظ بولا گیا ہے یا نہیں۔</p>
+          </div>
+          <div id="voResultBox" class="hidden">
+            <audio id="voPlayer" controls preload="metadata"></audio>
+            <div class="vo-counts">
+              <span class="vo-chip"><span class="jx" data-ur="اصل دورانیہ:" data-en="Actual duration:">اصل دورانیہ:</span> <span id="voRealDur">0:00</span></span>
+              <span class="vo-chip"><span class="jx" data-ur="فائل سائز:" data-en="File size:">فائل سائز:</span> <span id="voFileSize">0 MB</span></span>
+              <span class="vo-chip">WAV</span>
+            </div>
+            <button class="btn gold vo-big" id="voUseReplaceBtn" type="button" style="margin-top:12px">🎬 <span class="jx" data-ur="ویڈیو میں لگائیں — ویڈیو کی آواز بند، صرف یہ وائس اوور" data-en="Use in Video — Mute Video Sound, Voice Over Only">ویڈیو میں لگائیں — ویڈیو کی آواز بند، صرف یہ وائس اوور</span></button>
+            <button class="btn vo-big" id="voUseTrackBtn" type="button" style="margin-top:8px">🎧 <span class="jx" data-ur="ٹائم لائن میں الگ آڈیو ٹریک کے طور پر شامل کریں" data-en="Add to Timeline as a Separate Audio Track">ٹائم لائن میں الگ آڈیو ٹریک کے طور پر شامل کریں</span></button>
+            <div class="row" style="margin-top:8px">
+              <button class="btn" id="voDlWavBtn" type="button">⬇ <span class="jx" data-ur="WAV ڈاؤن لوڈ" data-en="Download WAV">WAV ڈاؤن لوڈ</span></button>
+              <button class="btn" id="voMp3Btn" type="button">⬇ <span class="jx" data-ur="MP3 بنائیں" data-en="Make MP3">MP3 بنائیں</span></button>
+              <button class="btn" id="voShareBtn" type="button"><span class="jx" data-ur="Share کریں" data-en="Share">Share کریں</span></button>
+            </div>
+            <p class="status" id="voResultStatus" role="status"></p>
+            <p class="hint jx" data-ur="محفوظ کرنا: iPhone پر Share → Save to Files؛ Android پر ڈاؤن لوڈ شدہ فائل Downloads/Files میں ملے گی؛ کمپیوٹر پر سیدھا ڈاؤن لوڈ۔ WhatsApp پر بھیجنا ہو تو Share دبائیں (system share sheet کھلے گا — WhatsApp لگا ہونا ضروری ہے)، ورنہ فائل ڈاؤن لوڈ کر کے WhatsApp میں attach کر دیں۔" data-en="Saving: on iPhone use Share → Save to Files; on Android the downloaded file is in Downloads/Files; on desktop it downloads directly. For WhatsApp, tap Share (the system share sheet opens — WhatsApp must be installed), otherwise download the file and attach it in WhatsApp.">محفوظ کرنا: iPhone پر Share → Save to Files؛ Android پر ڈاؤن لوڈ شدہ فائل Downloads/Files میں ملے گی؛ کمپیوٹر پر سیدھا ڈاؤن لوڈ۔ WhatsApp پر بھیجنا ہو تو Share دبائیں (system share sheet کھلے گا — WhatsApp لگا ہونا ضروری ہے)، ورنہ فائل ڈاؤن لوڈ کر کے WhatsApp میں attach کر دیں۔</p>
+          </div>
+          <details>
+            <summary class="jx" data-ur="جانچ رپورٹ — کیا آزمایا گیا، کیا باقی ہے" data-en="Test report — what was tested, what remains">جانچ رپورٹ — کیا آزمایا گیا، کیا باقی ہے</summary>
+            <ul style="margin:6px 0 0;padding-inline-start:20px">
+              <li class="jx" data-ur="بغیر نیٹ ورک کے جانچا گیا: متن کی تقسیم (حصے)، دورانیے کا اندازہ، زبان بدلنے پر متن/آواز/انداز کا محفوظ رہنا، key کے save/clear کے بٹن، WAV جوڑنے کا طریقہ۔" data-en="Tested without network: script chunking, duration estimate, language toggle keeping script/voice/style, key save/clear controls, WAV joining method.">بغیر نیٹ ورک کے جانچا گیا: متن کی تقسیم (حصے)، دورانیے کا اندازہ، زبان بدلنے پر متن/آواز/انداز کا محفوظ رہنا، key کے save/clear کے بٹن، WAV جوڑنے کا طریقہ۔</li>
+              <li class="jx" data-ur="آپ کی key کے بغیر اصل آواز نہیں بنائی جا سکتی — یہ دعویٰ نہیں کیا گیا۔ پہلی اصل جانچ آپ کا آڈیشن ہوگا: اوپر والا چھوٹا متن بنائیں اور تلفظ خود سنیں۔" data-en="Real speech cannot be generated without your key — no such success is claimed. Your first real test is the audition above: generate the short script and judge the pronunciation yourself.">آپ کی key کے بغیر اصل آواز نہیں بنائی جا سکتی — یہ دعویٰ نہیں کیا گیا۔ پہلی اصل جانچ آپ کا آڈیشن ہوگا: اوپر والا چھوٹا متن بنائیں اور تلفظ خود سنیں۔</li>
+              <li class="jx" data-ur="فائل Share کا اصل تجربہ آپ کے فون پر ہوگا (جہاں system share sheet موجود ہو)۔ کپشن ویڈیو (تجرباتی حصہ) اس نسخے میں شامل نہیں — پہلے آواز کا کام مکمل ہے۔" data-en="Real file sharing must be tested on your phone (where the system share sheet exists). The experimental caption video is not in this version — the audio workflow comes first.">فائل Share کا اصل تجربہ آپ کے فون پر ہوگا (جہاں system share sheet موجود ہو)۔ کپشن ویڈیو (تجرباتی حصہ) اس نسخے میں شامل نہیں — پہلے آواز کا کام مکمل ہے۔</li>
+            </ul>
+          </details>
+        </div>
+      </div>
+    </section>
+  </div>
   <p style="text-align:center;color:var(--muted2);font-size:12px;margin-top:18px">ProCut Studio — No watermark • No paywall • Apki video, apke phone par</p>
 </div>
 
@@ -908,7 +1128,7 @@ var $=function(id){return document.getElementById(id);};
 /* ---------- Build app navigation (top on desktop, bottom bar on phone) ---------- */
 var topbar=document.querySelector(".topbar");
 var nav=document.createElement("nav");nav.className="app-nav";nav.setAttribute("aria-label","App sections");
-var tabs=[["editor","✂️","Editor"],["thumb","🖼️","Thumbnail"],["audio","🎵","Audio"],["ai","✨","AI Studio"],["help","✓","Madad"]];
+var tabs=[["editor","✂️","Editor"],["thumb","🖼️","Thumbnail"],["audio","🎵","Audio"],["voice","🎙️","Voice Over"],["ai","✨","AI Studio"],["help","✓","Madad"]];
 tabs.forEach(function(t,i){
   var b=document.createElement("button");b.type="button";b.className="nav-btn";b.setAttribute("data-view",t[0]);b.setAttribute("aria-pressed",i===0?"true":"false");
   b.innerHTML="<span class='nav-ico' aria-hidden='true'>"+t[1]+"</span>"+t[2];
@@ -926,6 +1146,7 @@ var thumbPanel=grids[0]?grids[0].children[0]:null;
 var audioPanel=grids[0]?grids[0].children[1]:null;
 var aiPanel=grids[1]?grids[1].children[0]:null;
 var helpPanel=grids[1]?grids[1].children[1]:null;
+var voicePanel=document.getElementById("voicePanel");
 var warn=document.querySelector(".warn-box");
 var footerP=app.querySelector(":scope > p:last-of-type");
 
@@ -939,12 +1160,13 @@ editorView.appendChild(workspace);
 if(timeline)workspace.appendChild(timeline);
 var thumbScroll=makeView("thumb"); if(thumbPanel)thumbScroll.appendChild(thumbPanel);
 var audioScroll=makeView("audio"); if(audioPanel)audioScroll.appendChild(audioPanel);
+var voiceScroll=makeView("voice"); if(voicePanel)voiceScroll.appendChild(voicePanel);
 var aiScroll=makeView("ai"); if(aiPanel)aiScroll.appendChild(aiPanel);
 var helpScroll=makeView("help");
 if(warn){warn.style.display="block";warn.style.marginBottom="12px";helpScroll.appendChild(warn);}
 if(helpPanel)helpScroll.appendChild(helpPanel);
 if(footerP)helpScroll.appendChild(footerP);
-if(grids[0])grids[0].remove(); if(grids[1])grids[1].remove();
+if(grids[0])grids[0].remove(); if(grids[1])grids[1].remove(); var vg=document.getElementById("voiceGrid"); if(vg)vg.remove();
 
 function switchView(name){
   document.querySelectorAll(".view").forEach(function(v){v.classList.toggle("active",v.id==="view-"+name);});
@@ -2617,6 +2839,346 @@ function refresh(){
   else info.textContent="Abhi koi hissa nahi chuna — pehle Step 1 dabao.";
 }
 refresh();setInterval(refresh,500);
+})();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+<script>
+/* ===== JADOO VOICE — Urdu Voice Over (Gemini TTS, Interactions API) =====
+   Verified integration (21 Nov 2026, ai.google.dev/gemini-api/docs/speech-generation):
+   POST https://generativelanguage.googleapis.com/v1beta/interactions
+   header x-goog-api-key, body {model, input:[{type:"user_input",content:[{type:"text",
+   text, annotations:[{type:"speech_metadata", style}]}]}],
+   response_format:{type:"audio"}, generation_config:{speech_config:[{voice}]}}
+   Jawab mein audio base64 WAV steps[].content[].data mein aata hai (aakhri audio block). */
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id);};
+var panel=$("voicePanel"); if(!panel)return;
+var KEY_LS="procut_gemini_key", LANG_LS="procut_jadoo_lang";
+var AUDITION="السلام علیکم! آج ہم اردو میں اپنا پہلا وائس اوور بنا رہے ہیں۔ پہلے ایک چھوٹا سا متن آزمائیں، پھر آواز سن کر اگلا قدم اٹھائیں۔";
+var CHUNK_TARGET=1800;
+function lsGet(k){try{return window.localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{if(v)window.localStorage.setItem(k,v);else window.localStorage.removeItem(k);}catch(e){}}
+function setV(el,msg,cls){if(!el)return;el.textContent=msg||"";el.className="status"+(cls?" "+cls:"");}
+function fmtD(t){if(!isFinite(t)||t<0)t=0;var m=Math.floor(t/60),s=Math.floor(t%60);return m+":"+(s<10?"0":"")+s;}
+
+/* ---------- Language (Urdu default, English toggle — key se alag save) ---------- */
+var lang=lsGet(LANG_LS)==="en"?"en":"ur";
+function T(ur,en){return lang==="en"?en:ur;}
+function applyLang(){
+  panel.setAttribute("data-lang",lang);
+  panel.setAttribute("dir",lang==="ur"?"rtl":"ltr");
+  panel.querySelectorAll("[data-ur]").forEach(function(el){
+    var v=el.getAttribute(lang==="en"?"data-en":"data-ur");
+    if(v!==null)el.textContent=v;
+  });
+  var lb=$("voLangBtn"); if(lb)lb.textContent=(lang==="ur"?"English":"اردو");
+  updateCounts();
+}
+$("voLangBtn").addEventListener("click",function(){lang=(lang==="ur"?"en":"ur");lsSet(LANG_LS,lang);applyLang();});
+
+/* ---------- Key: ProCut ki saved key reuse, masked, test, clear ---------- */
+var voKey=$("voKey"), voSave=$("voSaveKey"), keyStatus=$("voKeyStatus"), mainKey=$("apiKey");
+function currentKey(){return (voKey.value||"").trim()||(mainKey?(mainKey.value||"").trim():"");}
+var savedKey=lsGet(KEY_LS);
+if(savedKey){voKey.value=savedKey;voSave.checked=true;setV(keyStatus,T("✓ Save شدہ key مل گئی — یہی key AI Studio والے ٹیب کی ہے۔","✓ Saved key loaded — the same key as the AI Studio tab."),"ok");}
+else if(mainKey&&mainKey.value){voKey.value=mainKey.value;}
+voKey.addEventListener("input",function(){
+  if(mainKey)mainKey.value=voKey.value;
+  if(voSave.checked)lsSet(KEY_LS,voKey.value.trim());
+});
+voSave.addEventListener("change",function(){
+  if(voSave.checked){lsSet(KEY_LS,voKey.value.trim());setV(keyStatus,T("Key اسی browser میں save ہو گئی (صرف سہولت — حفاظتی ضمانت نہیں)۔","Key saved in this browser (convenience only — not a security guarantee)."),"ok");}
+  else{lsSet(KEY_LS,null);setV(keyStatus,T("Browser سے key ہٹا دی — اب یہ صرف اسی session کے لیے ہے۔","Key removed from the browser — it now lasts only for this session."),"ok");}
+});
+$("voKeyShowBtn").addEventListener("click",function(){var show=voKey.type==="password";voKey.type=show?"text":"password";this.textContent=show?"Hide":"Show";});
+$("voKeyClearBtn").addEventListener("click",function(){
+  voKey.value="";if(mainKey)mainKey.value="";lsSet(KEY_LS,null);voSave.checked=false;
+  setV(keyStatus,T("Key صاف ہو گئی — اس آلے کی کاپی مٹ گئی ہے۔ Google والی key ختم نہیں ہوئی؛ ختم کرنا ہو تو AI Studio سے revoke کریں۔","Key cleared — the copy on this device is gone. The Google credential itself is not revoked; revoke it in AI Studio if needed."),"ok");
+});
+function sanitize(s,key){
+  var out=String(s||"");
+  if(key)out=out.split(key).join("•••");
+  out=out.replace(/AIza[0-9A-Za-z\-_]{8,}/g,"•••");
+  return out.slice(0,260);
+}
+function errorText(status,detail,key){
+  var head;
+  if(status===400)head=T("خرابی 400 — درخواست درست نہیں لگی۔ یہ ہمیشہ key کا مسئلہ نہیں ہوتا: متن، model یا انداز کی شکل چیک کریں۔","Error 400 — the request looks invalid. This is not always a key problem: check the text, model or style format.");
+  else if(status===401||status===403)head=T("خرابی "+status+" — key کی اجازت یا پابندی کا مسئلہ لگتا ہے۔ Key درست ہے؟ اس project/model تک رسائی ہے؟ AI Studio میں چیک کریں۔","Error "+status+" — likely a key permission or restriction problem. Check the key and its project/model access in AI Studio.");
+  else if(status===404)head=T("خرابی 404 — model یا endpoint نہیں ملا۔ Model کا نام اور اس تک رسائی چیک کریں۔","Error 404 — model or endpoint not found. Check the model name and your access to it.");
+  else if(status===429)head=T("خرابی 429 — quota ختم یا حد آ گئی ہے۔ تھوڑی دیر بعد دوبارہ کوشش کریں؛ اپنی حد AI Studio کے rate limits میں دیکھیں۔ اسی project کی نئی key سے quota نہیں بڑھتا۔","Error 429 — quota exhausted or rate limit hit. Try again later; see your limits in AI Studio rate limits. A new key in the same project does not increase quota.");
+  else if(status===0)head=T("نیٹ ورک کا مسئلہ — انٹرنیٹ چیک کر کے دوبارہ کوشش کریں۔","Network problem — check the internet connection and try again.");
+  else if(status==="decode")head=T("Google سے آواز آئی مگر browser اسے پڑھ نہیں سکا (decode ناکام)۔ دوبارہ کوشش کریں۔","Audio arrived from Google but the browser could not decode it. Please try again.");
+  else if(status==="noaudio")head=T("Google کے جواب میں آواز نہیں ملی — متن یا انداز بدل کر دوبارہ کوشش کریں۔ ہو سکتا ہے مواد روکا گیا ہو۔","No audio was returned — try changing the text or style. The content may have been blocked.");
+  else head=T("خرابی "+status+" — دوبارہ کوشش کریں۔","Error "+status+" — please try again.");
+  var d=sanitize(detail,key);
+  return head+(d?("\n\n"+T("تکنیکی تفصیل (key چھپا کر): ","Technical detail (key hidden): ")+d):"");
+}
+function showVoError(status,detail){
+  var box=$("voError");box.textContent=errorText(status,detail,currentKey());box.style.display="block";
+}
+function hideVoError(){$("voError").style.display="none";}
+$("voKeyTestBtn").addEventListener("click",function(){
+  var key=currentKey();
+  if(!key){setV(keyStatus,T("پہلے key لکھیں۔","Enter the key first."),"err");return;}
+  var btn=this;btn.disabled=true;setV(keyStatus,T("Key جانچی جا رہی ہے…","Testing the key…"));
+  fetch("https://generativelanguage.googleapis.com/v1beta/models",{method:"GET",headers:{"x-goog-api-key":key}})
+  .then(function(r){return r.text().then(function(tx){return{ok:r.ok,status:r.status,tx:tx};});})
+  .then(function(res){btn.disabled=false;
+    if(res.ok)setV(keyStatus,T("✓ Key کام کر رہی ہے — Google نے جواب دیا۔ اب آڈیشن بنائیں۔","✓ The key works — Google responded. Now make the audition."),"ok");
+    else setV(keyStatus,errorText(res.status,res.tx,key),"err");
+  })
+  .catch(function(e){btn.disabled=false;setV(keyStatus,errorText(0,e.message,key),"err");});
+});
+
+/* ---------- Script: ginti, andaza, hissay (chunks) ---------- */
+var voScript=$("voScript");
+function splitScript(text){
+  var clean=String(text||"").replace(/\s+\n/g,"\n").trim();
+  if(!clean)return [];
+  var parts=clean.match(/[^۔؟.!?\n]+[۔؟.!?\n]*/g)||[clean];
+  var chunks=[],cur="";
+  function pushLong(s){
+    while(s.length>CHUNK_TARGET){
+      var cut=s.lastIndexOf(" ",CHUNK_TARGET);
+      if(cut<CHUNK_TARGET*0.5)cut=s.lastIndexOf("،",CHUNK_TARGET);
+      if(cut<CHUNK_TARGET*0.5)cut=CHUNK_TARGET;
+      /* surrogate pair (emoji waghera) darmiyan se na kate */
+      var code=s.charCodeAt(cut-1); if(code>=0xD800&&code<=0xDBFF)cut-=1;
+      chunks.push(s.slice(0,cut).trim()); s=s.slice(cut).trim();
+    }
+    if(s)chunks.push(s);
+  }
+  parts.forEach(function(p){
+    p=p.trim(); if(!p)return;
+    if(p.length>CHUNK_TARGET){if(cur){chunks.push(cur);cur="";}pushLong(p);return;}
+    if(cur&&(cur.length+1+p.length)>CHUNK_TARGET){chunks.push(cur);cur=p;}
+    else cur=cur?(cur+" "+p):p;
+  });
+  if(cur)chunks.push(cur);
+  return chunks.filter(function(c){return c.length>0;});
+}
+function updateCounts(){
+  var text=voScript.value||"";
+  var n=text.trim()?text.length:0;
+  $("voCharCount").textContent=String(n);
+  var chunks=splitScript(text);
+  $("voChunkCount").textContent=String(Math.max(1,chunks.length));
+  $("voEstDur").textContent=fmtD(n/13); /* ~13 harf/sec — sirf mota andaza */
+  var warn=$("voLongWarn");
+  if(n>5000){warn.style.display="block";warn.textContent=T("⚠ متن بہت لمبا ہے ("+n+" حروف، "+chunks.length+" حصے)۔ پہلے چھوٹا آڈیشن بنا کر آواز پرکھیں — لمبی ریکارڈنگ میں quota بھی زیادہ لگے گا اور حصے جڑنے سے انداز میں ہلکا فرق آ سکتا ہے۔","⚠ Very long script ("+n+" characters, "+chunks.length+" chunks). Make a short audition and judge the voice first — long recordings use more quota and joined chunks can vary slightly.");}
+  else if(n>CHUNK_TARGET){warn.style.display="block";warn.textContent=T("یہ متن "+chunks.length+" حصوں میں بنے گا — ہر حصہ الگ درخواست ہے اور quota لگ سکتا ہے۔ پہلے آڈیشن سن لینا بہتر ہے۔","This script will be made in "+chunks.length+" chunks — each chunk is a separate request and may use quota. Hearing the audition first is better.");}
+  else warn.style.display="none";
+}
+voScript.addEventListener("input",updateCounts);
+$("voAuditionBtn").addEventListener("click",function(){voScript.value=AUDITION;updateCounts();voScript.focus();});
+$("voClearTextBtn").addEventListener("click",function(){voScript.value="";updateCounts();voScript.focus();});
+
+/* ---------- Generation ---------- */
+var AC=window.AudioContext||window.webkitAudioContext;
+var actx=null;
+function getCtx(){if(!actx)actx=new AC();if(actx.state==="suspended")actx.resume();return actx;}
+function buildStyle(){
+  var parts=[];
+  parts.push("Expression: "+$("voExpr").value);
+  parts.push("Pace: "+$("voPace").value);
+  parts.push("Accent: "+$("voAccent").value+" (requested, not guaranteed)");
+  var d=$("voDirection").value.trim(); if(d)parts.push(d);
+  return parts.join(". ");
+}
+function b64ToBytes(b64){
+  var bin=atob(b64),bytes=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+  return bytes;
+}
+function findAudioData(json){
+  var found=null;
+  function scanBlock(b){
+    if(!b)return;
+    if(typeof b.data==="string"&&b.data.length>80)found={data:b.data,mime:b.mimeType||b.mime_type||""};
+    if(b.inlineData&&b.inlineData.data)found={data:b.inlineData.data,mime:b.inlineData.mimeType||""};
+  }
+  if(json&&Array.isArray(json.steps))json.steps.forEach(function(st){
+    var c=st&&st.content;
+    if(Array.isArray(c))c.forEach(scanBlock); else if(c)scanBlock(c);
+  });
+  if(!found&&json&&typeof json.data==="string"&&json.data.length>80)found={data:json.data,mime:""};
+  return found;
+}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms);});}
+function fetchChunk(key,model,voice,style,chunk,signal){
+  var body={model:model,input:[{type:"user_input",content:[{type:"text",text:chunk,annotations:[{type:"speech_metadata",style:style}]}]}],response_format:{type:"audio"},generation_config:{speech_config:[{voice:voice}]}};
+  var attempt=0;
+  function tryOnce(){
+    return fetch("https://generativelanguage.googleapis.com/v1beta/interactions",{method:"POST",signal:signal,headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify(body)})
+    .then(function(r){return r.text().then(function(tx){return{ok:r.ok,status:r.status,tx:tx};});})
+    .then(function(res){
+      if(res.ok){
+        var json=null;try{json=JSON.parse(res.tx);}catch(e){}
+        var ad=json?findAudioData(json):null;
+        if(!ad||!ad.data)throw{status:"noaudio",detail:res.tx};
+        return b64ToBytes(ad.data);
+      }
+      /* auth / quota / ghalat request par loop nahi — fauran roko */
+      if([400,401,403,404,429].indexOf(res.status)>=0)throw{status:res.status,detail:res.tx};
+      if(res.status>=500&&attempt<2){attempt++;return wait(900*attempt).then(tryOnce);}
+      throw{status:res.status,detail:res.tx};
+    })
+    .catch(function(err){
+      if(err&&err.name==="AbortError")throw err;
+      if(err&&typeof err.status!=="undefined")throw err;
+      if(attempt<2){attempt++;return wait(900*attempt).then(tryOnce);}
+      throw{status:0,detail:(err&&err.message)||"network"};
+    });
+  }
+  return tryOnce();
+}
+function normalizeBuf(buf,sr,ch){
+  var len=Math.max(1,Math.ceil(buf.duration*sr));
+  var off=new OfflineAudioContext(ch,len,sr);
+  var src=off.createBufferSource();src.buffer=buf;src.connect(off.destination);src.start(0);
+  return off.startRendering();
+}
+function encodeWav(buffer){
+  var ch=Math.min(2,buffer.numberOfChannels),sr=buffer.sampleRate,len=buffer.length;
+  var bytes=44+len*ch*2,ab=new ArrayBuffer(bytes),v=new DataView(ab);
+  function ws(off,str){for(var i=0;i<str.length;i++)v.setUint8(off+i,str.charCodeAt(i));}
+  ws(0,"RIFF");v.setUint32(4,bytes-8,true);ws(8,"WAVE");ws(12,"fmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,ch,true);v.setUint32(24,sr,true);v.setUint32(28,sr*ch*2,true);v.setUint16(32,ch*2,true);v.setUint16(34,16,true);ws(36,"data");v.setUint32(40,len*ch*2,true);
+  var chans=[];for(var c=0;c<ch;c++)chans.push(buffer.getChannelData(c));
+  var off=44;
+  for(var i=0;i<len;i++)for(var c2=0;c2<ch;c2++){var s=Math.max(-1,Math.min(1,chans[c2][i]));v.setInt16(off,s<0?s*0x8000:s*0x7FFF,true);off+=2;}
+  return new Blob([ab],{type:"audio/wav"});
+}
+var chunkCache={};
+var controller=null,cancelled=false,generating=false;
+var wavBlob=null,wavUrl=null,wavDuration=0;
+var genBtn=$("voGenBtn"),cancelBtn=$("voCancelBtn"),progWrap=$("voProgWrap"),prog=$("voProgress"),genStatus=$("voGenStatus");
+cancelBtn.addEventListener("click",function(){cancelled=true;if(controller)controller.abort();});
+genBtn.addEventListener("click",function(){
+  if(generating)return;
+  hideVoError();
+  var key=currentKey();
+  if(!key){showVoError(401,T("Key نہیں لکھی گئی — پہلے حصہ 1 میں اپنی Gemini key لکھیں۔","No key entered — write your Gemini key in section 1 first."));return;}
+  var text=voScript.value.trim();
+  if(!text){showVoError(400,T("متن خالی ہے — پہلے بولنے والا متن لکھیں۔","The script is empty — write the text to speak first."));return;}
+  if(!AC){showVoError(0,T("اس browser میں AudioContext نہیں — Chrome آزمائیں۔","This browser has no AudioContext — try Chrome."));return;}
+  var model=$("voModel").value,voice=$("voVoice").value,style=buildStyle();
+  var chunks=splitScript(text);
+  generating=true;cancelled=false;controller=new AbortController();
+  genBtn.disabled=true;cancelBtn.disabled=false;progWrap.classList.remove("hidden");prog.value=0;
+  var ctx=getCtx();
+  var decodedList=[],targetSR=0,targetCh=1,done=0;
+  var chain=Promise.resolve();
+  chunks.forEach(function(chunk,idx){
+    chain=chain.then(function(){
+      if(cancelled)throw{name:"AbortError"};
+      setV(genStatus,T("حصہ "+(idx+1)+" از "+chunks.length+" بن رہا ہے…","Making chunk "+(idx+1)+" of "+chunks.length+"…"));
+      var ck=model+"|"+voice+"|"+style+"|"+chunk;
+      var job;
+      if(chunkCache[ck])job=Promise.resolve(chunkCache[ck]);
+      else job=fetchChunk(key,model,voice,style,chunk,controller.signal).then(function(bytes){
+        return ctx.decodeAudioData(bytes.buffer.slice(0)).then(function(buf){chunkCache[ck]=buf;return buf;},function(){throw{status:"decode",detail:"decodeAudioData failed"};});
+      });
+      return job.then(function(buf){
+        if(!targetSR){targetSR=buf.sampleRate;targetCh=Math.min(2,buf.numberOfChannels);}
+        return normalizeBuf(buf,targetSR,targetCh).then(function(nb){
+          decodedList[idx]=nb;done++;prog.value=Math.round(done/chunks.length*100);
+          setV(genStatus,T("حصہ "+done+" از "+chunks.length+" مکمل","Chunk "+done+" of "+chunks.length+" done"));
+        });
+      });
+    });
+  });
+  chain.then(function(){
+    var totalLen=0;decodedList.forEach(function(b){if(b)totalLen+=b.length;});
+    if(!totalLen||decodedList.length!==chunks.length)throw{status:"noaudio",detail:"incomplete chunks"};
+    var out=ctx.createBuffer(targetCh,totalLen,targetSR),off=0;
+    decodedList.forEach(function(b){
+      for(var c=0;c<targetCh;c++){var dst=out.getChannelData(c);var src=b.getChannelData(Math.min(c,b.numberOfChannels-1));dst.set(src,off);}
+      off+=b.length;
+    });
+    wavBlob=encodeWav(out);wavDuration=out.duration;
+    if(!wavBlob||wavBlob.size<200)throw{status:"noaudio",detail:"empty wav"};
+    if(wavUrl)URL.revokeObjectURL(wavUrl);
+    wavUrl=URL.createObjectURL(wavBlob);
+    $("voPlayer").src=wavUrl;
+    $("voRealDur").textContent=fmtD(wavDuration);
+    $("voFileSize").textContent=(wavBlob.size/1048576).toFixed(2)+" MB";
+    $("voResultEmpty").classList.add("hidden");$("voResultBox").classList.remove("hidden");
+    var shareBtn=$("voShareBtn");
+    var f=new File([wavBlob],"jadoo-voiceover.wav",{type:"audio/wav"});
+    shareBtn.style.display=(navigator.canShare&&navigator.canShare({files:[f]}))?"":"none";
+    setV($("voResultStatus"),T("آواز تیار ہے — پوری ریکارڈنگ غور سے سنیں، پھر ویڈیو میں لگائیں یا ڈاؤن لوڈ کریں۔","Voice is ready — listen to the full recording carefully, then use it in the video or download it."),"ok");
+    setV(genStatus,T("مکمل ہو گیا — "+chunks.length+" حصے جڑ کر ایک فائل بن گئی۔","Done — "+chunks.length+" chunk(s) joined into one file."),"ok");
+  }).catch(function(err){
+    if(cancelled||(err&&err.name==="AbortError"))setV(genStatus,T("روک دیا گیا — بنے ہوئے حصے محفوظ ہیں، دوبارہ بنانے پر وہ پھر نہیں بنیں گے۔","Cancelled — finished chunks are kept and will not be regenerated."),"err");
+    else showVoError(err&&typeof err.status!=="undefined"?err.status:0,err&&err.detail?err.detail:(err&&err.message));
+  }).then(function(){
+    generating=false;genBtn.disabled=false;cancelBtn.disabled=true;controller=null;
+  });
+});
+
+/* ---------- Result: download / MP3 / share / video mein lagayein ---------- */
+function downloadBlob(blob,name){
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(a.href);},4000);
+}
+$("voDlWavBtn").addEventListener("click",function(){if(wavBlob)downloadBlob(wavBlob,"jadoo-voiceover.wav");});
+$("voMp3Btn").addEventListener("click",function(){
+  var st=$("voResultStatus");
+  if(!wavBlob)return;
+  if(!window.lamejs||!lamejs.Mp3Encoder){setV(st,T("MP3 بنانے والی لائبریری لوڈ نہیں ہوئی — WAV درست ہے، وہی استعمال کریں۔","The MP3 library did not load — the WAV is valid, please use it."),"err");return;}
+  setV(st,T("MP3 بن رہا ہے…","Making MP3…"));
+  wavBlob.arrayBuffer().then(function(ab){return getCtx().decodeAudioData(ab);}).then(function(buf){
+    var ch=Math.min(2,buf.numberOfChannels),sr=buf.sampleRate;
+    var enc=new lamejs.Mp3Encoder(ch,sr,128);
+    function to16(d){var o=new Int16Array(d.length);for(var i=0;i<d.length;i++){var s=Math.max(-1,Math.min(1,d[i]));o[i]=s<0?s*0x8000:s*0x7FFF;}return o;}
+    var L=to16(buf.getChannelData(0)),R=ch>1?to16(buf.getChannelData(1)):null;
+    var parts=[],bs=1152;
+    for(var i=0;i<L.length;i+=bs){
+      var l=L.subarray(i,i+bs);
+      var d=ch>1?enc.encodeBuffer(l,R.subarray(i,i+bs)):enc.encodeBuffer(l);
+      if(d.length)parts.push(new Uint8Array(d));
+    }
+    var end=enc.flush();if(end.length)parts.push(new Uint8Array(end));
+    var mp3=new Blob(parts,{type:"audio/mpeg"});
+    return mp3.arrayBuffer().then(function(mab){return getCtx().decodeAudioData(mab);}).then(function(dec){
+      var diff=Math.abs(dec.duration-buf.duration);
+      if(diff>Math.max(1,buf.duration*0.05))throw new Error("duration mismatch");
+      downloadBlob(mp3,"jadoo-voiceover.mp3");
+      setV(st,T("MP3 تیار اور جانچا ہوا ہے ("+(mp3.size/1048576).toFixed(2)+" MB) — ڈاؤن لوڈ ہو گیا۔","MP3 made and validated ("+(mp3.size/1048576).toFixed(2)+" MB) — downloaded."),"ok");
+    });
+  }).catch(function(){setV(st,T("MP3 میں مسئلہ آیا — اصل WAV درست اور محفوظ ہے، وہی ڈاؤن لوڈ کریں۔","MP3 failed — the original WAV is valid and kept; please download the WAV."),"err");});
+});
+$("voShareBtn").addEventListener("click",function(){
+  var st=$("voResultStatus");
+  if(!wavBlob)return;
+  var f=new File([wavBlob],"jadoo-voiceover.wav",{type:"audio/wav"});
+  if(navigator.canShare&&navigator.canShare({files:[f]})){
+    navigator.share({files:[f]}).catch(function(e){if(e&&e.name!=="AbortError")setV(st,T("Share نہیں ہو سکا — فائل ڈاؤن لوڈ کر کے بھیج دیں۔","Sharing failed — download the file and send it instead."),"err");});
+  }else setV(st,T("اس آلے پر فائل Share کی سہولت نہیں — WAV ڈاؤن لوڈ کر کے WhatsApp میں attach کر دیں۔","File sharing is not supported on this device — download the WAV and attach it in WhatsApp."),"err");
+});
+function sendToEditor(inputId,okMsg){
+  var st=$("voResultStatus");
+  if(!wavBlob){setV(st,T("پہلے آواز بنائیں۔","Generate the voice first."),"err");return;}
+  try{
+    var inp=$(inputId); if(!inp)throw new Error("input missing");
+    var file=new File([wavBlob],"jadoo-voiceover.wav",{type:"audio/wav"});
+    var dt=new DataTransfer(); dt.items.add(file);
+    inp.files=dt.files;
+    inp.dispatchEvent(new Event("change",{bubbles:true}));
+    if(window.__switchView)window.__switchView("editor");
+    if(window.__switchSub)window.__switchSub("trim");
+    if(window.__voUseNote)window.__voUseNote(okMsg);
+  }catch(e){
+    setV(st,T("اس browser میں خودکار منتقلی نہیں ہو سکی — WAV ڈاؤن لوڈ کر کے Audio ٹیب سے اپ لوڈ کر دیں، وہی نتیجہ ملے گا۔","Automatic transfer failed in this browser — download the WAV and upload it from the Audio tab; the result is the same."),"err");
+  }
+}
+$("voUseReplaceBtn").addEventListener("click",function(){sendToEditor("mergeAudioInput",T("وائس اوور ویڈیو میں لگ گیا — ویڈیو کی اصل آواز بند ہے، اب صرف یہ وائس اوور چلے گا (preview اور export دونوں میں)۔ ٹائم لائن کی Audio لائن میں ٹریک دیکھیں۔","Voice over added to the video — the original video sound is muted, only this voice over will play (in preview and export). See the track in the timeline Audio lane."));});
+$("voUseTrackBtn").addEventListener("click",function(){sendToEditor("tlAudioInput",T("وائس اوور ٹائم لائن میں الگ آڈیو ٹریک بن گیا — ٹائم لائن کی Audio لائن میں اسے کھینچ کر جگہ بدل سکتے ہیں۔","Voice over added as a separate timeline audio track — drag it in the timeline Audio lane to move it."));});
+
+applyLang();updateCounts();
 })();
 </script>
 </body>
