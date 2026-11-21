@@ -344,6 +344,20 @@ ol.steps li{color:#d8e1ee}
 .tl-extract{margin-top:14px;border:1px solid var(--border2);background:var(--panel2);border-radius:10px;padding:12px}
 @media(max-width:760px){.tl-block{font-size:10.5px;padding:0 14px}.tl-zoom{margin-left:0}}
 </style>
+<style>
+/* ===== SAB MERGE HUB — Audio tab ka sab se bara, sab se upar wala hissa ===== */
+.merge-hub{border:2px solid var(--gold);background:linear-gradient(180deg,rgba(243,201,75,.12),rgba(243,201,75,.04));border-radius:14px;padding:14px;margin-bottom:16px}
+.merge-hub .label{color:var(--gold);font-size:12.5px}
+.hub-status{font-size:14.5px;font-weight:700;color:var(--text);margin:0 0 6px;line-height:1.55}
+.hub-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:60px;padding:14px 16px;font-size:16.5px;font-weight:800;border-radius:12px;border:0;margin-top:10px;text-align:center;line-height:1.35}
+.hub-btn.gold{background:var(--gold);color:#231a00}
+.hub-btn.gold:hover{background:#ffd95e}
+.hub-btn.green{background:var(--green);color:#04150a}
+.hub-btn.green:hover{background:#2ee06f}
+.hub-btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.green{background:var(--green);border-color:var(--green);color:#04150a;font-weight:800}
+.btn.green:hover{background:#2ee06f;border-color:var(--green)}
+</style>
 </head>
 <body>
 
@@ -541,6 +555,8 @@ ol.steps li{color:#d8e1ee}
       <div class="tl-topbar">
         <span class="tl-total" id="tlTotal">Kul waqt: 0:00</span>
         <span class="tl-pos" id="tlPos">Playhead: 0:00</span>
+        <button class="btn small gold" id="tlSelectAll" type="button" style="min-height:52px;font-size:15px">✓ Sab Select Karein</button>
+        <button class="btn small green" id="tlMergeAll" type="button" style="min-height:52px;font-size:15px">🎬 Sab Merge — AIK Video</button>
         <div class="tl-zoom">
           <button class="btn small" id="tlScrollL" type="button" aria-label="Timeline peeche scroll karein">◀ Peeche</button>
           <button class="btn small" id="tlScrollR" type="button" aria-label="Timeline aagay scroll karein">Aagay ▶</button>
@@ -624,6 +640,14 @@ ol.steps li{color:#d8e1ee}
     <section class="panel" aria-labelledby="audioHead">
       <div class="panel-head"><h2 id="audioHead">🎵 Audio Alag Karein — Video → Audio File</h2></div>
       <div class="panel-body">
+        <div class="merge-hub">
+          <span class="label" style="margin-top:0">★ Sabse Zaroori — Sab Merge Karein (Aik Hi File)</span>
+          <p class="hub-status" id="mergeHubStatus">Abhi koi clip nahi — pehle Editor → Media se videos load karein.</p>
+          <button class="hub-btn gold" id="hubAudioBtn" type="button">🎵 Sab Audio Merge Karein — AIK File Download (WAV)</button>
+          <button class="hub-btn green" id="hubVideoBtn" type="button">🎬 Sab Video Merge Karein — AIK Video Export</button>
+          <p class="status" id="hubStatus" role="status"></p>
+          <p class="hint" style="margin-bottom:0">Pehla button: <b style="color:var(--text)">saari clips ki awaz jud kar AIK hi audio file</b> download hogi. Doosra button: <b style="color:var(--text)">saari clips jud kar AIK hi video</b> export hogi. Alag-alag clip select karne ki zaroorat nahi — sab khud aik sath select hai.</p>
+        </div>
         <p class="subtle" style="margin-top:0">Load ki hui video / clip se sirf awaz nikaal kar alag audio file download karein — naat ya tilawat ki audio alag rakhne, ya awaz kisi doosri video mein istemal karne ke liye.</p>
         <span class="label">Tartib</span>
         <div class="seg" role="group" aria-label="Audio ka hissa">
@@ -734,6 +758,8 @@ ol.steps li{color:#d8e1ee}
           <dt>Kai clips aik video mein?</dt><dd>Import mein kai clips aik sath chunein — har clip ki asal lambai khud pehchan li jati hai, is liye timeline mein sab clips apni sahi jagah par barabar nazar aate hain. Har clip ka apna trim set karein, timeline mein clip ko drag karke ya Media list ke ↑ ↓ se tartib rakhein — Export sab ko jod kar aik video bana dega. Do clips ke darmiyan khali hissa (gap) chahiye to clip select karke “Gap +1s” dabayein.</dd>
           <dt>Audio alag kaise?</dt><dd>“Audio Alag Karein” hisse se trim wala hissa ya poori video ki awaz WAV file mein download ho jati hai. Timeline mein “Audio Alag (Track)” karein to audio alag track ban jata hai — usay select karke “⬇ Ye Audio Download Karein (WAV)” se wahi hissa file mein bhi mil jata hai.</dd>
           <dt>Teeno / sab videos ki AIK hi audio?</dt><dd>Audio hisse mein “Sab Clips Ki AIK Audio Banayein (WAV)” dabayein — timeline ki sab clips aik hi audio file mein tartib se jud jati hain (har clip ka trim wala hissa). Timeline ke project tools mein “Sab Clips Ki Aik Audio (Track)” se wahi cheez aik combined track ki surat mein bhi banti hai, wahan se bhi WAV download ho jata hai.</dd>
+          <dt>Saari audio AIK file mein download karni hai — button kahan hai?</dt><dd>Neeche wale <b>Audio</b> tab mein jayein — sab se upar sunehri (gold) frame mein sab se bara button hai: “🎵 Sab Audio Merge Karein — AIK File Download (WAV)”. Wahi dabayein, saari clips ki awaz aik hi WAV file mein download ho jayegi. Alag-alag clip select karne ki zaroorat nahi — sab khud aik sath select hai.</dd>
+          <dt>Poori video aik hi select / merge karni hai?</dt><dd>Editor → Trim (timeline) ke upar “✓ Sab Select Karein” dabayein — poori video (sab clips mila kar) aik hi select ho jayegi. Phir wahan “🎬 Sab Merge — AIK Video” dabayein ya upar wala Export Video button — sab clips jud kar aik hi video file ban jayegi.</dd>
           <dt>Apni audio file video mein merge karna — video ka sound band?</dt><dd>Audio hisse ke “Merge” wale khane se apni audio file (MP3/WAV) chunein — file lagte hi video ka apna sound khud band ho jata hai aur preview + export dono mein sirf usi audio ki awaz chalti hai. Wapas video ka sound chahiye to wahi toggle OFF kar dein, ya “Merge Audio Hatayein” dabayein.</dd>
           <dt>Awaz mein shor (noise) hai?</dt><dd>“Audio Alag Karein” hisse mein “Shor Kam Karein (Noise Reduce)” ON kar dein — phir jo audio file banegi us mein pankhe / AC ka halka shor kam aur awaz saaf hogi.</dd>
           <dt>Thumbnail?</dt><dd>Thumbnail Studio mein video ke frame se — ya Gemini AI background se — 1280×720 JPG thumbnail banta hai, Urdu text ke sath.</dd>
@@ -1323,6 +1349,7 @@ var wrap=$("tlWrap"),inner=$("tlInner"),ruler=$("tlRuler"),laneV=$("tlLaneVideo"
 var LABEL_W=52;
 var pxPerSec=26,fitMode=true;
 var sel=null; /* {type:'video'|'audio'|'overlay', index or id} */
+var allSel=false; /* true = poori video (sab clips) aik hi select hai */
 var audios=[],overlays=[],uid=1;
 var inPt=null,outPt=null;
 var origMuted=false;
@@ -1528,6 +1555,21 @@ $("tlZoomOut").addEventListener("click",function(){fitMode=false;pxPerSec=Math.m
 $("tlFit").addEventListener("click",function(){fitMode=true;render();wrap.scrollLeft=0;});
 $("tlScrollL").addEventListener("click",function(){wrap.scrollBy({left:-Math.max(140,wrap.clientWidth*0.75),behavior:"smooth"});});
 $("tlScrollR").addEventListener("click",function(){wrap.scrollBy({left:Math.max(140,wrap.clientWidth*0.75),behavior:"smooth"});});
+/* ---------- SAB SELECT / SAB MERGE — poori video aik hi ---------- */
+var saBtn=$("tlSelectAll");
+if(saBtn)saBtn.addEventListener("click",function(){
+  if(!clips().length){setStatus("Pehle Media se videos import karein — phir Sab Select dabayein.","err");return;}
+  sel=null;allSel=true;render();renderContext();
+  setStatus("★ Sab select ho gaya — poori video ("+clips().length+" clips, kul waqt "+fmt(total())+") aik hi video hai. Ab “🎬 Sab Merge” ya upar wala Export Video dabayein — sab jud kar aik hi file banegi.","ok");
+});
+var mgBtn=$("tlMergeAll");
+if(mgBtn)mgBtn.addEventListener("click",function(){
+  if(!clips().length){setStatus("Pehle Media se videos import karein.","err");return;}
+  sel=null;allSel=true;renderContext();
+  var eb=$("exportBtn");
+  if(eb&&!eb.disabled){setStatus("Sab clips merge ho rahe hain — aik hi video export ho rahi hai.","ok");eb.click();}
+  else setStatus("Export abhi tayyar nahi — pehle video load hone dein.","err");
+});
 
 /* ---------- context toolbar ---------- */
 function ctxBtn(label,fn,gold){
@@ -1538,8 +1580,20 @@ function renderContext(){
   var cs=clips();
   function label(txt){var s=document.createElement("span");s.className="ctx-label";s.textContent=txt;box.appendChild(s);}
   if(!cs.length){label("Timeline Tools — pehle video import karein");return;}
+  if(sel)allSel=false;
+  if(allSel&&!sel){
+    label("★ SAB SELECT HAI — Poori Video ("+cs.length+" clips • kul waqt "+fmt(total())+")");
+    box.appendChild(ctxBtn("🎬 Sab Merge — AIK Video Export Karein",function(){var eb=$("exportBtn");if(eb)eb.click();},true));
+    box.appendChild(ctxBtn("🎵 Sab Ki AIK Audio Download (WAV)",function(){downloadCombined();},true));
+    box.appendChild(ctxBtn("🎧 Sab Ki Aik Audio (Track Banayein)",doCombinedTrack));
+    var ah=document.createElement("span");ah.className="hint";ah.style.margin="0";ah.textContent="Poori video aik hi hai — Export dabane par sab clips tartib se jud kar aik hi video file banegi, aur audio wala button saari awaz aik hi WAV file mein dega. Kisi aik clip ko alag edit karna ho to timeline mein us par tap kar dein.";box.appendChild(ah);
+    return;
+  }
   if(!sel){
     label("Timeline Tools — kuch select nahi (project tools)");
+    box.appendChild(ctxBtn("✓ Sab Select Karein (Poori Video)",function(){allSel=true;renderContext();setStatus("★ Sab select ho gaya — poori video ("+cs.length+" clips, kul waqt "+fmt(total())+") aik hi hai. Ab “🎬 Sab Merge — AIK Video Export Karein” dabayein.","ok");},true));
+    box.appendChild(ctxBtn("🎬 Sab Merge — AIK Video Export",function(){var eb=$("exportBtn");if(eb)eb.click();}));
+    box.appendChild(ctxBtn("🎵 Sab Ki AIK Audio Download (WAV)",function(){downloadCombined();}));
     box.appendChild(ctxBtn("＋ Clip Add Karein",function(){var fi=$("fileInput");if(fi)fi.click();}));
     box.appendChild(ctxBtn("🎵 Audio Add Karein",function(){$("tlAudioInput").click();}));
     box.appendChild(ctxBtn("🏷️ Logo Add Karein",function(){$("tlLogoInput").click();}));
@@ -1822,6 +1876,50 @@ function loopSync(){
 }
 render();renderContext();updateMergeUI();requestAnimationFrame(loopSync);
 window.addEventListener("resize",function(){render();});
+})();
+</script>
+
+<script>
+/* ===== SAB MERGE HUB — Audio tab ke sab se upar wale bare buttons ===== */
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id);};
+var hubStatus=$("mergeHubStatus"),hs=$("hubStatus"),aBtn=$("hubAudioBtn"),vBtn=$("hubVideoBtn");
+if(!aBtn||!vBtn)return;
+function totals(){
+  var ed=window.__editor;var cs=ed?ed.clips():[];var tot=0;
+  cs.forEach(function(c,i){tot+=Math.max(0,(c.trimEnd||c.duration||0)-(c.trimStart||0));if(i>0)tot+=(c.gapBefore||0);});
+  return{n:cs.length,tot:tot};
+}
+function refresh(){
+  var ed=window.__editor;if(!ed)return;
+  var t=totals();
+  var ab=document.querySelectorAll("#tlLaneAudio .tl-block").length;
+  if(hubStatus){
+    hubStatus.textContent=t.n?("🎬 "+t.n+" video clip"+(t.n>1?"s":"")+" • 🎵 "+ab+" audio track"+(ab!==1?"s":"")+" • ⏱ Kul waqt "+ed.fmt(t.tot)+" — sab aik sath select hai, neeche wale bare buttons se sab merge ho jayega."):"Abhi koi clip nahi — pehle Editor → Media se videos load karein, phir yahan aayein.";
+  }
+  aBtn.disabled=!t.n;vBtn.disabled=!t.n;
+}
+function setH(m,cls){if(hs){hs.textContent=m||"";hs.className="status"+(cls?" "+cls:"");}}
+aBtn.addEventListener("click",function(){
+  var ed=window.__editor;
+  if(!ed||!ed.clips().length){setH("Pehle Editor → Media se videos load karein.","err");return;}
+  aBtn.disabled=true;setH("Sab clips ki AIK audio bann rahi hai… chand second lagein ge.");
+  ed.buildCombinedWav(ed.noiseOn?ed.noiseOn():false).then(function(blob){
+    aBtn.disabled=false;
+    var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="sab-clips-aik-audio.wav";document.body.appendChild(a);a.click();a.remove();
+    setH("Ho gaya! Sab audio merge ho kar AIK file download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, WAV).","ok");
+  }).catch(function(err){aBtn.disabled=false;setH("Audio nahi bann saka ("+err.message+") — video mein awaz maujood hai ya nahi, check karein.","err");});
+});
+vBtn.addEventListener("click",function(){
+  var ed=window.__editor;
+  if(!ed||!ed.clips().length){setH("Pehle Editor → Media se videos load karein.","err");return;}
+  setH("Editor khul raha hai — sab clips merge ho kar aik hi video export hogi.","ok");
+  if(window.__switchView)window.__switchView("editor");
+  if(window.__switchSub)window.__switchSub("props");
+  setTimeout(function(){var eb=$("exportBtn");if(eb&&!eb.disabled)eb.click();},120);
+});
+refresh();setInterval(refresh,700);
 })();
 </script>
 </body>
