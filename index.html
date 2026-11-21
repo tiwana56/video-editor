@@ -472,8 +472,13 @@ ol.steps li{color:#d8e1ee}
 .jadoo .vo-grid2{display:grid;grid-template-columns:1fr;gap:10px}
 @media(min-width:640px){.jadoo .vo-grid2{grid-template-columns:1fr 1fr}}
 /* ===== CAPTION VIDEO (تجرباتی — OPTIONAL, default OFF) ===== */
-.cap-toggle-wrap{display:flex;align-items:center;gap:14px;width:100%;min-height:68px;padding:12px 14px;border:2px solid var(--jgold);border-radius:14px;background:rgba(0,0,0,.35);cursor:pointer}
-.cap-toggle-wrap input{position:absolute;opacity:0;width:1px;height:1px}
+.cap-toggle-wrap{position:relative;display:flex;align-items:center;gap:14px;width:100%;min-height:68px;padding:12px 14px;border:2px solid var(--jgold);border-radius:14px;background:rgba(0,0,0,.35);cursor:pointer}
+/* Checkbox label ke ANDAR hi rahe (position:relative wala label is ka
+   containing block hai) — pehle label par position nahi thi, to tap par
+   browser is chhupi hui 1px input ko focus karke "reveal" karne ke liye
+   page ko ghalat jagah scroll kar deta tha: screen aadhi kaali ho jati
+   thi aur neeche wala hissa scroll karke bhi nahi milta tha. */
+.cap-toggle-wrap input{position:absolute;top:0;inset-inline-start:0;opacity:0;width:1px;height:1px}
 .cap-track{flex:none;width:74px;height:40px;border-radius:999px;background:#3f3f46;border:2px solid rgba(255,255,255,.35);position:relative;transition:background .2s}
 .cap-track::after{content:"";position:absolute;top:3px;inset-inline-start:4px;width:30px;height:30px;border-radius:50%;background:#fff;transition:transform .2s}
 .cap-toggle-wrap input:checked + .cap-track{background:var(--green-d)}
@@ -535,9 +540,9 @@ ol.steps li{color:#d8e1ee}
         <label class="file-pick" for="fileInput">
           <span style="font-size:26px;display:block;margin-bottom:6px">＋</span>
           <b>Import Video Clips</b>
-          <span>Tap karke gallery / files se <b>aik ya kai clips</b> chunein<br/>MP4, WebM — phone se seedha load, koi upload nahi<br/>Isi picker se <b>tasveerein bhi</b> chun sakte hain</span>
+          <span>Tap karke gallery / files se <b>aik ya kai video clips</b> chunein<br/>MP4, WebM — phone se seedha load, koi upload nahi<br/>Tasveerein lagani hon to neeche wala <b>Images Upload</b> button use karein</span>
         </label>
-        <input class="hidden" type="file" id="fileInput" accept="video/*,image/*" multiple/>
+        <input class="hidden" type="file" id="fileInput" accept="video/*" multiple/>
         <p class="file-meta" id="fileMeta">No media imported — abhi koi video select nahi hui.</p>
         <button class="btn gold block" id="mediaAudioUploadBtn" type="button" style="margin-top:4px">📤 Audio File Upload Karein (MP3 / WAV)</button>
         <p class="hint">Apni audio file (naat, background awaz, apni recording) chunein — wo video mein merge ho jayegi, <b style="color:var(--text)">video ka apna sound band</b> ho jayega aur preview + export dono mein sirf is audio ki awaz chalegi. Yahi button neeche Audio tab mein bhi hai.</p>
@@ -1622,10 +1627,11 @@ function probeDuration(c){
 }
 $("fileInput").addEventListener("change",function(ev){
   /* FileList LIVE hoti hai — pehle copy lo, phir input reset karo.
-     Is picker se ab tasveerein bhi chun sakte hain: video files video
-     clip banti hain, image files image clip ban kar upar chuni hui
-     jagah (shuru / playhead / end) par lagti hain. Isi liye baghair
-     video ke, sirf tasveeron se bhi project shuru ho sakta hai. */
+     Ye picker SIRF video ke liye hai (accept="video/*") taake phone par
+     video wala picker hi khule, Photos wala nahi. Tasveeron ke liye
+     alag Images Upload button (imageInput) hai. Phir bhi koi image
+     file aa jaye to wo image clip ban kar upar chuni hui jagah
+     (shuru / playhead / end) par lag jati hai. */
   var picked=ev.target.files?Array.prototype.slice.call(ev.target.files):[];
   ev.target.value="";
   if(!picked.length)return;
@@ -3300,7 +3306,7 @@ function capBuildPeaks(buf){
 function capEnsureData(){
   if(!wavBlob)return Promise.reject(new Error("noaudio"));
   if(capBuffer&&capBufferFor===wavBlob)return Promise.resolve(capBuffer);
-  var fonts=(document.fonts&&document.fonts.load)?Promise.all([document.fonts.load('700 60px "Noto Nastaliq Urdu"'),document.fonts.load('600 40px "Montserrat"')]).catch(function(){}):Promise.resolve();
+  var fonts=(document.fonts&&document.fonts.load)?Promise.all([document.fonts.load('700 60px "Noto Nastaliq Urdu"')]).catch(function(){}):Promise.resolve();
   return fonts.then(function(){return wavBlob.arrayBuffer();}).then(function(ab){return getCtx().decodeAudioData(ab);}).then(function(buf){
     capBuffer=buf;capBufferFor=wavBlob;wavDuration=buf.duration;capBuildPeaks(buf);capBuildWords();return buf;
   });
@@ -3315,13 +3321,10 @@ function capStaticLayer(w,h){
   x.strokeStyle="rgba(201,162,39,.8)";x.lineWidth=Math.max(3,w*0.006);
   var m=w*0.045;x.strokeRect(m,m,w-2*m,h-2*m);
   x.strokeStyle="rgba(201,162,39,.3)";x.lineWidth=1.5;x.strokeRect(m+10,m+10,w-2*m-20,h-2*m-20);
-  /* exact Urdu Ai wordmark — Urdu safed, Ai sunehra (#FFBE0B), Montserrat */
-  var fs=w*0.085;x.font="600 "+fs+"px Montserrat, sans-serif";x.textBaseline="middle";x.direction="ltr";
-  var wU=x.measureText("Urdu").width,wA=x.measureText("Ai").width,gap=fs*0.28,total=wU+gap+wA,sx=(w-total)/2,sy=h*0.075;
-  x.textAlign="left";x.fillStyle="#ffffff";x.fillText("Urdu",sx,sy);
-  x.fillStyle="#FFBE0B";x.fillText("Ai",sx+wU+gap,sy);
-  x.font="600 "+(w*0.028)+"px Montserrat, sans-serif";x.fillStyle="rgba(243,233,210,.65)";x.textAlign="center";
-  x.fillText("C A P T I O N   V I D E O",w/2,h*0.115);
+  /* "Urdu Ai" wordmark/logo caption video se poori tarah hata diya gaya
+     hai (user ki hidayat) — na preview mein hai, na export ki hui video
+     mein. Upar wala hissa ab saaf rehta hai, sirf frame aur caption
+     text aata hai. */
   capStatic=c;capStaticKey=key;return c;
 }
 function capWordAlpha(dist){return Math.max(.3,1-dist*.13);}
@@ -3628,7 +3631,7 @@ $("capDownloadBtn").addEventListener("click",function(){
       }
       if(capResultUrl)URL.revokeObjectURL(capResultUrl);
       capResultUrl=URL.createObjectURL(res.rec.blob);
-      var ext=res.item.ext,fname="urdu-ai-caption-video."+ext;
+      var ext=res.item.ext,fname="caption-video."+ext;
       $("capResultVideo").src=capResultUrl;
       var dl=$("capDlLink");dl.href=capResultUrl;dl.setAttribute("download",fname);
       $("capFileSize").textContent=(res.rec.blob.size/1048576).toFixed(2)+" MB";
