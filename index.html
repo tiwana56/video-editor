@@ -1314,9 +1314,17 @@ $("fileInput").addEventListener("change",function(ev){
 });
 /* ===== IMAGES UPLOAD — tasveerein bhi clips banti hain ===== */
 $("imageInput").addEventListener("change",function(ev){
-  var files=ev.target.files;if(!files||!files.length)return;ev.target.value="";
+  /* FileList LIVE hoti hai: input ko khaali (value="") karte hi us ki
+     files bhi sath khaali ho jati hain. Is liye pehle chuni hui files
+     ki copy aik aam array mein lo, PHIR input reset karo. Pehle reset
+     pehle ho jata tha — loop tak files 0 reh jati theen, koi image
+     clip banta hi nahi tha: tasveer select ho jati thi lekin video
+     mein kahin nazar nahi aati thi (na shuru mein, na aakhir mein). */
+  var picked=ev.target.files?Array.prototype.slice.call(ev.target.files):[];
+  ev.target.value="";
+  if(!picked.length)return;
   var firstNew=clips.length;
-  for(var i=0;i<files.length;i++){
+  for(var i=0;i<picked.length;i++){
     (function(f){
       var c={file:f,name:f.name,size:f.size,url:URL.createObjectURL(f),isImage:true,img:null,duration:10,trimStart:0,trimEnd:3};
       clips.push(c);
@@ -1324,9 +1332,9 @@ $("imageInput").addEventListener("change",function(ev){
       img.onload=function(){c.img=img;renderClipList();if(clips[activeClip]===c)drawFrame();};
       img.onerror=function(){setStatus(editorStatus,"Aik tasveer nahi khul saki ("+f.name+") — JPG/PNG try karein.","err");};
       img.src=c.url;
-    })(files[i]);
+    })(picked[i]);
   }
-  setStatus(editorStatus,files.length+" tasveer(ain) media list mein clip ban kar add ho gayi — har tasveer video mein 3 second dikhegi. Tartib ↑ ↓ se badlein, lambai timeline ke kinaron se (zyada se zyada 10 second), phir Export karein.","ok");
+  setStatus(editorStatus,picked.length+" tasveer(ain) media list mein clip ban kar add ho gayi — har tasveer video mein 3 second dikhegi. Tartib ↑ ↓ se badlein, lambai timeline ke kinaron se (zyada se zyada 10 second), phir Export karein.","ok");
   loadClip(firstNew);
 });
 var mediaImageBtn=$("mediaImageBtn");
