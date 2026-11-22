@@ -147,6 +147,10 @@ progress{width:100%;height:10px;appearance:none}
 progress::-webkit-progress-bar{background:#1a2130;border-radius:99px}
 progress::-webkit-progress-value{background:var(--green);border-radius:99px}
 progress::-moz-progress-bar{background:var(--green);border-radius:99px}
+/* Export patti ab screen ke neeche chipki rehti hai — progress, status
+   aur download button hamesha nazar ke samne. Pehle ye side panel mein
+   kahin neeche hoti thi, user ko milti hi nahi thi. */
+#exportProgressWrap:not(.hidden){position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#0f1622;border-top:2px solid #22c55e;padding:10px 12px calc(12px + env(safe-area-inset-bottom));box-shadow:0 -8px 28px rgba(0,0,0,.55)}
 .status{font-size:13.5px;margin-top:8px;min-height:1.35em;color:var(--muted)}
 .status.err{color:var(--danger);font-weight:600}.status.ok{color:#86efac;font-weight:600}
 .warn-box{border:1px solid #854d0e;background:#221a06;border-radius:10px;padding:12px 13px;font-size:13.5px;color:#fde68a;line-height:1.55}
@@ -2672,6 +2676,14 @@ function showDlButton(url,filename,blob){
 }
 function pickMime(){var c=["video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];for(var i=0;i<c.length;i++){if(window.MediaRecorder&&MediaRecorder.isTypeSupported(c[i]))return c[i];}return "";}
 function dispatchRecorderExport(){
+  if(window.__fastFail){
+    try{
+      var __wp=document.getElementById("exportWhy");
+      if(!__wp){__wp=document.createElement("p");__wp.id="exportWhy";__wp.className="status";__wp.style.color="#fbbf24";var __ww=$("exportProgressWrap");if(__ww)__ww.insertBefore(__wp,__ww.firstChild);}
+      __wp.textContent="ℹ Tez export nahi ho saka ("+window.__fastFail+") — purana rasta chal raha hai: is mein video CHALTI hai, wahi is ki recording hai. Ghabrana nahi, page khula rakhein.";
+    }catch(e){}
+    window.__fastFail="";
+  }
   if(clips.length>1){exportJoined();return;}
   if(clips.length===1&&clips[0].isImage){exportImageSingle();return;}
   exportSingleRecorder();
@@ -2684,6 +2696,7 @@ exportBtn.addEventListener("click",function(){
     exportFast().then(function(done){if(!done)dispatchRecorderExport();});
     return;
   }
+  window.__fastFail="is browser mein tez export (WebCodecs) ki sahulat nahi hai";
   dispatchRecorderExport();
 });
 function exportSingleRecorder(){
@@ -3014,7 +3027,7 @@ function exportFast(){
     function done(ok){if(settled)return;settled=true;window.__fastBusy=false;resolve(ok);}
     /* Fori feedback: progress patti pehle lamhe se dikhe — library load
        hone tak khamoshi nahi (slow net par ye marhala lamba lagta hai). */
-    try{var __w=$("exportProgressWrap"),__p=$("exportProgress"),__s=$("exportStatus");if(__w)__w.classList.remove("hidden");if(__p)__p.value=0;var __old=document.getElementById("exportDlBtn");if(__old)__old.remove();var __oldS=document.getElementById("exportShareBtn");if(__oldS)__oldS.remove();if(__s)setStatus(__s,"Tez export ki tayyari — library load ho rahi hai… (slow net par thora waqt lag sakta hai)");}catch(e){}
+    try{var __w=$("exportProgressWrap"),__p=$("exportProgress"),__s=$("exportStatus");if(__w)__w.classList.remove("hidden");if(__p)__p.value=0;var __old=document.getElementById("exportDlBtn");if(__old)__old.remove();var __oldS=document.getElementById("exportShareBtn");if(__oldS)__oldS.remove();var __why=document.getElementById("exportWhy");if(__why)__why.remove();if(__s)setStatus(__s,"Tez export ki tayyari — library load ho rahi hai… (slow net par thora waqt lag sakta hai)");}catch(e){}
     var segs=[], totalOut=0;
     try{
       clips.forEach(function(c,i){
@@ -3024,14 +3037,15 @@ function exportFast(){
         segs.push({c:c,i:i,gapOut:gapOut,outDur:outDur,rate:rate,outStart:totalOut+gapOut});
         totalOut+=gapOut+outDur;
       });
-    }catch(e){done(false);return;}
+    }catch(e){window.__fastFail=(e&&e.message)||"tayyari mein khami";done(false);return;}
     /* Bohat lambi video par memory mehfooz nahi — purana rasta */
-    if(!clips.length||!(totalOut>0.4)||totalOut>900){done(false);return;}
+    if(!clips.length||!(totalOut>0.4)||totalOut>900){if(totalOut>900)window.__fastFail="video 15 minute se lambi hai";done(false);return;}
     var totalFrames=Math.max(1,Math.round(totalOut*FAST_FPS));
     loadMp4Muxer().then(function(M){
       return fastExportRun(M,segs,totalOut,totalFrames);
     }).then(function(){done(true);}).catch(function(e){
       try{console.warn("Tez export fail — purana rasta chalega:",e);}catch(_){}
+      window.__fastFail=(e&&e.message)||"tez export fail ho gaya";
       done(false);
     });
   });
