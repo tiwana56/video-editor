@@ -1122,7 +1122,7 @@ textarea{min-height:64px}
         <canvas id="thumbCanvas" width="1280" height="720" aria-label="Thumbnail preview"></canvas>
         <span class="label">Thumbnail Par Bara Text (Urdu)</span>
         <input type="text" id="thumbTitleText" class="urdu-input" dir="rtl" lang="ur" placeholder="مثلاً: سورۃ الکہف کی فضیلت"/>
-        <p class="hint">3–4 alfaz sab se behtar lagte hain. Neeche Gemini wala button pehle background tasveer banayega, phir ye text us par lag jayega.</p>
+        <p class="hint">3–4 alfaz sab se behtar lagte hain. Design professional banta hai: tasveer par gehra sabz rang, sunehra gradient title gehre outline ke sath aur ornamental gold frame — chhoti size mein bhi saaf parha jata hai. Neeche wale hisse se AI ke banaye hue thumbnail alfaz aik dabane par yahan lag jate hain.</p>
         <div class="row" style="margin-top:10px">
           <button class="btn" id="thumbFrameBtn" type="button">📸 Video Frame Se Banayein</button>
           <button class="btn gold" id="thumbAiBtn" type="button">✦ Gemini AI Background</button>
@@ -1131,8 +1131,8 @@ textarea{min-height:64px}
           <button class="btn" id="thumbRedrawBtn" type="button">Text Dobara Lagayein</button>
           <button class="btn" id="thumbDownloadBtn" type="button" style="border-color:var(--green);color:#86efac">⬇ Thumbnail Download (JPG)</button>
         </div>
-        <p class="status" id="thumbStatus" role="status">Video load karke “Video Frame” dabayein — ya Gemini key (neeche wale hisse mein) daal kar AI background banwayein.</p>
-        <p class="hint">AI thumbnail ke liye wahi muft Gemini key istemal hogi jo neeche “Gemini AI” hisse mein daali jati hai. AI sirf background banata hai (bina text ke) — Urdu text editor khud lagata hai taake spelling hamesha durust rahe.</p>
+        <p class="status" id="thumbStatus" role="status">Video load karke “Video Frame” dabayein — ya AI Studio tab mein Gemini key daal kar professional AI background banwayein.</p>
+        <p class="hint">AI thumbnail ke liye wahi muft Gemini key istemal hogi jo AI Studio tab mein daali jati hai. AI sirf background banata hai (bina text ke) — Urdu text, gold design aur frame editor khud lagata hai taake spelling hamesha durust rahe aur look professional bane.</p>
       </div>
     </section>
 
@@ -1219,14 +1219,44 @@ textarea{min-height:64px}
         </div>
       </div>
     </section>
+
+    <!-- TITLE / DESCRIPTION / TAGS — Thumbnail tab mein dikhega.
+         Title hamesha video/audio ke ASAL MATN se banta hai (Voice Over
+         tab ki transcription ya neeche paste kiya gaya matn) — sirf
+         topic ke andaze se nahi. Gemini key AI Studio tab wali hi hai. -->
+    <section class="panel" aria-labelledby="metaHead">
+      <div class="panel-head"><h2 id="metaHead">✦ Title, Description, Tags — Video Ke Matn Se</h2><span class="badge green" style="font-size:10px">Gemini AI</span></div>
+      <div class="panel-body">
+        <p class="subtle" style="margin-top:0">Title, description aur tags <b style="color:var(--text)">video / audio ke asal matn</b> se bante hain — sirf topic ke andaze se nahi. Voice Over tab mein transcription maujood ho to Gemini <b style="color:var(--text)">khud wahi matn</b> parh lega; ya neeche wale khane mein matn paste kar dein. Gemini ko aik <b style="color:var(--text)">poori skill (tafseeli hidayat)</b> di jati hai — 3 title options, mukammal description aur search wale tags. Key <b style="color:var(--text)">AI Studio tab</b> wali hi chalegi.</p>
+        <span class="label">Video Ka Matn (Transcription / Script) — Behtareen Nateeja Isi Se Milta Hai</span>
+        <textarea id="aiMatn" dir="auto" lang="ur" placeholder="Video ya audio ka matn yahan paste karein — ya neeche wala button dabakar Voice Over tab ka matn yahin le aayein…"></textarea>
+        <div class="row" style="margin-top:8px">
+          <button class="btn fixed" id="aiMatnBtn" type="button">🎙️ Voice Over Se Matn Lein</button>
+          <span class="hint" id="aiMatnMsg" style="margin:0"></span>
+        </div>
+        <span class="label" style="margin-top:12px">Topic (Ikhtiyari — Sirf Matn Na Ho To)</span>
+        <input type="text" id="aiTopic" placeholder="Misal: Surah Al-Kahf tilawat, Friday bayan, Ramzan ki dua…"/>
+        <p class="hint">Matn maujood ho to topic ki zaroorat nahi — Gemini matn parh kar khud mozū pehchan lega.</p>
+        <button class="btn gold block" id="aiBtn" type="button" style="margin-top:14px">✨ Matn Se Title + Description + Tags Banayein</button>
+        <p class="status" id="aiStatus" role="status"></p>
+        <div class="result-box" id="aiResult">
+          <div id="aiResultText"></div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn small fixed" id="copyAiBtn" type="button">Poora Jawab Copy Karein</button>
+            <button class="btn small fixed" id="useTitleBtn" type="button">Title Video Text Mein Lagayein</button>
+            <button class="btn small fixed" id="useThumbTextBtn" type="button">🖼 Thumbnail Text Thumbnail Par Lagayein</button>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 
   <div class="bottom-grid">
     <!-- GEMINI -->
     <section class="panel" aria-labelledby="s3">
-      <div class="panel-head"><h2 id="s3">✦ Gemini AI — Title, Description, Tags</h2><span class="badge green" style="font-size:10px">Free Key</span></div>
+      <div class="panel-head"><h2 id="s3">✦ AI Studio — Keys Aur Model</h2><span class="badge green" style="font-size:10px">Free Key</span></div>
       <div class="panel-body">
-        <p class="subtle" style="margin-top:0">Apni <b style="color:var(--text)">muft Gemini API key</b> se Urdu title, description aur tags banwayein. Key <b style="color:var(--text)">aik dafa dalne par isi browser mein save ho jati hai</b> — dobara nahi dalni paregi. Jawab ke liye key Google ke Gemini server ko bheji jati hai.</p>
+        <p class="subtle" style="margin-top:0">Is tab mein sirf <b style="color:var(--text)">keys aur model ki setting</b> hai. Key <b style="color:var(--text)">aik dafa dalne par isi browser mein save ho jati hai</b> — dobara nahi dalni paregi, aur Thumbnail / Voice Over sab jagah wahi key chalti hai. <b style="color:var(--text)">Title, Description, Tags ab Thumbnail wale tab mein hain</b> — wahan wo video ke asal matn se bante hain. Jawab ke liye key Google ke Gemini server ko bheji jati hai.</p>
         <h3 style="font-size:13.5px;margin:14px 0 4px">Muft key — 2 minute</h3>
         <ol class="steps">
           <li><a href="https://aistudio.google.com" target="_blank" rel="noopener">Google AI Studio</a> kholein, Google account se sign in karein.</li>
@@ -1253,9 +1283,6 @@ textarea{min-height:64px}
           <button class="btn fixed" id="groqKeyShowBtn" type="button">Show</button>
         </div>
         <p class="hint">Ye key sirf Whisper backup ke liye hai aur sirf jawab ke waqt Groq ko bheji jati hai. Gemini wali key is se alag hai — dono apni apni jagah dalein.</p>
-        <span class="label">Video Kis Bare Mein Hai?</span>
-        <input type="text" id="aiTopic" placeholder="Misal: Surah Al-Kahf tilawat, Friday bayan, Ramzan ki dua…"/>
-        <p class="hint">Roman Urdu / English mein likhein — jawab Urdu mein milega.</p>
         <span class="label">Model — Naam Khud Bhi Likh Sakte Hain</span>
         <input type="text" id="modelSel" list="modelList" value="gemini-3.5-flash-lite" autocomplete="off" placeholder="gemini-3.5-flash-lite"/>
         <datalist id="modelList">
@@ -1269,15 +1296,7 @@ textarea{min-height:64px}
           <button class="btn fixed" id="modelSaveBtn" type="button">💾 Model Save Karein</button>
           <span class="hint" id="modelSaveMsg" style="margin:0"></span>
         </div>
-        <button class="btn gold block" id="aiBtn" type="button" style="margin-top:14px">✨ Title + Description + Tags Banayein</button>
-        <p class="status" id="aiStatus" role="status"></p>
-        <div class="result-box" id="aiResult">
-          <div id="aiResultText"></div>
-          <div class="row" style="margin-top:10px">
-            <button class="btn small fixed" id="copyAiBtn" type="button">Poora Jawab Copy Karein</button>
-            <button class="btn small fixed" id="useTitleBtn" type="button">Title Video Text Mein Lagayein</button>
-          </div>
-        </div>
+        <p class="hint" style="margin-bottom:0">Yehi model Thumbnail tab ke Title / Description / Tags aur baqi Gemini kaamon mein istemal hota hai.</p>
       </div>
     </section>
 
@@ -1325,7 +1344,7 @@ textarea{min-height:64px}
           <dt>Video mein tasveerein (images) kaise add karein?</dt><dd><b>Editor → Media</b> panel mein neela button hai: “🖼️ Images Upload Karein” — gallery se aik ya kai tasveerein chunein. Har tasveer media list mein <b>aik clip (3 second)</b> ban kar aa jati hai, bilkul video clip ki tarah: list ke ↑ ↓ se ya timeline mein drag karke tartib badlein, timeline mein tasveer select karke <b>3 / 5 / 10 second</b> ke buttons se us ka time badlein, delete bhi wahi se. Phir <b>Export</b> dabayein — tasveerein usi tartib mein video ke andar chalengi.</dd>
           <dt>Tasveer video ke SHURU ya BEECH mein kaise lagayein — sirf end par kyun lagti thi?</dt><dd>Pehle tasveer hamesha list ke aakhir (end) mein judti thi. Ab Media panel mein tasveer chunne se <b>pehle</b> jagah tay karein: <b>“📍 Tasveer Kahan Lage?”</b> wale teen buttons — <b>Playhead Par (Beech Mein)</b>: pehle safed line (playhead) ko video mein wahan le jayein jahan tasveer dikhani hai, phir tasveer chunein — video usi jagah se khud split ho jayegi aur tasveer darmiyan mein lag jayegi. <b>Shuru Mein</b>: tasveer sab se pehle aayegi. <b>End Mein</b>: sab se aakhir mein. Agar tasveer pehle se lagi hui hai to timeline mein usay select karke <b>“⏮ Sab Se Shuru Mein” / “📍 Playhead Par” / “⏭ Sab Se End Mein”</b> buttons se us ki jagah kabhi bhi badal sakte hain.</dd>
           <dt>Sirf tasveeron se video (slideshow) kaise banayein — bina kisi video ke?</dt><dd>Media panel ke sab se upar sunehra button dabayein: <b>“🖼️ Sirf Tasveeron Se Video Banayein — Slideshow”</b> — gallery se kai tasveerein aik sath chunein, har tasveer 3 second ki clip ban jayegi (time timeline mein select karke 3/5/10 second kar sakte hain). Koi video import karne ki zaroorat nahi. Phir upar wala <b>Export Video</b> dabayein — saari tasveerein jud kar aik video ban jayegi. Awaz lagani ho to “📤 Audio File Upload Karein” se apni audio (naat / awaz) lagayein — wo tasveeron par chalegi, bilkul slideshow ki tarah. Main Import wala picker bhi ab tasveerein le leta hai, wahan se bhi sirf tasveerein chun kar project shuru ho sakta hai.</dd>
-          <dt>Thumbnail?</dt><dd>Thumbnail Studio mein video ke frame se — ya Gemini AI background se — 1280×720 JPG thumbnail banta hai, Urdu text ke sath.</dd>
+          <dt>Thumbnail?</dt><dd>Thumbnail Studio mein video ke frame se — ya Gemini AI background se — professional 1280×720 JPG thumbnail banta hai: gehra sabz + gold design, bara sunehra Urdu title aur ornamental frame. <b>Title, Description, Tags bhi isi Thumbnail tab mein hain</b> — wo video/audio ke asal matn (Voice Over wali transcription ya paste kiye gaye matn) se Gemini ki poori skill ke sath bante hain: 3 title options, mukammal description aur search wale tags.</dd>
           <dt>Install ke baad 404 kyun aata hai?</dt><dd>Purana home-screen icon pehle wali ghalat link par bana hota hai aur naya install usay khud nahi badalta. Usay long-press karke delete karein, phir is page ko Chrome mein khol kar dobara Install karein — manifest ki link ab durust hai, is liye taza icon editor par khulna chahiye.</dd>
         </dl>
       </div>
@@ -1612,6 +1631,7 @@ var timeline=document.querySelector(".timeline-panel");
 var grids=document.querySelectorAll(".bottom-grid");
 var thumbPanel=grids[0]?grids[0].children[0]:null;
 var audioPanel=grids[0]?grids[0].children[1]:null;
+var metaPanel=grids[0]?grids[0].children[2]:null;
 var aiPanel=grids[1]?grids[1].children[0]:null;
 var helpPanel=grids[1]?grids[1].children[1]:null;
 var voicePanel=document.getElementById("voicePanel");
@@ -1627,6 +1647,7 @@ var editorView=document.createElement("div");editorView.className="view active";
 editorView.appendChild(workspace);
 if(timeline)workspace.appendChild(timeline);
 var thumbScroll=makeView("thumb"); if(thumbPanel)thumbScroll.appendChild(thumbPanel);
+if(metaPanel)thumbScroll.appendChild(metaPanel);
 var audioScroll=makeView("audio"); if(audioPanel)audioScroll.appendChild(audioPanel);
 var voiceScroll=makeView("voice"); if(voicePanel)voiceScroll.appendChild(voicePanel);
 var aiScroll=makeView("ai"); if(aiPanel)aiScroll.appendChild(aiPanel);
@@ -2279,7 +2300,7 @@ function setFilter(b,c,s){state.brightness=b;state.contrast=c;state.saturation=s
 $("filterNoneBtn").addEventListener("click",function(){setFilter(100,100,100);pushHistory();});$("filterWarmBtn").addEventListener("click",function(){setFilter(108,105,118);pushHistory();});$("filterVividBtn").addEventListener("click",function(){setFilter(105,112,145);pushHistory();});$("filterSoftBtn").addEventListener("click",function(){setFilter(112,92,88);pushHistory();});
 var templates={tilawat:{t:"خوبصورت تلاوتِ قرآن",s:"دل کو سکون دینے والی آواز"},naat:{t:"دلکش نعتِ رسول ﷺ",s:"عقیدت و محبت کے ساتھ سنیں"},bayan:{t:"ایمان افروز بیان",s:"مکمل بیان کے لیے چینل وزٹ کریں"},dua:{t:"قبولیت کی دعا",s:"آمین لکھ کر شریک ہوں"}};
 document.querySelectorAll("[data-tpl]").forEach(function(btn){btn.addEventListener("click",function(){var tpl=templates[btn.getAttribute("data-tpl")];if(!tpl)return;$("titleText").value=tpl.t;$("subText").value=tpl.s;drawFrame();pushHistory();});});
-var ytId="";$("ytCheckBtn").addEventListener("click",function(){var url=$("ytLink").value.trim();var m=url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);var thumb=$("ytThumb"),msg=$("ytMsg");if(!m){ytId="";thumb.style.display="none";msg.textContent="Ye YouTube ka durust link nahi laga. watch ya shorts wala poora link paste karein.";return;}ytId=m[1];thumb.src="https://i.ytimg.com/vi/"+ytId+"/hqdefault.jpg";thumb.style.display="block";thumb.onerror=function(){thumb.style.display="none";};msg.textContent="Video pehchan li gayi (ID: "+ytId+"). Ab is video ki file phone mein save karke upar Import se load karein — aur Gemini helper mein topic likh kar title/tags banayein.";});
+var ytId="";$("ytCheckBtn").addEventListener("click",function(){var url=$("ytLink").value.trim();var m=url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);var thumb=$("ytThumb"),msg=$("ytMsg");if(!m){ytId="";thumb.style.display="none";msg.textContent="Ye YouTube ka durust link nahi laga. watch ya shorts wala poora link paste karein.";return;}ytId=m[1];thumb.src="https://i.ytimg.com/vi/"+ytId+"/hqdefault.jpg";thumb.style.display="block";thumb.onerror=function(){thumb.style.display="none";};msg.textContent="Video pehchan li gayi (ID: "+ytId+"). Ab is video ki file phone mein save karke upar Import se load karein — aur Thumbnail tab mein video ke matn se title/tags banayein.";});
 function pickMime(){var c=["video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];for(var i=0;i<c.length;i++){if(window.MediaRecorder&&MediaRecorder.isTypeSupported(c[i]))return c[i];}return "";}
 exportBtn.addEventListener("click",function(){
   if(!state.loaded||state.exporting)return;
@@ -2302,23 +2323,73 @@ exportBtn.addEventListener("click",function(){
   function begin(){if(started)return;started=true;video.removeEventListener("seeked",begin);var prevRate=video.playbackRate;video.playbackRate=parseFloat($("speedSel").value);rec.start(250);video.play();if(mergeUsed&&window.__mergePlay)window.__mergePlay(combinedOffset(activeClip));startLoop();var tick=setInterval(function(){var done=Math.min(1,(video.currentTime-start)/clipDur);prog.value=Math.round(done*100);setStatus(estatus,"Export ho raha hai… "+Math.round(done*100)+"% — page khula rakhein.");if(video.currentTime>=end||video.ended){clearInterval(tick);video.pause();setTimeout(function(){if(rec.state!=="inactive")rec.stop();},150);}},200);setTimeout(function(){clearInterval(tick);if(rec.state!=="inactive"){video.pause();rec.stop();}},(clipDur+4)*1000/Math.max(0.5,parseFloat($("speedSel").value)));}
   video.addEventListener("seeked",begin);setTimeout(begin,900);
 });
-/* Gemini */
-var aiStatus=$("aiStatus"),lastAiText="",lastAiTitle="";
+/* Gemini — Title / Description / Tags (Thumbnail tab mein)
+   ===== META SKILL: Gemini ko di jane wali POORI hidayat =====
+   Usool: title/description/tags hamesha video ke ASAL MATN se banein
+   ge — matn Voice Over tab ki transcription se khud liya jata hai,
+   ya user Thumbnail tab ke khane mein paste karta hai. Sirf topic
+   par andaza sirf tab, jab matn bilkul maujood na ho. */
+var META_SKILL=[
+"Tum aik expert YouTube SEO copywriter ho — aik Pakistani Islamic YouTube channel ke liye kaam karte ho jahan tilawat, naat, bayan aur dua ki videos upload hoti hain. Tumhara kaam: video ke ASAL MATN (transcription) ko ghaur se parh kar aisi title, description aur tags likhna jo (1) 100% sach par mabni hon, (2) YouTube par log jo alfaz asal mein search karte hain un se match karein, (3) dekhne wale ko click karne ki taraf raghib karein — lekin jhoot ya dhoke wala clickbait bilkul nahi.",
+"",
+"QAIDE — har haal mein lazmi:",
+"1. Har naam, Surah, ayat, waqia ya dawa SIRF matn se lo. Jo baat matn mein nahi, wo title/description mein mat likho — andaza bilkul nahi lagana.",
+"2. Matn mein qari/speaker ka naam, Surah ya para ka naam, ya koi mashhoor jumla aaye to usay pehle title mein zaroor jagah do — yahi cheezein sab se zyada search hoti hain.",
+"3. TITLES: 3 mukhtalif options do, har title Urdu script mein aur 60 characters se kam. Pehla title sab se mazboot ho — us mein main search jumla (masalan Surah ka naam + tilawat/bayan) lazmi ho. Teeno ka andaz alag ho: aik seedha search wala, aik jazbati, aik sawal ya hairat wala — lekin teeno sache.",
+"4. THUMBNAIL TEXT: sirf 3-4 alfaz — bohat bare parhe jane wale, dil ko chhune wale lekin sache. Ye lafz thumbnail par sunehri bare harfon mein likhe jayenge.",
+"5. DESCRIPTION: Urdu script mein 150-220 alfaz. Pehli 2 lines mein hook + main keyword (taake search mein wahi dikhe). Phir matn ka saaf khulasa — jo topics asal mein cover hue sirf wahi. Phir 'اس ویڈیو میں:' ke tehat 3-5 chhoti lines jo matn se niklein. Phir subscribe ki pur-khuloos dawat. Aakhir mein aik line 'Credit: [credit yahan]' aur us ke baad 3-5 hashtags (# ke sath).",
+"6. TAGS: 15-20 tags, comma se alag. Teenon andaz ka mix: Urdu script + Roman Urdu + English. Wahi jumle jo log asal mein search karte hain — mozū ke naam ke mukhtalif andaz (masalan: surah kahf, سورۃ الکہف, surah al kahf tilawat, surah kahf ki fazilat). Koi ghair-mutaliqa tag nahi.",
+"7. Jawab SIRF neeche diye gaye format mein do — koi salam-dua, koi tashreeh, koi extra line nahi.",
+"",
+"FORMAT (bilkul isi tartib mein):",
+"TITLES:",
+"1. <pehla title>",
+"2. <dosra title>",
+"3. <teesra title>",
+"THUMBNAIL TEXT: <3-4 alfaz>",
+"DESCRIPTION:",
+"<poori description>",
+"TAGS: <tag1, tag2, tag3, ...>"
+].join("\n");
+var aiStatus=$("aiStatus"),lastAiText="",lastAiTitle="",lastAiThumb="";
+var VO_SAMPLE_HEAD="السلام علیکم! آج ہم اردو میں اپنا پہلا وائس اوور";
+function currentMatn(){
+  var m=$("aiMatn")?$("aiMatn").value.trim():"";
+  if(m)return {text:m,src:"paste kiya gaya matn"};
+  var vs=$("voScript");
+  if(vs){var t=vs.value.trim();if(t&&t.indexOf(VO_SAMPLE_HEAD)!==0)return {text:t,src:"Voice Over wala matn"};}
+  return {text:"",src:""};
+}
 $("keyShowBtn").addEventListener("click",function(){var k=$("apiKey");var show=k.type==="password";k.type=show?"text":"password";this.textContent=show?"Hide":"Show";});
+$("aiMatnBtn").addEventListener("click",function(){
+  var vs=$("voScript"),msg=$("aiMatnMsg");
+  var t=vs?vs.value.trim():"";
+  if(!t||t.indexOf(VO_SAMPLE_HEAD)===0){if(msg)msg.textContent="Voice Over tab mein abhi asal matn nahi hai — pehle wahan audio se matn nikalwayein, ya upar wale khane mein matn khud paste kar dein.";return;}
+  $("aiMatn").value=t;
+  if(msg)msg.textContent="✓ Matn aa gaya ("+t.length+" haroof) — ab neeche wala sunehra button dabayein.";
+});
 $("aiBtn").addEventListener("click",function(){
   var key=$("apiKey").value.trim(),topic=$("aiTopic").value.trim(),model=$("modelSel").value;
-  if(!key){setStatus(aiStatus,"Pehle apni muft Gemini API key paste karein (upar steps diye hain).","err");return;}
-  if(!topic){setStatus(aiStatus,"Video ka topic likhein — masalan “Surah Al-Kahf ki tilawat”.","err");return;}
-  var btn=this;btn.disabled=true;setStatus(aiStatus,"Gemini soch raha hai… chand second intezar karein.");$("aiResult").style.display="none";
-  var prompt="Tum aik Pakistani Islamic YouTube channel ke liye expert title writer ho. Video ka topic ye hai: \""+topic+"\". "+(ytId?"YouTube video ID: "+ytId+". ":"")+"Is ke liye ye cheezein Urdu script mein likho, saaf headings ke sath:\nTITLE: aik pur-kashish lekin sacha Urdu title (60 characters ke andar, clickbait jhoot bilkul nahi)\nTHUMBNAIL TEXT: 3-4 alfaz jo thumbnail par bare likhe ja sakein\nDESCRIPTION: 3-4 lines ki Urdu description jis mein viewers ko subscribe ki dawat ho aur source ka credit likhne ki jagah [credit yahan] di gayi ho\nTAGS: 12 comma-separated tags (Urdu + Roman mix) jo log search karte hain\nSirf yehi chaar hisse do, koi extra guftagu nahi.";
-  fetch("https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:700}})})
+  if(!key){setStatus(aiStatus,"Pehle AI Studio tab mein apni muft Gemini API key paste karein — wahi key yahan bhi chalti hai.","err");if(window.__switchView)window.__switchView("ai");var kf=$("apiKey");if(kf)setTimeout(function(){kf.focus();},80);return;}
+  var matn=currentMatn();
+  if(!matn.text&&!topic){setStatus(aiStatus,"Pehle video ka matn paste karein (ya Voice Over se lein) — ya kam az kam topic likhein. Matn se nateeja bohat behtar milta hai.","err");return;}
+  var btn=this;btn.disabled=true;setStatus(aiStatus,matn.text?("Gemini matn parh raha hai ("+matn.src+")… chand second intezar karein."):"Gemini soch raha hai… chand second intezar karein.");$("aiResult").style.display="none";
+  var prompt=META_SKILL+"\n\n---\n"+(topic?"TOPIC HINT (user ne diya): "+topic+"\n":"")+(ytId?"YouTube video ID: "+ytId+"\n":"")+(matn.text?("VIDEO KA ASAL MATN (transcription) — title, description aur tags SIRF isi se banao:\n\"\"\"\n"+matn.text.slice(0,8000)+"\n\"\"\""):"(Matn nahi diya gaya — sirf upar wale topic se banao, lekin format aur qaide bilkul wahi rakho.)");
+  fetch("https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:1600}})})
   .then(function(r){return r.json().then(function(j){return{ok:r.ok,status:r.status,j:j};});})
   .then(function(res){btn.disabled=false;if(!res.ok){var msg=(res.j&&res.j.error&&res.j.error.message)||"Na-maloom ghalti";if(res.status===429)setStatus(aiStatus,"Free limit khatam ho gayi hai (429). Thori dair baad try karein, ya Flash-Lite chunein.","err");else if(res.status===400||res.status===403)setStatus(aiStatus,"Key durust nahi lagi ya model band hai. Key dobara check karein — "+msg,"err");else setStatus(aiStatus,"Gemini ne jawab nahi diya ("+res.status+"): "+msg,"err");return;}
-  var parts=res.j.candidates&&res.j.candidates[0]&&res.j.candidates[0].content&&res.j.candidates[0].content.parts;var text=parts?parts.map(function(p){return p.text||"";}).join("\n").trim():"";if(!text){setStatus(aiStatus,"Jawab khaali aaya — dobara try karein.","err");return;}lastAiText=text;var tm=text.match(/TITLE:\s*(.+)/i);lastAiTitle=tm?tm[1].trim():"";$("aiResultText").innerHTML="";var div=document.createElement("div");div.className="urdu-out";div.dir="rtl";div.lang="ur";div.style.textAlign="right";div.textContent=text;$("aiResultText").appendChild(div);$("aiResult").style.display="block";setStatus(aiStatus,"Tayyar! Neeche se copy karke YouTube par lagayein.","ok");})
+  var parts=res.j.candidates&&res.j.candidates[0]&&res.j.candidates[0].content&&res.j.candidates[0].content.parts;var text=parts?parts.map(function(p){return p.text||"";}).join("\n").trim():"";if(!text){setStatus(aiStatus,"Jawab khaali aaya — dobara try karein.","err");return;}lastAiText=text;var titlesSec=text.split(/THUMBNAIL TEXT/i)[0];var tm=titlesSec.match(/^\s*1[.)]\s*(.+)$/m)||text.match(/TITLE:\s*(.+)/i);lastAiTitle=tm?tm[1].trim():"";var thm=text.match(/THUMBNAIL TEXT:\s*(.+)/i);lastAiThumb=thm?thm[1].trim():"";$("aiResultText").innerHTML="";var div=document.createElement("div");div.className="urdu-out";div.dir="rtl";div.lang="ur";div.style.textAlign="right";div.textContent=text;$("aiResultText").appendChild(div);$("aiResult").style.display="block";setStatus(aiStatus,"Tayyar! Title, description aur tags "+(matn.text?"video ke asal matn se ban gaye":"topic se ban gaye")+" — copy karke YouTube par lagayein. Neeche 'Thumbnail Text' wala button dabane se wahi lafz thumbnail par bhi lag jayenge.","ok");})
   .catch(function(err){btn.disabled=false;setStatus(aiStatus,"Internet masla — connection check karke dobara try karein. ("+err.message+")","err");});
 });
 $("copyAiBtn").addEventListener("click",function(){if(!lastAiText)return;var done=function(){setStatus(aiStatus,"Poora jawab copy ho gaya.","ok");};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(lastAiText).then(done,function(){setStatus(aiStatus,"Copy nahi ho saka — text select karke copy karein.","err");});}else setStatus(aiStatus,"Is browser mein copy support nahi — text select karke copy karein.","err");});
 $("useTitleBtn").addEventListener("click",function(){if(!lastAiTitle){setStatus(aiStatus,"Jawab mein TITLE nahi mila.","err");return;}$("titleText").value=lastAiTitle;drawFrame();pushHistory();setStatus(aiStatus,"Title video ke text mein lag gaya — Editor tab mein dekhein.","ok");if(window.__switchView)window.__switchView("editor");if(window.__switchSub)window.__switchSub("props");});
+$("useThumbTextBtn").addEventListener("click",function(){
+  if(!lastAiThumb){setStatus(aiStatus,"Jawab mein THUMBNAIL TEXT nahi mila — pehle upar se title/tags banwayein.","err");return;}
+  $("thumbTitleText").value=lastAiThumb;
+  if(thumbImg)drawThumbBase(thumbImg);else drawThumbFromVideo();
+  setStatus(aiStatus,"Thumbnail text upar Thumbnail Studio mein lag gaya — frame ya AI background ke sath dekhein, pasand aaye to Download karein.","ok");
+  setStatus($("thumbStatus"),"AI ke banaye hue thumbnail alfaz lag gaye hain — design pasand aaye to Download karein.","ok");
+});
 /* ===== Sirf image clip ka export: tasveer ko chand second ki video banana ===== */
 function exportImageSingle(){
   if(!window.MediaRecorder||!canvas.captureStream){setStatus(editorStatus,"Is browser mein export support nahi hai. Chrome mein page khol kar try karein.","err");return;}
@@ -2552,22 +2623,49 @@ $("extractAudioRecBtn").addEventListener("click",function(){
 /* ===== Thumbnail Studio ===== */
 var thumbCanvas=$("thumbCanvas"),tctx=thumbCanvas.getContext("2d"),thumbImg=null;
 function thumbWrap(text,maxWidth,font){tctx.font=font;var words=text.split(/\s+/).filter(Boolean);var lines=[],line="";for(var i=0;i<words.length;i++){var test=line?line+" "+words[i]:words[i];if(tctx.measureText(test).width>maxWidth&&line){lines.push(line);line=words[i];}else line=test;}if(line)lines.push(line);return lines;}
+/* ===== Professional thumbnail design: gehra sabz + sunehra premium
+   look — gold gradient Urdu title gehre outline ke sath (chhoti size
+   mein bhi saaf parha jaye), ornamental double gold frame, konon par
+   heere ke naqsh, sub-text ke peeche sabz pill. Bilkul simple nahi. ===== */
+function thumbRoundRect(x,y,w,h,r){tctx.beginPath();if(tctx.roundRect){tctx.roundRect(x,y,w,h,r);}else{tctx.rect(x,y,w,h);}}
 function drawThumbBase(source){
-  var W=1280,H=720;tctx.save();tctx.fillStyle="#0b0e13";tctx.fillRect(0,0,W,H);
+  var W=1280,H=720;tctx.save();
+  tctx.fillStyle="#03130b";tctx.fillRect(0,0,W,H);
   var sw=source.videoWidth||source.naturalWidth||source.width,sh=source.videoHeight||source.naturalHeight||source.height;
-  if(sw&&sh){var sc=Math.max(W/sw,H/sh),dw=sw*sc,dh=sh*sc;try{tctx.drawImage(source,(W-dw)/2,(H-dh)/2,dw,dh);}catch(e){}}
-  var grad=tctx.createLinearGradient(0,H*0.35,0,H);grad.addColorStop(0,"rgba(0,0,0,0)");grad.addColorStop(1,"rgba(0,0,0,0.82)");tctx.fillStyle=grad;tctx.fillRect(0,0,W,H);
-  tctx.strokeStyle="#f3c94b";tctx.lineWidth=14;tctx.strokeRect(7,7,W-14,H-14);
+  if(sw&&sh){var sc=Math.max(W/sw,H/sh),dw=sw*sc,dh=sh*sc;try{tctx.filter="saturate(1.18) contrast(1.08) brightness(1.03)";tctx.drawImage(source,(W-dw)/2,(H-dh)/2,dw,dh);}catch(e){try{tctx.drawImage(source,(W-dw)/2,(H-dh)/2,dw,dh);}catch(e2){}}try{tctx.filter="none";}catch(e){}}
+  /* cinematic gehra-sabz rang + neeche title ke liye gehra saya */
+  var tint=tctx.createLinearGradient(0,0,0,H);tint.addColorStop(0,"rgba(3,30,18,0.22)");tint.addColorStop(0.5,"rgba(3,30,18,0.04)");tint.addColorStop(1,"rgba(2,18,11,0.42)");tctx.fillStyle=tint;tctx.fillRect(0,0,W,H);
+  var grad=tctx.createLinearGradient(0,H*0.38,0,H);grad.addColorStop(0,"rgba(1,12,7,0)");grad.addColorStop(0.72,"rgba(1,12,7,0.78)");grad.addColorStop(1,"rgba(1,12,7,0.95)");tctx.fillStyle=grad;tctx.fillRect(0,0,W,H);
   var title=($("thumbTitleText").value.trim()||$("titleText").value.trim()||"");
   var sub=$("subText").value.trim();
   tctx.direction="rtl";tctx.textAlign="center";tctx.textBaseline="middle";
-  if(state.bismillah){tctx.font="600 44px 'Noto Nastaliq Urdu', serif";tctx.fillStyle="#ffffff";tctx.shadowColor="rgba(0,0,0,.8)";tctx.shadowBlur=10;tctx.fillText("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",W/2,64);}
-  if(title){var fs=118;var lines=thumbWrap(title,W-140,"700 "+fs+"px 'Noto Nastaliq Urdu', serif");while(lines.length>2&&fs>64){fs-=12;lines=thumbWrap(title,W-140,"700 "+fs+"px 'Noto Nastaliq Urdu', serif");}
-    tctx.font="700 "+fs+"px 'Noto Nastaliq Urdu', serif";tctx.fillStyle="#f3c94b";tctx.shadowColor="rgba(0,0,0,.9)";tctx.shadowBlur=16;tctx.shadowOffsetY=4;
-    var lh=fs*1.9,blockH=lines.length*lh,y=H-70-blockH-(sub?54:0);
-    lines.forEach(function(ln){tctx.fillText(ln,W/2,y+lh/2);y+=lh;});
-    if(sub){tctx.font="400 42px 'Noto Nastaliq Urdu', serif";tctx.fillStyle="#ffffff";tctx.fillText(sub,W/2,H-58);}
+  if(state.bismillah){tctx.font="600 42px 'Noto Nastaliq Urdu', serif";tctx.shadowColor="rgba(0,0,0,.85)";tctx.shadowBlur=12;tctx.fillStyle="#ffe9a8";tctx.fillText("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",W/2,68);tctx.shadowBlur=0;}
+  if(title){
+    var fs=122;var lines=thumbWrap(title,W-150,"700 "+fs+"px 'Noto Nastaliq Urdu', serif");while(lines.length>2&&fs>62){fs-=12;lines=thumbWrap(title,W-150,"700 "+fs+"px 'Noto Nastaliq Urdu', serif");}
+    var lh=fs*1.9,blockH=lines.length*lh,bottomPad=sub?118:64,blockTop=H-bottomPad-blockH;
+    /* title ke upar sunehri divider — darmiyan mein heera (diamond) */
+    var divY=blockTop-26;tctx.save();tctx.strokeStyle="#f3c94b";tctx.lineWidth=3;tctx.shadowColor="rgba(0,0,0,.7)";tctx.shadowBlur=6;
+    tctx.beginPath();tctx.moveTo(W/2-190,divY);tctx.lineTo(W/2-26,divY);tctx.moveTo(W/2+26,divY);tctx.lineTo(W/2+190,divY);tctx.stroke();
+    tctx.fillStyle="#f3c94b";tctx.beginPath();tctx.moveTo(W/2,divY-11);tctx.lineTo(W/2+11,divY);tctx.lineTo(W/2,divY+11);tctx.lineTo(W/2-11,divY);tctx.closePath();tctx.fill();tctx.restore();
+    /* gold gradient title + gehra outline — chhoti size mein bhi saaf */
+    var tg=tctx.createLinearGradient(0,blockTop,0,blockTop+blockH);tg.addColorStop(0,"#fff3b0");tg.addColorStop(0.45,"#f6cd4f");tg.addColorStop(1,"#d29a12");
+    tctx.font="700 "+fs+"px 'Noto Nastaliq Urdu', serif";tctx.lineJoin="round";tctx.strokeStyle="rgba(24,12,0,0.92)";tctx.lineWidth=Math.max(6,fs*0.13);tctx.shadowColor="rgba(0,0,0,.9)";tctx.shadowBlur=18;tctx.shadowOffsetY=5;
+    var y=blockTop;
+    lines.forEach(function(ln){tctx.strokeText(ln,W/2,y+lh/2);tctx.fillStyle=tg;tctx.fillText(ln,W/2,y+lh/2);y+=lh;});
+    tctx.shadowBlur=0;tctx.shadowOffsetY=0;
+    if(sub){
+      tctx.font="400 40px 'Noto Nastaliq Urdu', serif";
+      var subW=Math.min(W-160,tctx.measureText(sub).width+76);
+      tctx.fillStyle="rgba(3,32,19,0.88)";thumbRoundRect(W/2-subW/2,H-98,subW,58,29);tctx.fill();
+      tctx.strokeStyle="rgba(243,201,75,0.85)";tctx.lineWidth=2;thumbRoundRect(W/2-subW/2,H-98,subW,58,29);tctx.stroke();
+      tctx.fillStyle="#ffffff";tctx.fillText(sub,W/2,H-68);
+    }
   }
+  /* ornamental double gold frame + konon par heere ke naqsh */
+  tctx.strokeStyle="#f3c94b";tctx.lineWidth=12;tctx.strokeRect(8,8,W-16,H-16);
+  tctx.strokeStyle="rgba(255,233,168,0.9)";tctx.lineWidth=3;tctx.strokeRect(30,30,W-60,H-60);
+  tctx.fillStyle="#f3c94b";
+  [[30,30],[W-30,30],[30,H-30],[W-30,H-30]].forEach(function(c){tctx.save();tctx.translate(c[0],c[1]);tctx.rotate(Math.PI/4);tctx.fillRect(-9,-9,18,18);tctx.restore();});
   tctx.restore();
 }
 function drawThumbPlaceholder(){var W=1280,H=720;tctx.save();tctx.fillStyle="#1a2130";tctx.fillRect(0,0,W,H);tctx.strokeStyle="#2e333f";tctx.lineWidth=4;tctx.strokeRect(24,24,W-48,H-48);tctx.fillStyle="#9aa3b2";tctx.font="600 40px Inter, sans-serif";tctx.textAlign="center";tctx.fillText("Thumbnail Preview — 1280 × 720",W/2,H/2-14);tctx.font="400 30px Inter, sans-serif";tctx.fillText("Video load karein, phir Frame ya Gemini AI dabayein",W/2,H/2+40);tctx.restore();}
@@ -2579,10 +2677,10 @@ $("thumbDownloadBtn").addEventListener("click",function(){var st=$("thumbStatus"
 $("thumbAiBtn").addEventListener("click",function(){
   var st=$("thumbStatus");var key=$("apiKey").value.trim();
   var topic=($("aiTopic").value.trim()||$("thumbTitleText").value.trim()||$("titleText").value.trim());
-  if(!key){setStatus(st,"Pehle neeche “Gemini AI” hisse mein apni muft Gemini API key paste karein — wahi key thumbnail ke liye bhi chalegi.","err");if(window.__switchView)window.__switchView("ai");var kf=$("apiKey");if(kf)setTimeout(function(){kf.focus();},80);return;}
+  if(!key){setStatus(st,"Pehle AI Studio tab mein apni muft Gemini API key paste karein — wahi key thumbnail ke liye bhi chalegi.","err");if(window.__switchView)window.__switchView("ai");var kf=$("apiKey");if(kf)setTimeout(function(){kf.focus();},80);return;}
   if(!topic){setStatus(st,"Video ka topic ya thumbnail text likhein — Gemini ko batana hoga ke thumbnail kis bare mein hai.","err");return;}
-  var btn=this;btn.disabled=true;setStatus(st,"Gemini AI background bana raha hai… 15–40 second lag sakte hain.");
-  var prompt="Create a beautiful 16:9 YouTube thumbnail BACKGROUND image (no text at all) for an Islamic video about: "+topic+". Scene: peaceful mosque silhouette at golden sunset, an open Quran with soft light, emerald green and gold colors, cinematic, high contrast, leave the lower half darker and empty for big title text. Absolutely NO text, NO letters, NO words, NO watermark, NO human faces.";
+  var btn=this;btn.disabled=true;setStatus(st,"Gemini professional AI background bana raha hai… 15–40 second lag sakte hain.");
+  var prompt="Create a PREMIUM, professional 16:9 YouTube thumbnail BACKGROUND image (absolutely no text) for an Islamic video about: "+topic+". Art direction: cinematic emerald-green and gold palette, a majestic mosque dome and minarets silhouetted against a dramatic golden sunset sky, an open Quran on a carved wooden rehal (book stand) with warm rays of light falling on its pages, soft glowing clouds, rich detail, high contrast, polished look of a top Islamic YouTube channel — NOT plain or simple. Composition: the main subject in the upper two-thirds; keep the lower third darker, clean and uncluttered so a big gold title can sit there. Absolutely NO text, NO letters, NO calligraphy, NO words, NO watermark, NO human faces.";
   var models=["gemini-nano-banana-2.1","gemini-3.1-flash-lite-image","gemini-3-pro-image"];
   function tryModel(mi){
     if(mi>=models.length){btn.disabled=false;setStatus(st,"Gemini se tasveer nahi bann saki — free limit ya model access ka masla ho sakta hai. Thori dair baad try karein, ya “Video Frame” wala tareeqa use karein (wo hamesha chalta hai).","err");return;}
