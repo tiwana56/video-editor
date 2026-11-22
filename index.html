@@ -999,7 +999,8 @@ ol.steps li{color:#d8e1ee}
             <button class="btn gold block" id="voAudioPickBtn" type="button" style="min-height:56px">🎧 <span class="jx" data-ur="آڈیو فائل چنیں — Gemini متن لکھ دے گا" data-en="Choose an Audio File — Gemini Will Write the Script">آڈیو فائل چنیں — Gemini متن لکھ دے گا</span></button>
             <input class="hidden" type="file" id="voAudioInput" accept="audio/*"/>
             <p class="status" id="voTrStatus" role="status"></p>
-            <p class="hint jx" style="margin-bottom:0" data-ur="اپنی آڈیو فائل (MP3 / WAV / M4A وغیرہ) چنیں — Gemini اسے سن کر اس کا متن (transcription) نیچے والے خانے میں لکھ دے گا۔ پھر اسی متن پر نیچے حصہ 2 میں آواز چن کر حصہ 3 سے وائس اوور بنا لیں۔ فائل Google کو بھیجی جاتی ہے؛ 18 MB سے بڑی فائل نہیں چلے گی۔ AI Studio والی save شدہ key ہی استعمال ہوگی۔" data-en="Choose your audio file (MP3 / WAV / M4A etc.) — Gemini will listen to it and write its transcription into the box below. Then pick a voice in section 2 and generate the voice over in section 3 from that same text. The file is sent to Google; files larger than 18 MB will not work. The saved AI Studio key is used.">اپنی آڈیو فائل (MP3 / WAV / M4A وغیرہ) چنیں — Gemini اسے سن کر اس کا متن (transcription) نیچے والے خانے میں لکھ دے گا۔ پھر اسی متن پر نیچے حصہ 2 میں آواز چن کر حصہ 3 سے وائس اوور بنا لیں۔ فائل Google کو بھیجی جاتی ہے؛ 18 MB سے بڑی فائل نہیں چلے گی۔ AI Studio والی save شدہ key ہی استعمال ہوگی۔</p>
+            <div class="vo-err" id="voTrError" role="alert" style="font-size:15px"></div>
+            <p class="hint jx" style="margin-bottom:0" data-ur="اپنی آڈیو فائل (MP3 / WAV / M4A وغیرہ) چنیں — Gemini اسے سن کر اس کا متن (transcription) نیچے والے خانے میں لکھ دے گا۔ پھر اسی متن پر نیچے حصہ 2 میں آواز چن کر حصہ 3 سے وائس اوور بنا لیں۔ فائل بھیجنے سے پہلے آپ کے فون پر ہی چھوٹی (16 kHz mono) کر دی جاتی ہے، اس لیے بڑی WAV فائل بھی چل جاتی ہے؛ لمبی فائل حصوں میں بھیج کر متن جوڑ دیا جاتا ہے۔ AI Studio والی save شدہ key ہی استعمال ہوگی۔" data-en="Choose your audio file (MP3 / WAV / M4A etc.) — Gemini will listen to it and write its transcription into the box below. Then pick a voice in section 2 and generate the voice over in section 3 from that same text. Before sending, the file is shrunk on your phone (16 kHz mono), so even a large WAV works; a long file is sent in parts and the text is joined together. The saved AI Studio key is used.">اپنی آڈیو فائل (MP3 / WAV / M4A وغیرہ) چنیں — Gemini اسے سن کر اس کا متن (transcription) نیچے والے خانے میں لکھ دے گا۔ پھر اسی متن پر نیچے حصہ 2 میں آواز چن کر حصہ 3 سے وائس اوور بنا لیں۔ فائل بھیجنے سے پہلے آپ کے فون پر ہی چھوٹی (16 kHz mono) کر دی جاتی ہے، اس لیے بڑی WAV فائل بھی چل جاتی ہے؛ لمبی فائل حصوں میں بھیج کر متن جوڑ دیا جاتا ہے۔ AI Studio والی save شدہ key ہی استعمال ہوگی۔</p>
           </div>
           <span class="label jx" data-ur="اردو متن یہاں لکھیں یا paste کریں" data-en="Write or paste the Urdu script here">اردو متن یہاں لکھیں یا paste کریں</span>
           <textarea id="voScript" dir="auto" lang="ur">السلام علیکم! آج ہم اردو میں اپنا پہلا وائس اوور بنا رہے ہیں۔ پہلے ایک چھوٹا سا متن آزمائیں، پھر آواز سن کر اگلا قدم اٹھائیں۔</textarea>
@@ -3177,11 +3178,17 @@ $("voClearTextBtn").addEventListener("click",function(){voScript.value="";update
 
 /* ---------- Audio file se matn (transcription) ----------
    User apni audio file (tilawat / naat ki clip waghera) upload karta
-   hai; Gemini ka audio-input tareeqa (generateContent + inline_data)
-   usi AI Studio wali saved key se matn nikal kar script box mein
-   likh deta hai — phir usi matn par neeche wahi awaz/style chun kar
-   voice over ban jata hai. */
-var voAudioInput=$("voAudioInput"), voTrStatus=$("voTrStatus"), voTrBusy=false;
+   hai. File pehle phone par hi chhoti ki jati hai: decode karke
+   16 kHz mono WAV bana kar ~100 second ke hisson mein Gemini ko
+   bhejte hain (generateContent + inlineData — REST API ki
+   documented camelCase shakal) aur har hisse ka matn jod kar
+   script box mein likh dete hain. Is se 13 MB ki WAV bhi halki
+   ho jati hai (poori file base64 mein bhejne par ~17 MB ban kar
+   API ki inline had ke qareeb pohonch jati thi) aur lambi file
+   bhi chal jati hai. Kharabi ho to asal error (status + saaf
+   Urdu wajah) ISI khane ke andar laal box (voTrError) mein bara
+   dikhta hai — user parh kar bata sakta hai. */
+var voAudioInput=$("voAudioInput"), voTrStatus=$("voTrStatus"), voTrError=$("voTrError"), voTrBusy=false;
 $("voAudioPickBtn").addEventListener("click",function(){voAudioInput.click();});
 function voMimeFor(file){
   if(file.type&&file.type.indexOf("audio/")===0)return file.type.split(";")[0];
@@ -3195,46 +3202,122 @@ function voMimeFor(file){
   if(/\.aac$/.test(n))return "audio/aac";
   return "audio/mpeg";
 }
+function showTrError(status,detail){
+  var msg;
+  if(status===401||status===403){
+    msg=T("🔑 Key کا مسئلہ ہے (خرابی "+status+") — AI Studio والے ٹیب میں اپنی Gemini key ڈالیں، یا وہاں چیک کریں کہ key درست اور active ہے۔ وہی key یہاں خود بخود چلے گی؛ یہاں الگ سے key ڈالنے کی جگہ نہیں۔","🔑 This is a key problem (error "+status+") — add your Gemini key in the AI Studio tab, or check there that the key is correct and active. That same key works here automatically; there is no separate key field here.");
+    var d=sanitize(detail,currentKey());
+    if(d)msg+="\n\n"+T("تکنیکی تفصیل (key چھپا کر): ","Technical detail (key hidden): ")+d;
+  }else{
+    msg=errorText(status,detail,currentKey());
+  }
+  voTrError.textContent=msg;
+  voTrError.style.display="block";
+  try{voTrError.scrollIntoView({block:"nearest"});}catch(e){}
+}
+function hideTrError(){voTrError.style.display="none";voTrError.textContent="";}
+function trFail(status,detail){
+  voTrBusy=false;
+  showTrError(status,detail);
+  setV(voTrStatus,T("متن نہیں نکل سکا — وجہ نیچے لال خانے میں پڑھیں۔","Transcription failed — read the reason in the red box below."),"err");
+}
+function blobToB64(blob){
+  return new Promise(function(resolve,reject){
+    var r=new FileReader();
+    r.onerror=function(){reject(new Error("file read failed"));};
+    r.onload=function(){var s=String(r.result||""),i=s.indexOf(",");resolve(i>=0?s.slice(i+1):"");};
+    r.readAsDataURL(blob);
+  });
+}
+var TR_PROMPT="Transcribe this audio exactly, word for word, in its original language and original script (use Urdu script if the audio is Urdu). Output ONLY the transcription text — no translation, no commentary, no timestamps, no headings.";
+function trSendChunk(key,mime,b64){
+  var body={contents:[{parts:[
+    {inlineData:{mimeType:mime,data:b64}},
+    {text:TR_PROMPT}
+  ]}]};
+  return fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify(body)})
+  .then(function(r){return r.text().then(function(tx){return{ok:r.ok,status:r.status,tx:tx};});})
+  .then(function(res){
+    if(!res.ok)throw{status:res.status,detail:res.tx};
+    var json=null;try{json=JSON.parse(res.tx);}catch(e){}
+    var out="";
+    try{
+      var parts=json&&json.candidates&&json.candidates[0]&&json.candidates[0].content&&json.candidates[0].content.parts;
+      if(Array.isArray(parts))parts.forEach(function(p){if(p&&typeof p.text==="string")out+=p.text;});
+    }catch(e){}
+    out=out.trim();
+    if(!out){
+      var blocked=json&&json.promptFeedback&&json.promptFeedback.blockReason;
+      throw{status:"noaudio",detail:blocked?("Content blocked: "+blocked):res.tx};
+    }
+    return out;
+  });
+}
+function trSliceMono(buf,startSec,durSec){
+  var sr=buf.sampleRate,start=Math.floor(startSec*sr);
+  var len=Math.min(buf.length-start,Math.ceil(durSec*sr));
+  var out=getCtx().createBuffer(1,Math.max(1,len),sr),dst=out.getChannelData(0);
+  var c0=buf.getChannelData(0);
+  if(buf.numberOfChannels>1){
+    var c1=buf.getChannelData(1);
+    for(var i=0;i<len;i++)dst[i]=(c0[start+i]+c1[start+i])*0.5;
+  }else dst.set(c0.subarray(start,start+len));
+  return out;
+}
 voAudioInput.addEventListener("change",function(){
   var file=voAudioInput.files&&voAudioInput.files[0];
   voAudioInput.value="";
   if(!file||voTrBusy)return;
-  hideVoError();refreshKeyNote();
+  hideTrError();refreshKeyNote();
   var key=currentKey();
-  if(!key){showVoError(401,T("Gemini key نہیں ملی — AI Studio والے ٹیب میں اپنی key ڈالیں، وہی key یہاں خود بخود چلے گی۔","No Gemini key found — add your key in the AI Studio tab; that same key works here automatically."));return;}
-  if(file.size>18*1024*1024){setV(voTrStatus,T("فائل بہت بڑی ہے ("+(file.size/1048576).toFixed(1)+" MB) — 18 MB سے چھوٹی آڈیو چنیں۔","File is too large ("+(file.size/1048576).toFixed(1)+" MB) — choose an audio under 18 MB."),"err");return;}
+  if(!key){showTrError(401,"");setV(voTrStatus,T("Gemini key نہیں ملی — نیچے لال خانہ پڑھیں۔","No Gemini key found — read the red box below."),"err");return;}
+  if(!AC){trFail(0,T("اس browser میں AudioContext نہیں — Chrome آزمائیں۔","This browser has no AudioContext — try Chrome."));return;}
   voTrBusy=true;
   setV(voTrStatus,T("آڈیو پڑھی جا رہی ہے…","Reading the audio…"));
-  var reader=new FileReader();
-  reader.onerror=function(){voTrBusy=false;setV(voTrStatus,T("فائل پڑھنے میں مسئلہ آیا — دوسری فائل آزمائیں۔","Could not read the file — try another one."),"err");};
-  reader.onload=function(){
-    var dataUrl=String(reader.result||"");
-    var b64=dataUrl.indexOf(",")>=0?dataUrl.slice(dataUrl.indexOf(",")+1):"";
-    if(!b64){voTrBusy=false;setV(voTrStatus,T("فائل خالی لگی — دوسری فائل آزمائیں۔","The file looks empty — try another one."),"err");return;}
+  file.arrayBuffer().then(function(ab){
+    return getCtx().decodeAudioData(ab).then(function(buf){return buf;},function(){return null;});
+  }).then(function(buf){
+    var texts=[];
+    if(buf&&buf.duration>0&&isFinite(buf.duration)){
+      /* Phone par chhoti karo: 16 kHz mono, ~100 second ke hisse —
+         har hissa bari bari bhejo taake memory halki rahe aur
+         lambi file ka matn hisso se jud jaye. */
+      var CH=100,total=Math.max(1,Math.ceil(buf.duration/CH)),chain=Promise.resolve();
+      for(var idx=0;idx<total;idx++)(function(i){
+        chain=chain.then(function(){
+          setV(voTrStatus,T("حصہ "+(i+1)+" از "+total+" — آڈیو چھوٹی کر کے Gemini کو بھیجا جا رہا ہے…","Part "+(i+1)+" of "+total+" — shrinking the audio and sending it to Gemini…"));
+          var slice=trSliceMono(buf,i*CH,CH);
+          return normalizeBuf(slice,16000,1)
+          .then(function(nb){return blobToB64(encodeWav(nb));})
+          .then(function(b64){return trSendChunk(key,"audio/wav",b64);})
+          .then(function(t){texts.push(t);});
+        });
+      })(idx);
+      return chain.then(function(){return texts;});
+    }
+    /* Decode na ho saka (ajeeb format) — asal file seedhi bhejo,
+       lekin sirf tab jab us ka size mehfooz ho. */
+    if(file.size>14*1024*1024)throw{status:"toobig"};
+    var mime=voMimeFor(file); if(mime==="audio/x-wav")mime="audio/wav";
     setV(voTrStatus,T("Gemini آڈیو سن کر متن لکھ رہا ہے… تھوڑا انتظار کریں۔","Gemini is listening to the audio and writing the script… please wait."));
-    var body={contents:[{parts:[
-      {inline_data:{mime_type:voMimeFor(file),data:b64}},
-      {text:"Transcribe this audio exactly, word for word, in its original language and original script (use Urdu script if the audio is Urdu). Output ONLY the transcription text — no translation, no commentary, no timestamps, no headings."}
-    ]}]};
-    fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify(body)})
-    .then(function(r){return r.text().then(function(tx){return{ok:r.ok,status:r.status,tx:tx};});})
-    .then(function(res){
+    return blobToB64(file).then(function(b64){return trSendChunk(key,mime,b64);}).then(function(t){texts.push(t);return texts;});
+  }).then(function(texts){
+    voTrBusy=false;
+    var out=texts.join("\n").trim();
+    if(!out){trFail("noaudio","");return;}
+    voScript.value=out;updateCounts();
+    setV(voTrStatus,T("✓ متن تیار ہے — نیچے خانے میں آ گیا ہے۔ اب حصہ 2 میں آواز چن کر حصہ 3 سے وائس اوور بنائیں۔","✓ Script ready — it is in the box below. Now pick a voice in section 2 and generate the voice over in section 3."),"ok");
+  }).catch(function(e){
+    if(e&&e.status==="toobig"){
       voTrBusy=false;
-      if(!res.ok){showVoError(res.status,res.tx);setV(voTrStatus,T("متن نہیں نکل سکا — اوپر خرابی دیکھیں۔","Transcription failed — see the error above."),"err");return;}
-      var json=null;try{json=JSON.parse(res.tx);}catch(e){}
-      var out="";
-      try{
-        var parts=json&&json.candidates&&json.candidates[0]&&json.candidates[0].content&&json.candidates[0].content.parts;
-        if(Array.isArray(parts))parts.forEach(function(p){if(p&&typeof p.text==="string")out+=p.text;});
-      }catch(e){}
-      out=out.trim();
-      if(!out){showVoError("noaudio",res.tx);setV(voTrStatus,T("Gemini کے جواب میں متن نہیں ملا — صاف آواز والی فائل آزمائیں۔","No text was found in Gemini's reply — try a file with clearer audio."),"err");return;}
-      voScript.value=out;updateCounts();
-      setV(voTrStatus,T("✓ متن تیار ہے — نیچے خانے میں آ گیا ہے۔ اب حصہ 2 میں آواز چن کر حصہ 3 سے وائس اوور بنائیں۔","✓ Script ready — it is in the box below. Now pick a voice in section 2 and generate the voice over in section 3."),"ok");
-    })
-    .catch(function(e){voTrBusy=false;setV(voTrStatus,errorText(0,e.message,key),"err");});
-  };
-  reader.readAsDataURL(file);
+      voTrError.textContent=T("یہ فائل ("+(file.size/1048576).toFixed(1)+" MB) browser میں پڑھی (decode) نہیں ہو سکی، اور اتنی بڑی ہے کہ اصل حالت میں بھی نہیں بھیجی جا سکتی۔ فائل کو MP3 میں بدل کر یا چھوٹی کلپ کاٹ کر دوبارہ آزمائیں۔","This file ("+(file.size/1048576).toFixed(1)+" MB) could not be decoded in the browser, and it is too large to send as-is. Convert it to MP3 or cut a shorter clip and try again.");
+      voTrError.style.display="block";
+      setV(voTrStatus,T("متن نہیں نکل سکا — وجہ نیچے لال خانے میں پڑھیں۔","Transcription failed — read the reason in the red box below."),"err");
+      return;
+    }
+    if(e&&typeof e.status!=="undefined")trFail(e.status,e.detail);
+    else trFail(0,(e&&e.message)||"network");
+  });
 });
 
 /* ---------- Generation ---------- */
