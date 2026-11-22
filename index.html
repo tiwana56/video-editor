@@ -902,12 +902,12 @@ ol.steps li{color:#d8e1ee}
         <input type="text" id="aiTopic" placeholder="Misal: Surah Al-Kahf tilawat, Friday bayan, Ramzan ki dua…"/>
         <p class="hint">Roman Urdu / English mein likhein — jawab Urdu mein milega.</p>
         <span class="label">Model — Naam Khud Bhi Likh Sakte Hain</span>
-        <input type="text" id="modelSel" list="modelList" value="gemini-2.5-flash-lite" autocomplete="off" placeholder="gemini-2.5-flash-lite"/>
+        <input type="text" id="modelSel" list="modelList" value="gemini-3.5-flash-lite" autocomplete="off" placeholder="gemini-3.5-flash-lite"/>
         <datalist id="modelList">
-          <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite — free limit sab se zyada</option>
-          <option value="gemini-2.5-flash">Gemini 2.5 Flash — behtar jawab, limit kam</option>
-          <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-          <option value="gemini-3-flash-preview">Gemini 3 Flash (Preview) — naya model</option>
+          <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite — free limit sab se zyada, current model</option>
+          <option value="gemini-3.8-flash">Gemini 3.8 Flash — behtar jawab, Google ki tajweez shuda</option>
+          <option value="gemini-3.6-flash">Gemini 3.6 Flash — pichla stable model</option>
+          <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash-Lite — halka aur sasta</option>
         </datalist>
         <p class="hint">Google model badalta rehta hai — jab naya model aaye to us ka naam yahan khud likh dein, code badalne ki zaroorat nahi. Neeche wala button dabane par model bhi browser mein save ho jayega.</p>
         <div class="row" style="margin-top:8px">
@@ -2205,7 +2205,7 @@ $("thumbAiBtn").addEventListener("click",function(){
   if(!topic){setStatus(st,"Video ka topic ya thumbnail text likhein — Gemini ko batana hoga ke thumbnail kis bare mein hai.","err");return;}
   var btn=this;btn.disabled=true;setStatus(st,"Gemini AI background bana raha hai… 15–40 second lag sakte hain.");
   var prompt="Create a beautiful 16:9 YouTube thumbnail BACKGROUND image (no text at all) for an Islamic video about: "+topic+". Scene: peaceful mosque silhouette at golden sunset, an open Quran with soft light, emerald green and gold colors, cinematic, high contrast, leave the lower half darker and empty for big title text. Absolutely NO text, NO letters, NO words, NO watermark, NO human faces.";
-  var models=["gemini-2.5-flash-image","gemini-2.0-flash-preview-image-generation"];
+  var models=["gemini-nano-banana-2.1","gemini-3.1-flash-lite-image","gemini-3-pro-image"];
   function tryModel(mi){
     if(mi>=models.length){btn.disabled=false;setStatus(st,"Gemini se tasveer nahi bann saki — free limit ya model access ka masla ho sakta hai. Thori dair baad try karein, ya “Video Frame” wala tareeqa use karein (wo hamesha chalta hai).","err");return;}
     fetch("https://generativelanguage.googleapis.com/v1beta/models/"+models[mi]+":generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{responseModalities:["TEXT","IMAGE"]}})})
@@ -2238,7 +2238,12 @@ function lsGet(k){try{return window.localStorage.getItem(k);}catch(e){return nul
 function lsSet(k,v){try{if(v)window.localStorage.setItem(k,v);else window.localStorage.removeItem(k);}catch(e){}}
 var keyEl=$("apiKey"),modelEl=$("modelSel");
 var savedKey=lsGet(KEY); if(keyEl&&savedKey)keyEl.value=savedKey;
-var savedModel=lsGet(MODEL); if(modelEl&&savedModel)modelEl.value=savedModel;
+/* Band/shutdown ho chuke purane model naam browser mein save hon to
+   khud current model par badal do — warna Title/Tags phir 404 dega. */
+var MODEL_MIGRATE={"gemini-2.5-flash":"gemini-3.8-flash","gemini-2.5-flash-lite":"gemini-3.5-flash-lite","gemini-2.0-flash":"gemini-3.5-flash-lite","gemini-2.0-flash-lite":"gemini-3.5-flash-lite","gemini-2.5-flash-image":"gemini-nano-banana-2.1"};
+var savedModel=lsGet(MODEL);
+if(savedModel&&MODEL_MIGRATE[savedModel]){savedModel=MODEL_MIGRATE[savedModel];lsSet(MODEL,savedModel);}
+if(modelEl&&savedModel)modelEl.value=savedModel;
 if(keyEl)keyEl.addEventListener("input",function(){lsSet(KEY,keyEl.value.trim());});
 if(modelEl)modelEl.addEventListener("change",function(){lsSet(MODEL,modelEl.value.trim());});
 var saveBtn=$("modelSaveBtn");
@@ -3235,7 +3240,7 @@ function trSendChunk(key,mime,b64){
     {inlineData:{mimeType:mime,data:b64}},
     {text:TR_PROMPT}
   ]}]};
-  return fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify(body)})
+  return fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify(body)})
   .then(function(r){return r.text().then(function(tx){return{ok:r.ok,status:r.status,tx:tx};});})
   .then(function(res){
     if(!res.ok)throw{status:res.status,detail:res.tx};
