@@ -815,8 +815,8 @@ textarea{min-height:64px}
     <button class="icon-btn-top hist-btn" id="redoBtn" type="button" title="Redo — undo kiya hua step dobara karein (Ctrl+Y)" aria-label="Redo — undo kiya hua step dobara karein"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg><span>Redo</span></button>
     <button class="icon-btn-top hist-btn refresh-btn" id="refreshBtn" type="button" title="Page Refresh — page dobara load karein (jo editing export nahi hui, wo khatam ho jayegi)" aria-label="Page refresh karein"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg><span>Refresh</span></button>
     <select id="qualitySel" class="select-dark" aria-label="Export quality">
-      <option value="720">Export • 720p HD</option>
-      <option value="480" selected>Export • 480p Fast</option>
+      <option value="720" selected>Export • 720p HD</option>
+      <option value="480">Export • 480p Fast</option>
     </select>
     <button class="btn-install" id="installBtn" type="button">📲 Install App</button>
     <button class="btn-export" id="exportBtn" type="button" disabled><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 21h16"/></svg> Export Video</button>
@@ -1030,7 +1030,10 @@ textarea{min-height:64px}
         <div class="hidden" id="exportProgressWrap">
           <progress id="exportProgress" max="100" value="0"></progress>
           <p class="status" id="exportStatus"></p>
+          <button class="btn small hidden" id="exportCancelBtn" type="button">✕ Export Cancel Karein</button>
         </div>
+        <p class="status" id="draftStatus" role="status"></p>
+        <button class="btn small hidden" id="draftDeleteBtn" type="button">🗑 Save Shuda Draft Delete Karein</button>
         <p class="status" id="editorStatus" role="status">Editor tayyar hai — pehle video import karein.</p>
         <p class="hint">Export mein clip jitni lambi hogi utna waqt lagega. Export ke dauran page khula rakhein, doosri app par na jayein. Kuch purane phones par Chrome sab se behtar chalta hai.</p>
       </div>
@@ -2114,7 +2117,7 @@ function renderClipList(){
     row.appendChild(mk("↓","Neeche le jayein",function(){if(i<clips.length-1){var t=clips[i+1];clips[i+1]=clips[i];clips[i]=t;if(activeClip===i)activeClip=i+1;else if(activeClip===i+1)activeClip=i;renderClipList();pushHistory();}}));
     /* URL revoke NAHI karte — warna Undo se delete shuda clip wapas
        aane par us ki file khul hi nahi sakegi. */
-    row.appendChild(mk("✕","Clip hatayein",function(){clips.splice(i,1);if(activeClip>=clips.length)activeClip=clips.length-1;renderClipList();if(clips.length&&activeClip>=0)loadClip(activeClip);else if(!clips.length){state.loaded=false;exportBtn.disabled=true;}pushHistory();}));
+    row.appendChild(mk("✕","Clip hatayein",function(){var cc=clips[i];if(cc&&!clips.some(function(x,j){return j!==i&&x.url===cc.url;})){try{URL.revokeObjectURL(cc.url);}catch(e){}}clips.splice(i,1);if(activeClip>=clips.length)activeClip=clips.length-1;renderClipList();if(clips.length&&activeClip>=0)loadClip(activeClip);else if(!clips.length){state.loaded=false;exportBtn.disabled=true;}pushHistory();}));
     row.addEventListener("click",function(){if(i!==activeClip)loadClip(i);});
     box.appendChild(row);
   });
@@ -2306,6 +2309,43 @@ $("filterNoneBtn").addEventListener("click",function(){setFilter(100,100,100);pu
 var templates={tilawat:{t:"خوبصورت تلاوتِ قرآن",s:"دل کو سکون دینے والی آواز"},naat:{t:"دلکش نعتِ رسول ﷺ",s:"عقیدت و محبت کے ساتھ سنیں"},bayan:{t:"ایمان افروز بیان",s:"مکمل بیان کے لیے چینل وزٹ کریں"},dua:{t:"قبولیت کی دعا",s:"آمین لکھ کر شریک ہوں"}};
 document.querySelectorAll("[data-tpl]").forEach(function(btn){btn.addEventListener("click",function(){var tpl=templates[btn.getAttribute("data-tpl")];if(!tpl)return;$("titleText").value=tpl.t;$("subText").value=tpl.s;drawFrame();pushHistory();});});
 var ytId="";$("ytCheckBtn").addEventListener("click",function(){var url=$("ytLink").value.trim();var m=url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);var thumb=$("ytThumb"),msg=$("ytMsg");if(!m){ytId="";thumb.style.display="none";msg.textContent="Ye YouTube ka durust link nahi laga. watch ya shorts wala poora link paste karein.";return;}ytId=m[1];thumb.src="https://i.ytimg.com/vi/"+ytId+"/hqdefault.jpg";thumb.style.display="block";thumb.onerror=function(){thumb.style.display="none";};msg.textContent="Video pehchan li gayi (ID: "+ytId+"). Ab is video ki file phone mein save karke upar Import se load karein — aur Thumbnail tab mein video ke matn se title/tags banayein.";});
+/* ===== PHASE 1: WakeLock + quality-wise bitrate + export cancel =====
+   Export ke doran screen band ho jaye to canvas ke frames jam jate
+   hain aur recorder kharab video banata hai — WakeLock screen ko
+   export ke doran jagaye rakhta hai. Bitrate ab quality ke hisab
+   se milta hai (480p: 2.5 Mbps, 720p: 6 Mbps, 1080p: 10 Mbps).
+   Cancel button export ko beech mein rok kar adhoora result
+   phenk deta hai aur UI wapas pehli halat mein aa jata hai. */
+var __wakeLock=null;
+function wakeLockOn(){
+  try{
+    if(navigator.wakeLock&&navigator.wakeLock.request){
+      navigator.wakeLock.request("screen").then(function(wl){
+        __wakeLock=wl;
+        try{ if(wl.addEventListener)wl.addEventListener("release",function(){if(__wakeLock===wl)__wakeLock=null;}); }catch(e){}
+      }).catch(function(){});
+    }
+  }catch(e){}
+}
+function wakeLockOff(){
+  try{ if(__wakeLock){ var wl=__wakeLock; __wakeLock=null; if(wl.release)wl.release().catch(function(){}); } }catch(e){}
+}
+function bitrateForQuality(){
+  var q=parseInt(($("qualitySel")||{}).value,10);
+  var map={"480":2500000,"720":6000000,"1080":10000000};
+  return map[q]||6000000;
+}
+var exportCancelHook=null;
+function exportCancelArm(){ var b=$("exportCancelBtn"); if(b)b.classList.remove("hidden"); }
+function exportCancelDone(){ var b=$("exportCancelBtn"); if(b)b.classList.add("hidden"); exportCancelHook=null; }
+(function(){ var b=$("exportCancelBtn"); if(b)b.addEventListener("click",function(){ if(exportCancelHook){ try{exportCancelHook();}catch(e){} } }); })();
+/* ===== PHASE 1: Service Worker — app shell offline cache ===== */
+try{
+  if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){
+    var __swReg=function(){ navigator.serviceWorker.register("sw.js").catch(function(e){ try{console.warn("Service worker register nahi ho saka:",e);}catch(_){} }); };
+    if(document.readyState==="complete")__swReg(); else window.addEventListener("load",__swReg);
+  }
+}catch(e){}
 function pickMime(){var c=["video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];for(var i=0;i<c.length;i++){if(window.MediaRecorder&&MediaRecorder.isTypeSupported(c[i]))return c[i];}return "";}
 exportBtn.addEventListener("click",function(){
   if(!state.loaded||state.exporting)return;
@@ -2315,17 +2355,18 @@ exportBtn.addEventListener("click",function(){
   var mime=pickMime();if(!mime){setStatus(editorStatus,"Is phone par recording format support nahi mila. Chrome update karke try karein.","err");return;}
   var start=parseFloat(trimStartEl.value),end=parseFloat(trimEndEl.value),clipDur=end-start;
   if(clipDur<0.5){setStatus(editorStatus,"Clip bohat chhoti hai — Start aur End mein kam az kam 1 second ka farq rakhein.","err");return;}
-  applyCanvasSize();state.exporting=true;exportBtn.disabled=true;var wrap=$("exportProgressWrap"),prog=$("exportProgress"),estatus=$("exportStatus");wrap.classList.remove("hidden");prog.value=0;setStatus(estatus,"Export shuru… video chal rahi hai, page khula rakhein.");
+  applyCanvasSize();state.exporting=true;exportBtn.disabled=true;var wrap=$("exportProgressWrap"),prog=$("exportProgress"),estatus=$("exportStatus");wrap.classList.remove("hidden");prog.value=0;setStatus(estatus,"Export shuru… video chal rahi hai, page khula rakhein.");wakeLockOn();exportCancelArm();
   var stream=canvas.captureStream(30);
   var mergeUsed=false;
   if(window.__hasMerge&&window.__hasMerge()&&window.__getMergeAudioTrack){var mtrack=window.__getMergeAudioTrack();if(mtrack){stream.addTrack(mtrack);mergeUsed=true;}}
   if(!mergeUsed){try{var vs=video.captureStream?video.captureStream():(video.mozCaptureStream?video.mozCaptureStream():null);if(vs){vs.getAudioTracks().forEach(function(t){stream.addTrack(t);});}}catch(e){}}
   if(window.__hasMerge&&window.__hasMerge()&&!mergeUsed)estatus.textContent+=" (Note: merge audio is browser mein export mein capture nahi ho saka — video ka apna sound record hoga. Chrome mein try karein.)";
-  var chunks=[],rec;try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:2500000});}catch(e){state.exporting=false;exportBtn.disabled=false;setStatus(editorStatus,"Recorder shuru nahi ho saka: "+e.message,"err");return;}
+  var chunks=[],rec,cancelled=false;try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:bitrateForQuality()});}catch(e){state.exporting=false;exportBtn.disabled=false;wakeLockOff();exportCancelDone();setStatus(editorStatus,"Recorder shuru nahi ho saka: "+e.message,"err");return;}
   rec.ondataavailable=function(ev){if(ev.data&&ev.data.size)chunks.push(ev.data);};
-  rec.onstop=function(){if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;var ext=mime.indexOf("mp4")>=0?"mp4":"webm";var blob=new Blob(chunks,{type:mime.split(";")[0]});var a=document.createElement("a");var name=($("titleText").value.trim()||"meri-video").replace(/[\\/:*?"<>|]/g,"").slice(0,40);a.href=URL.createObjectURL(blob);a.download=name+"."+ext;document.body.appendChild(a);a.click();a.remove();prog.value=100;setStatus(estatus,"Ho gaya! No watermark video download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, "+ext.toUpperCase()+"). Ab YouTube app se upload kar dein.","ok");setStatus(editorStatus,"");};
+  rec.onstop=function(){if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;var ext=mime.indexOf("mp4")>=0?"mp4":"webm";var blob=new Blob(chunks,{type:mime.split(";")[0]});var a=document.createElement("a");var name=($("titleText").value.trim()||"meri-video").replace(/[\\/:*?"<>|]/g,"").slice(0,40);a.href=URL.createObjectURL(blob);a.download=name+"."+ext;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){try{URL.revokeObjectURL(a.href);}catch(e){}},4000);prog.value=100;setStatus(estatus,"Ho gaya! No watermark video download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, "+ext.toUpperCase()+"). Ab YouTube app se upload kar dein.","ok");setStatus(editorStatus,"");};
+  (function(){var __os=rec.onstop;rec.onstop=function(){wakeLockOff();exportCancelDone();if(cancelled){chunks.length=0;prog.value=0;if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;setStatus(estatus,"Export cancel kar diya gaya — koi file download nahi hui.","err");setStatus(editorStatus,"");return;}__os();};})();
   video.pause();video.currentTime=start;var started=false;
-  function begin(){if(started)return;started=true;video.removeEventListener("seeked",begin);var prevRate=video.playbackRate;video.playbackRate=parseFloat($("speedSel").value);rec.start(250);video.play();if(mergeUsed&&window.__mergePlay)window.__mergePlay(combinedOffset(activeClip));startLoop();var tick=setInterval(function(){var done=Math.min(1,(video.currentTime-start)/clipDur);prog.value=Math.round(done*100);setStatus(estatus,"Export ho raha hai… "+Math.round(done*100)+"% — page khula rakhein.");if(video.currentTime>=end||video.ended){clearInterval(tick);video.pause();setTimeout(function(){if(rec.state!=="inactive")rec.stop();},150);}},200);setTimeout(function(){clearInterval(tick);if(rec.state!=="inactive"){video.pause();rec.stop();}},(clipDur+4)*1000/Math.max(0.5,parseFloat($("speedSel").value)));}
+  function begin(){if(started)return;started=true;video.removeEventListener("seeked",begin);var prevRate=video.playbackRate;video.playbackRate=parseFloat($("speedSel").value);rec.start(250);video.play();if(mergeUsed&&window.__mergePlay)window.__mergePlay(combinedOffset(activeClip));startLoop();var tick=setInterval(function(){var done=Math.min(1,(video.currentTime-start)/clipDur);prog.value=Math.round(done*100);setStatus(estatus,"Export ho raha hai… "+Math.round(done*100)+"% — page khula rakhein.");if(video.currentTime>=end||video.ended){clearInterval(tick);video.pause();setTimeout(function(){if(rec.state!=="inactive")rec.stop();},150);}},200);setTimeout(function(){clearInterval(tick);if(rec.state!=="inactive"){video.pause();rec.stop();}},(clipDur+4)*1000/Math.max(0.5,parseFloat($("speedSel").value)));exportCancelHook=function(){cancelled=true;clearInterval(tick);try{video.pause();}catch(e){}if(rec.state!=="inactive")rec.stop();};}
   video.addEventListener("seeked",begin);setTimeout(begin,900);
 });
 /* Gemini — Title / Description / Tags (Thumbnail tab mein)
@@ -2402,18 +2443,19 @@ function exportImageSingle(){
   var c=clips[0];var s=c.trimStart||0,e=c.trimEnd||c.duration||3,clipDur=e-s;
   if(clipDur<0.3){setStatus(editorStatus,"Image clip bohat chhota hai — kam az kam 1 second rakhein.","err");return;}
   applyCanvasSize();state.exporting=true;stopImgPlayback();exportBtn.disabled=true;
-  var wrap=$("exportProgressWrap"),prog=$("exportProgress"),estatus=$("exportStatus");wrap.classList.remove("hidden");prog.value=0;setStatus(estatus,"Image export shuru… tasveer ki video bann rahi hai, page khula rakhein.");
+  var wrap=$("exportProgressWrap"),prog=$("exportProgress"),estatus=$("exportStatus");wrap.classList.remove("hidden");prog.value=0;setStatus(estatus,"Image export shuru… tasveer ki video bann rahi hai, page khula rakhein.");wakeLockOn();exportCancelArm();
   var stream=canvas.captureStream(30);
   var mergeUsed=false;
   if(window.__hasMerge&&window.__hasMerge()&&window.__getMergeAudioTrack){var mtrack2=window.__getMergeAudioTrack();if(mtrack2){stream.addTrack(mtrack2);mergeUsed=true;}}
-  var chunks=[],rec;try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:2500000});}catch(err){state.exporting=false;exportBtn.disabled=false;setStatus(editorStatus,"Recorder shuru nahi ho saka: "+err.message,"err");return;}
+  var chunks=[],rec,cancelled=false;try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:bitrateForQuality()});}catch(err){state.exporting=false;exportBtn.disabled=false;wakeLockOff();exportCancelDone();setStatus(editorStatus,"Recorder shuru nahi ho saka: "+err.message,"err");return;}
   rec.ondataavailable=function(ev){if(ev.data&&ev.data.size)chunks.push(ev.data);};
-  rec.onstop=function(){if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;var ext=mime.indexOf("mp4")>=0?"mp4":"webm";var blob=new Blob(chunks,{type:mime.split(";")[0]});var a=document.createElement("a");var name=($("titleText").value.trim()||"meri-video").replace(/[\\/:*?"<>|]/g,"").slice(0,40);a.href=URL.createObjectURL(blob);a.download=name+"."+ext;document.body.appendChild(a);a.click();a.remove();prog.value=100;setStatus(estatus,"Ho gaya! Tasveer ki video download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, "+ext.toUpperCase()+", koi watermark nahi).","ok");setStatus(editorStatus,"");};
+  rec.onstop=function(){if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;var ext=mime.indexOf("mp4")>=0?"mp4":"webm";var blob=new Blob(chunks,{type:mime.split(";")[0]});var a=document.createElement("a");var name=($("titleText").value.trim()||"meri-video").replace(/[\\/:*?"<>|]/g,"").slice(0,40);a.href=URL.createObjectURL(blob);a.download=name+"."+ext;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){try{URL.revokeObjectURL(a.href);}catch(e){}},4000);prog.value=100;setStatus(estatus,"Ho gaya! Tasveer ki video download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, "+ext.toUpperCase()+", koi watermark nahi).","ok");setStatus(editorStatus,"");};
+  (function(){var __os=rec.onstop;rec.onstop=function(){wakeLockOff();exportCancelDone();if(cancelled){chunks.length=0;prog.value=0;if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;setStatus(estatus,"Image export cancel kar diya gaya — koi file download nahi hui.","err");setStatus(editorStatus,"");return;}__os();};})();
   imgPos=s;drawFrame();
   rec.start(250);if(mergeUsed&&window.__mergePlay)window.__mergePlay(0);
   var rate=Math.max(0.5,parseFloat($("speedSel").value)||1),t0=performance.now(),done=false;
   var drawInt=setInterval(function(){drawFrame();var frac=Math.min(1,(performance.now()-t0)/1000*rate/clipDur);prog.value=Math.round(frac*100);setStatus(estatus,"Image export ho raha hai… "+Math.round(frac*100)+"% — page khula rakhein.");},120);
-  setTimeout(function(){if(done)return;done=true;clearInterval(drawInt);setTimeout(function(){if(rec.state!=="inactive")rec.stop();},150);},clipDur*1000/rate+250);
+  setTimeout(function(){if(done)return;done=true;clearInterval(drawInt);setTimeout(function(){if(rec.state!=="inactive")rec.stop();},150);},clipDur*1000/rate+250);exportCancelHook=function(){cancelled=true;done=true;clearInterval(drawInt);if(rec.state!=="inactive")rec.stop();};
 }
 /* ===== Join export: kai clips -> aik video ===== */
 var exportCtx=null,exportAudioDest=null;
@@ -2423,7 +2465,7 @@ function exportJoined(){
   var total=0;clips.forEach(function(c,i){total+=Math.max(0.3,(c.trimEnd||c.duration||0)-(c.trimStart||0));if(i>0)total+=(c.gapBefore||0);});
   var prevActive=activeClip;
   applyCanvasSize();state.exporting=true;state.playClipOnly=false;exportBtn.disabled=true;
-  var wrap=$("exportProgressWrap"),prog=$("exportProgress"),estatus=$("exportStatus");wrap.classList.remove("hidden");prog.value=0;setStatus(estatus,"Join export shuru… "+clips.length+" clips jod rahe hain, page khula rakhein.");
+  var wrap=$("exportProgressWrap"),prog=$("exportProgress"),estatus=$("exportStatus");wrap.classList.remove("hidden");prog.value=0;setStatus(estatus,"Join export shuru… "+clips.length+" clips jod rahe hain, page khula rakhein.");wakeLockOn();exportCancelArm();
   var stream=canvas.captureStream(30);
   var audioOk=false,mergeUsed=false;
   if(window.__hasMerge&&window.__hasMerge()&&window.__getMergeAudioTrack){var jmt=window.__getMergeAudioTrack();if(jmt){stream.addTrack(jmt);mergeUsed=true;audioOk=true;}}
@@ -2436,11 +2478,13 @@ function exportJoined(){
   }
   if(window.__hasMerge&&window.__hasMerge()&&!mergeUsed)estatus.textContent+=" (Note: merge audio is browser mein export mein capture nahi ho saka — video ka apna sound record hoga. Chrome mein try karein.)";
   var chunks=[],rec;
-  try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:2500000});}catch(e){state.exporting=false;exportBtn.disabled=false;setStatus(editorStatus,"Recorder shuru nahi ho saka: "+e.message,"err");return;}
+  try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:bitrateForQuality()});}catch(e){state.exporting=false;exportBtn.disabled=false;wakeLockOff();exportCancelDone();setStatus(editorStatus,"Recorder shuru nahi ho saka: "+e.message,"err");return;}
   rec.ondataavailable=function(ev){if(ev.data&&ev.data.size)chunks.push(ev.data);};
-  rec.onstop=function(){if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;var ext=mime.indexOf("mp4")>=0?"mp4":"webm";var blob=new Blob(chunks,{type:mime.split(";")[0]});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="joined-video."+ext;document.body.appendChild(a);a.click();a.remove();prog.value=100;setStatus(estatus,"Ho gaya! "+clips.length+" clips jud kar aik video download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, "+ext.toUpperCase()+", koi watermark nahi).","ok");setStatus(editorStatus,"");loadClip(prevActive);};
-  var idx=0,elapsed=0,finished=false;
+  rec.onstop=function(){if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;var ext=mime.indexOf("mp4")>=0?"mp4":"webm";var blob=new Blob(chunks,{type:mime.split(";")[0]});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="joined-video."+ext;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){try{URL.revokeObjectURL(a.href);}catch(e){}},4000);prog.value=100;setStatus(estatus,"Ho gaya! "+clips.length+" clips jud kar aik video download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, "+ext.toUpperCase()+", koi watermark nahi).","ok");setStatus(editorStatus,"");loadClip(prevActive);};
+  (function(){var __os=rec.onstop;rec.onstop=function(){wakeLockOff();exportCancelDone();if(cancelled){chunks.length=0;prog.value=0;if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;setStatus(estatus,"Join export cancel kar diya gaya — koi file download nahi hui.","err");setStatus(editorStatus,"");loadClip(prevActive);return;}__os();};})();
+  var idx=0,elapsed=0,finished=false,cancelled=false;
   function finish(){if(finished)return;finished=true;video.pause();setTimeout(function(){if(rec.state!=="inactive")rec.stop();},200);}
+  exportCancelHook=function(){if(finished)return;cancelled=true;finish();};
   function loadAndSeek(c,t,cb){
     var done=false;
     function go(){if(done)return;done=true;video.removeEventListener("seeked",go);cb();}
@@ -2488,6 +2532,7 @@ function exportJoined(){
       if(rec.state==="inactive"){rec.start(250);if(mergeUsed&&window.__mergePlay)window.__mergePlay(0);}
       video.play();startLoop();
       var tick=setInterval(function(){
+        if(finished){clearInterval(tick);return;}
         var doneFrac=Math.min(1,(elapsed+Math.max(0,video.currentTime-s))/total);prog.value=Math.round(doneFrac*100);setStatus(estatus,"Join ho raha hai… clip "+(idx+1)+"/"+clips.length+" • "+Math.round(doneFrac*100)+"% — page khula rakhein.");
         if(video.currentTime>=e-0.05||video.ended){clearInterval(tick);video.pause();elapsed+=Math.max(0,e-s);idx++;playNext();}
       },200);
@@ -2619,7 +2664,7 @@ $("extractAudioRecBtn").addEventListener("click",function(){
   try{rec=new MediaRecorder(aStream,aMime?{mimeType:aMime}:undefined);}catch(err){setStatus(astatus,"Recorder shuru nahi ho saka: "+err.message,"err");return;}
   var btn=this;btn.disabled=true;$("audioProgressWrap").classList.remove("hidden");var prog=$("audioProgress");prog.value=0;
   rec.ondataavailable=function(ev){if(ev.data&&ev.data.size)chunks.push(ev.data);};
-  rec.onstop=function(){btn.disabled=false;var ext=aMime.indexOf("mp4")>=0?"m4a":"webm";var blob=new Blob(chunks,{type:aMime?aMime.split(";")[0]:"audio/webm"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=((c&&c.name.replace(/\.[^.]+$/,""))||"audio")+"-audio."+ext;document.body.appendChild(a);a.click();a.remove();prog.value=100;setStatus(astatus,"Ho gaya! Audio download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, "+ext.toUpperCase()+").","ok");};
+  rec.onstop=function(){btn.disabled=false;var ext=aMime.indexOf("mp4")>=0?"m4a":"webm";var blob=new Blob(chunks,{type:aMime?aMime.split(";")[0]:"audio/webm"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=((c&&c.name.replace(/\.[^.]+$/,""))||"audio")+"-audio."+ext;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){try{URL.revokeObjectURL(a.href);}catch(e){}},4000);prog.value=100;setStatus(astatus,"Ho gaya! Audio download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, "+ext.toUpperCase()+").","ok");};
   video.pause();video.currentTime=s;
   var started=false;
   function begin(){if(started)return;started=true;video.removeEventListener("seeked",begin);rec.start(250);video.play();setStatus(astatus,"Audio record ho raha hai… video real-time chalegi, page khula rakhein.");var tick=setInterval(function(){var d=Math.min(1,(video.currentTime-s)/Math.max(0.3,e-s));prog.value=Math.round(d*100);if(video.currentTime>=e||video.ended){clearInterval(tick);video.pause();setTimeout(function(){if(rec.state!=="inactive")rec.stop();},150);}},200);}
@@ -2706,6 +2751,170 @@ $("thumbAiBtn").addEventListener("click",function(){
 drawThumbPlaceholder();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawFrame);
 pushHistory();
+/* ===== PHASE 1: PROJECT DRAFT AUTO-SAVE (IndexedDB) =====
+   Clips ki asal files (Blob/File) aur poora edit state (tartib,
+   trim, text, captions, settings, timeline) IndexedDB mein
+   mehfooz hota hai. Page refresh ya tab band ho jaye to agli
+   dafa khulne par draft wapas load karne ki peshkash hoti hai.
+   Har cheez try/catch mein hai — draft fail ho to editor par
+   koi asar nahi parta, sirf console mein warning jati hai. */
+var DRAFT_DB_NAME="procutDrafts",DRAFT_STORE="store",DRAFT_KEY="currentProject";
+var draftLastKey="",draftBusy=false,draftRestoring=false;
+function draftDb(){
+  return new Promise(function(resolve,reject){
+    try{
+      var rq=indexedDB.open(DRAFT_DB_NAME,1);
+      rq.onupgradeneeded=function(){ try{ rq.result.createObjectStore(DRAFT_STORE); }catch(e){} };
+      rq.onsuccess=function(){ resolve(rq.result); };
+      rq.onerror=function(){ reject(rq.error||new Error("IndexedDB khul nahi saka")); };
+      rq.onblocked=function(){ reject(new Error("IndexedDB blocked hai")); };
+    }catch(e){ reject(e); }
+  });
+}
+function draftIdb(mode,fn){
+  return draftDb().then(function(db){
+    return new Promise(function(resolve,reject){
+      try{
+        var tx=db.transaction(DRAFT_STORE,mode);
+        var req=fn(tx.objectStore(DRAFT_STORE));
+        tx.oncomplete=function(){ try{db.close();}catch(e){} resolve(req?req.result:undefined); };
+        tx.onabort=tx.onerror=function(){ try{db.close();}catch(e){} reject(tx.error||new Error("Draft transaction fail ho gayi")); };
+      }catch(e){ reject(e); }
+    });
+  });
+}
+function draftSaveRecord(rec){ return draftIdb("readwrite",function(st){ return st.put(rec,DRAFT_KEY); }); }
+function draftLoadRecord(){ return draftIdb("readonly",function(st){ return st.get(DRAFT_KEY); }); }
+function draftDeleteRecord(){ return draftIdb("readwrite",function(st){ return st.delete(DRAFT_KEY); }); }
+function draftImgBlob(img){
+  return new Promise(function(resolve){
+    try{
+      if(!img||!img.naturalWidth){ resolve(null); return; }
+      var cv=document.createElement("canvas"); cv.width=img.naturalWidth; cv.height=img.naturalHeight;
+      cv.getContext("2d").drawImage(img,0,0);
+      if(cv.toBlob){ cv.toBlob(function(b){ resolve(b||null); },"image/png"); }
+      else resolve(null);
+    }catch(e){ resolve(null); }
+  });
+}
+function draftBuild(){
+  var snap=snapshot();
+  var rec={ v:1, savedAt:Date.now(),
+    ui:{ t:snap.t, s:snap.s, fs:snap.fs, c:snap.c, p:snap.p, b:snap.b, bi:snap.bi, ratio:snap.ratio, fit:snap.fit, br:snap.br, ct:snap.ct, sa:snap.sa, zoom:snap.zoom, rot:snap.rot, flip:snap.flip, active:snap.active },
+    clips:snap.clips.map(function(c){ return { file:c.file||null, name:c.name, size:c.size, duration:c.duration, trimStart:c.trimStart||0, trimEnd:c.trimEnd||0, gapBefore:c.gapBefore||0, isImage:!!c.isImage }; }),
+    extra:{ quality:($("qualitySel")||{}).value||"720", speed:($("speedSel")||{}).value||"1", volume:($("volumeSlider")||{}).value||"1", voScript:($("voScript")||{}).value||"", edCapOn:!!edCapOn, edCapMove:edCapMove||"static" },
+    tl:null };
+  var tl=snap.tl;
+  if(!tl) return Promise.resolve(rec);
+  var audios=(tl.audios||[]).map(function(a){ return { id:a.id, name:a.name, start:a.start, dur:a.dur, srcStart:a.srcStart||0, fromClip:a.fromClip, combined:!!a.combined, srcFile:a.srcFile||null, isMerge:!!a.isMerge }; });
+  var ovs=(tl.overlays||[]);
+  return Promise.all(ovs.map(function(o){ return draftImgBlob(o.img); })).then(function(blobs){
+    rec.tl={ audios:audios,
+      overlays:ovs.map(function(o,i){ return { id:o.id, name:o.name, start:o.start, end:o.end, opacity:o.opacity, pos:o.pos||"tr", fixed:!!o.fixed, imgBlob:blobs[i]||null }; }),
+      inPt:tl.inPt, outPt:tl.outPt, origMuted:!!tl.origMuted, mergeId:tl.mergeId, replaceId:tl.replaceId, uidNext:tl.uidNext };
+    return rec;
+  });
+}
+function draftSaveNow(){
+  if(draftBusy||draftRestoring||state.exporting) return;
+  if(!window.indexedDB) return;
+  if(!clips.length) return;
+  var key=""; try{ key=snapKey(snapshot()); }catch(e){ key=""; }
+  if(key&&key===draftLastKey) return;
+  draftBusy=true;
+  draftBuild().then(function(rec){ return draftSaveRecord(rec); }).then(function(){
+    draftLastKey=key;
+    var ds=$("draftStatus"); if(ds) setStatus(ds,"✓ Draft auto-save ho gaya ("+new Date().toLocaleTimeString()+") — page band bhi ho jaye to kaam mehfooz hai.","ok");
+    var dbn=$("draftDeleteBtn"); if(dbn) dbn.classList.remove("hidden");
+  }).catch(function(e){ try{ console.warn("ProCut draft save nahi ho saka:",e); }catch(_){} }).then(function(){ draftBusy=false; });
+}
+function draftLoadImg(src){
+  return new Promise(function(resolve){
+    try{
+      var img=new Image();
+      var to=setTimeout(function(){ resolve(img); },4000);
+      img.onload=function(){ clearTimeout(to); resolve(img); };
+      img.onerror=function(){ clearTimeout(to); resolve(img); };
+      img.src=src;
+    }catch(e){ resolve(null); }
+  });
+}
+function draftRestore(rec){
+  draftRestoring=true;
+  var clipPromises=(rec.clips||[]).map(function(c){
+    var nc={ file:c.file||null, name:c.name, size:c.size, url:"", duration:c.duration||0, trimStart:c.trimStart||0, trimEnd:c.trimEnd||0, gapBefore:c.gapBefore||0, isImage:!!c.isImage, img:null };
+    try{ if(c.file) nc.url=URL.createObjectURL(c.file); }catch(e){}
+    if(nc.isImage&&nc.url) return draftLoadImg(nc.url).then(function(img){ nc.img=img; return nc; });
+    return Promise.resolve(nc);
+  });
+  var tlPromise=Promise.resolve(null);
+  if(rec.tl){
+    var audios=(rec.tl.audios||[]).map(function(a){
+      var na={ id:a.id, name:a.name, start:a.start, dur:a.dur, srcStart:a.srcStart||0, fromClip:a.fromClip, combined:!!a.combined, srcFile:a.srcFile||null, el:null, isMerge:!!a.isMerge };
+      try{ if(a.srcFile){ var el=new Audio(); el.preload="auto"; el.src=URL.createObjectURL(a.srcFile); na.el=el; } }catch(e){}
+      return na;
+    });
+    var ovPromises=(rec.tl.overlays||[]).map(function(o){
+      var no={ id:o.id, name:o.name, start:o.start, end:o.end, opacity:o.opacity, img:null, pos:o.pos||"tr", fixed:!!o.fixed };
+      if(o.imgBlob){ var u=""; try{ u=URL.createObjectURL(o.imgBlob); }catch(e){} if(u) return draftLoadImg(u).then(function(img){ no.img=img; return no; }); }
+      return Promise.resolve(no);
+    });
+    tlPromise=Promise.all(ovPromises).then(function(overlays){
+      return { audios:audios, overlays:overlays, inPt:rec.tl.inPt, outPt:rec.tl.outPt, origMuted:!!rec.tl.origMuted, mergeId:rec.tl.mergeId, replaceId:rec.tl.replaceId, uidNext:rec.tl.uidNext };
+    });
+  }
+  return Promise.all([Promise.all(clipPromises),tlPromise]).then(function(parts){
+    var ui=rec.ui||{};
+    var snapObj={ t:ui.t||"", s:ui.s||"", fs:ui.fs||58, c:ui.c||"#ffffff", p:ui.p||"bottom", b:!!ui.b, bi:!!ui.bi, ratio:ui.ratio||"9:16", fit:ui.fit||"cover", br:(ui.br==null?100:ui.br), ct:(ui.ct==null?100:ui.ct), sa:(ui.sa==null?100:ui.sa), zoom:ui.zoom||1, rot:ui.rot||0, flip:!!ui.flip, active:(typeof ui.active==="number"?ui.active:0), clips:parts[0], tl:parts[1] };
+    applySnap(snapObj);
+    var ex=rec.extra||{};
+    try{ if(ex.quality&&$("qualitySel")) $("qualitySel").value=ex.quality; }catch(e){}
+    try{ if(ex.speed&&$("speedSel")) $("speedSel").value=ex.speed; }catch(e){}
+    try{ if(ex.volume&&$("volumeSlider")) $("volumeSlider").value=ex.volume; }catch(e){}
+    try{ if(typeof ex.voScript==="string"&&$("voScript")) $("voScript").value=ex.voScript; }catch(e){}
+    try{
+      if(typeof ex.edCapOn==="boolean"&&ex.edCapOn!==edCapOn&&$("edCapToggle")) $("edCapToggle").click();
+      if(ex.edCapMove&&typeof edCapMoveSeg!=="undefined"&&edCapMoveSeg) edCapMoveSeg.querySelectorAll("button").forEach(function(b){ if(b.getAttribute("data-emove")===ex.edCapMove) b.click(); });
+    }catch(e){}
+    try{ applyCanvasSize(); }catch(e){}
+    setStatus(editorStatus,"✓ Pichla draft wapas load ho gaya — saari clips, trim, text aur timeline wapas aa gaye. Kaam aagay barhayein ya Export karein.","ok");
+    var ds=$("draftStatus"); if(ds) setStatus(ds,"Draft restore ho gaya"+(rec.savedAt?(" — save hua tha: "+new Date(rec.savedAt).toLocaleString()):"")+".","ok");
+    try{ draftLastKey=snapKey(snapshot()); }catch(e){ draftLastKey=""; }
+    setTimeout(function(){ draftRestoring=false; },1600);
+  }).catch(function(e){
+    draftRestoring=false;
+    try{ console.warn("ProCut draft restore nahi ho saka:",e); }catch(_){}
+    setStatus(editorStatus,"Draft mila tha lekin load nahi ho saka — koi baat nahi, naya kaam shuru karein.","err");
+  });
+}
+function draftInit(){
+  if(!window.indexedDB) return;
+  draftLoadRecord().then(function(rec){
+    if(!rec||!rec.clips||!rec.clips.length) return;
+    var dbn=$("draftDeleteBtn"); if(dbn) dbn.classList.remove("hidden");
+    var ds=$("draftStatus"); if(ds) setStatus(ds,"Pichla adhoora kaam (draft) mehfooz hai"+(rec.savedAt?(" — "+new Date(rec.savedAt).toLocaleString()+" ko save hua"):"")+".","");
+    if(clips.length) return;
+    var ok=false;
+    try{ ok=window.confirm("ProCut Studio\n\nPichla adhoora kaam (draft) mila hai"+(rec.savedAt?("\nSave hua: "+new Date(rec.savedAt).toLocaleString()):"")+"\nClips: "+rec.clips.length+"\n\nWapas load karein?\nOK = Haan, load karein\nCancel = Nahi, naya kaam shuru karein"); }catch(e){}
+    if(ok) draftRestore(rec);
+  }).catch(function(e){ try{ console.warn("ProCut draft check nahi ho saka:",e); }catch(_){} });
+}
+(function(){
+  var delBtn=$("draftDeleteBtn");
+  if(delBtn) delBtn.addEventListener("click",function(){
+    var ok=false; try{ ok=window.confirm("Save shuda draft delete kar dein? Is se pichla adhoora kaam hamesha ke liye khatam ho jayega (abhi khula hua kaam mutasir nahi hoga)."); }catch(e){}
+    if(!ok) return;
+    draftDeleteRecord().then(function(){
+      draftLastKey="";
+      delBtn.classList.add("hidden");
+      var ds=$("draftStatus"); if(ds) setStatus(ds,"Draft delete ho gaya.","ok");
+    }).catch(function(e){ try{ console.warn("Draft delete nahi ho saka:",e); }catch(_){} });
+  });
+  setTimeout(draftInit,700);
+  setInterval(function(){ draftSaveNow(); },4000);
+  window.addEventListener("pagehide",function(){ draftSaveNow(); });
+  document.addEventListener("visibilitychange",function(){ if(document.visibilityState==="hidden") draftSaveNow(); });
+})();
 })();
 </script>
 
