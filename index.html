@@ -815,6 +815,7 @@ textarea{min-height:64px}
     <button class="icon-btn-top hist-btn" id="redoBtn" type="button" title="Redo — undo kiya hua step dobara karein (Ctrl+Y)" aria-label="Redo — undo kiya hua step dobara karein"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg><span>Redo</span></button>
     <button class="icon-btn-top hist-btn refresh-btn" id="refreshBtn" type="button" title="Page Refresh — page dobara load karein (jo editing export nahi hui, wo khatam ho jayegi)" aria-label="Page refresh karein"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg><span>Refresh</span></button>
     <select id="qualitySel" class="select-dark" aria-label="Export quality">
+      <option value="1080">Export • 1080p Full HD</option>
       <option value="720" selected>Export • 720p HD</option>
       <option value="480">Export • 480p Fast</option>
     </select>
@@ -1010,6 +1011,8 @@ textarea{min-height:64px}
           </div>
           <p class="hint">Caption ka matn <b style="color:var(--text)">Voice Over tab ke script (حصہ 1)</b> se aata hai — wahan matn likhein ya audio file se nikalwayein. Lafz poori edited video (sab clips mila kar) ke waqt par andaze se chalte hain — jo lafz bolne ka waqt hoga, wo <b style="color:var(--gold)">sunehra</b> hoga, baqi halke. Ye caption <b style="color:var(--text)">Preview mein bhi dikhega aur Export ki hui video mein bhi shamil</b> hoga. Caption band karna ho to upar wala button dobara dabayein.</p>
         </div>
+        <button class="btn small" id="edCapSrtBtn" type="button" style="margin-top:8px">⬇ SRT File Download Karein (Captions Ki File)</button>
+        <p class="hint">SRT file YouTube aur video players mein captions upload karne ke kaam aati hai. Agar script Groq Whisper se bani ho to SRT ASAL bolne ke waqton par banti hai, warna andaze par.</p>
         <p class="status" id="edCapStatus" role="status"></p>
 
         <div class="divider"></div>
@@ -1017,11 +1020,16 @@ textarea{min-height:64px}
         <div class="slider-row"><span>Brightness</span><input type="range" id="brightnessSlider" min="50" max="150" value="100"/><output id="brightnessOut">100%</output></div>
         <div class="slider-row"><span>Contrast</span><input type="range" id="contrastSlider" min="50" max="150" value="100"/><output id="contrastOut">100%</output></div>
         <div class="slider-row"><span>Saturation</span><input type="range" id="saturationSlider" min="0" max="200" value="100"/><output id="saturationOut">100%</output></div>
-        <div class="row" style="margin-top:10px">
+        <div class="row" style="margin-top:10px;flex-wrap:wrap">
           <button class="btn small" id="filterNoneBtn" type="button">Original</button>
           <button class="btn small" id="filterWarmBtn" type="button">Warm</button>
           <button class="btn small" id="filterVividBtn" type="button">Vivid</button>
           <button class="btn small" id="filterSoftBtn" type="button">Soft</button>
+          <button class="btn small" id="filterBWBtn" type="button">B&amp;W</button>
+          <button class="btn small" id="filterVintageBtn" type="button">Vintage</button>
+          <button class="btn small" id="filterSepiaBtn" type="button">Sepia</button>
+          <button class="btn small" id="filterDramaBtn" type="button">Dramatic</button>
+          <button class="btn small" id="filterFadeBtn" type="button">Fade</button>
         </div>
         <p class="hint">Ye adjustments preview ke sath export mein bhi shamil honge.</p>
 
@@ -1035,7 +1043,7 @@ textarea{min-height:64px}
         <p class="status" id="draftStatus" role="status"></p>
         <button class="btn small hidden" id="draftDeleteBtn" type="button">🗑 Save Shuda Draft Delete Karein</button>
         <p class="status" id="editorStatus" role="status">Editor tayyar hai — pehle video import karein.</p>
-        <p class="hint">Export mein clip jitni lambi hogi utna waqt lagega. Export ke dauran page khula rakhein, doosri app par na jayein. Kuch purane phones par Chrome sab se behtar chalta hai.</p>
+        <p class="hint">Export mein clip jitni lambi hogi utna waqt lagega. Export ke dauran page khula rakhein, doosri app par na jayein. Kuch purane phones par Chrome sab se behtar chalta hai. Jahan WebCodecs support ho wahan Export khud ⚡ TEZ tareeqa (asal MP4) istemal karta hai — warna purana tareeqa khud chal jata hai, ghabrana nahi.</p>
       </div>
     </aside>
   </div>
@@ -1075,6 +1083,7 @@ textarea{min-height:64px}
       <div class="tl-context" id="tlContext" aria-label="Timeline tools"></div>
       <input class="hidden" type="file" id="tlAudioInput" accept="audio/*"/>
       <input class="hidden" type="file" id="tlLogoInput" accept="image/*"/>
+      <input class="hidden" type="file" id="tlStickerInput" accept="image/*"/>
       <div class="tl-extract cut-box">
         <span class="label" style="margin-top:0">✂️ Video Kaato — Chhota Clip Banao (Sirf 3 Asan Steps)</span>
         <p class="cut-intro">Bari video mein se sirf <b>acha wala hissa</b> rakhna hai? Bas ye 3 kaam bari bari karo — pehle Step 1, phir Step 2, phir Step 3. Is ke ilawa kuch dabane ki zaroorat nahi.</p>
@@ -1741,7 +1750,14 @@ var $=function(id){return document.getElementById(id);};
 var video=$("srcVideo"), canvas=$("stage"), ctx=canvas.getContext("2d");
 var stageEmpty=$("stageEmpty"), transport=$("transport"), playBtn=$("playBtn"), seekBar=$("seekBar"), timeLabel=$("timeLabel");
 var trimStartEl=$("trimStart"), trimEndEl=$("trimEnd"), editorStatus=$("editorStatus"), exportBtn=$("exportBtn");
-var state={loaded:false,duration:0,ratio:"9:16",fit:"cover",pos:"bottom",color:"#ffffff",band:true,bismillah:false,exporting:false,playClipOnly:false,brightness:100,contrast:100,saturation:100,zoom:1,rotation:0,flip:false,loop:false,muted:false};
+var state={loaded:false,duration:0,ratio:"9:16",fit:"cover",pos:"bottom",color:"#ffffff",band:true,bismillah:false,exporting:false,playClipOnly:false,brightness:100,contrast:100,saturation:100,zoom:1,rotation:0,flip:false,loop:false,muted:false,hue:0,sepia:0,gray:0};
+/* PHASE 2: transition ke liye doosra (chhupa hua) video element —
+   agla clip is par pehle se load/seek rehta hai taake crossfade ke
+   doran dono clips aik sath canvas par aa sakein. Hamesha muted. */
+var altVideo=document.createElement("video");
+altVideo.muted=true;altVideo.playsInline=true;altVideo.preload="auto";
+var altManual=false; /* true = tez export khud altVideo sambhal raha hai */
+var capTimeOverride=null; /* tez export: caption ka waqt frame se tay hota hai */
 /* ===== UNDO / REDO — POORI EDITING KI HISTORY =====
    Purana masla: history mein sirf title/rang jaisi chand cheezein save
    hoti theen — clip kaatna, split, delete, trim, tartib, gap, audio
@@ -1752,6 +1768,13 @@ var state={loaded:false,duration:0,ratio:"9:16",fit:"cover",pos:"bottom",color:"
    audio/logo tracks bhi. File/URL ke asal references rakhe jate hain,
    taake delete shuda clip bhi Undo se wapas aa sake. */
 var history=[], historyIdx=-1, applyingSnap=false;
+/* PHASE 2: har clip ki pro settings (speed, volume, fade, transition,
+   Ken Burns) — aik hi jagah se taake snapshot / split / duplicate /
+   draft sab mein yahi fields copy hon. Default purani rawaiya jaisi:
+   speed null = global speedSel, vol 1, fade/transition 0, kb "" (band). */
+function fxOf(c){return {speed:(c.speed==null?null:c.speed),vol:(c.vol==null?1:c.vol),fadeIn:c.fadeIn||0,fadeOut:c.fadeOut||0,transition:c.transition||0,kb:c.kb||""};}
+window.__fxOf=fxOf;
+function clipRate(c){var g=parseFloat(($("speedSel")||{}).value)||1;var r=(c&&c.speed!=null&&c.speed>0)?c.speed:g;return Math.min(2,Math.max(0.25,r));}
 function snapshot(){
   var tl=null;
   try{ if(window.__tlSnapshot) tl=window.__tlSnapshot(); }catch(e){}
@@ -1759,16 +1782,16 @@ function snapshot(){
     t:$("titleText").value, s:$("subText").value, fs:$("fontSize").value,
     c:state.color, p:state.pos, b:state.band, bi:state.bismillah,
     ratio:state.ratio, fit:state.fit,
-    br:state.brightness, ct:state.contrast, sa:state.saturation,
+    br:state.brightness, ct:state.contrast, sa:state.saturation, hu:state.hue||0, se:state.sepia||0, gr:state.gray||0,
     zoom:state.zoom, rot:state.rotation, flip:state.flip,
     active:activeClip,
-    clips:clips.map(function(c){return {file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:c.trimStart||0,trimEnd:c.trimEnd||0,gapBefore:c.gapBefore||0,isImage:!!c.isImage,img:c.img||null};}),
+    clips:clips.map(function(c){var o={file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:c.trimStart||0,trimEnd:c.trimEnd||0,gapBefore:c.gapBefore||0,isImage:!!c.isImage,img:c.img||null};var fx=fxOf(c);for(var k in fx)o[k]=fx[k];return o;}),
     tl:tl
   };
 }
 function snapKey(o){
   try{
-    var ck=o.clips.map(function(c){return c.name+"|"+(c.isImage?"IMG":"VID")+"|"+c.duration+"|"+(c.trimStart||0).toFixed(2)+"|"+(c.trimEnd||0).toFixed(2)+"|"+(c.gapBefore||0);}).join(";");
+    var ck=o.clips.map(function(c){return c.name+"|"+(c.isImage?"IMG":"VID")+"|"+c.duration+"|"+(c.trimStart||0).toFixed(2)+"|"+(c.trimEnd||0).toFixed(2)+"|"+(c.gapBefore||0)+"|"+(c.speed==null?"g":c.speed)+"|"+(c.vol==null?1:c.vol)+"|"+(c.fadeIn||0)+"|"+(c.fadeOut||0)+"|"+(c.transition||0)+"|"+(c.kb||"");}).join(";");
     var tk="";
     if(o.tl){
       tk=o.tl.audios.map(function(a){return a.id+":"+(+a.start).toFixed(2)+":"+(+a.dur).toFixed(2)+":"+(+(a.srcStart||0)).toFixed(2);}).join(";")
@@ -1779,7 +1802,7 @@ function snapKey(o){
        karna ya playback ka agle clip par khud chale jana history ka
        step nahi banna chahiye, warna Undo dabane se kuch badle baghair
        sirf selection idhar udhar hogi. */
-    return [o.t,o.s,o.fs,o.c,o.p,o.b,o.bi,o.ratio,o.fit,o.br,o.ct,o.sa,o.zoom,o.rot,o.flip,ck,tk].join("~");
+    return [o.t,o.s,o.fs,o.c,o.p,o.b,o.bi,o.ratio,o.fit,o.br,o.ct,o.sa,o.hu||0,o.se||0,o.gr||0,o.zoom,o.rot,o.flip,ck,tk].join("~");
   }catch(e){return "k"+Math.random();}
 }
 function pushHistory(){
@@ -1801,7 +1824,7 @@ function applySnap(o){
   state.color=o.c||"#ffffff";state.pos=o.p||"bottom";state.band=!!o.b;state.bismillah=!!o.bi;
   if(o.ratio)state.ratio=o.ratio;
   if(o.fit)state.fit=o.fit;
-  state.brightness=(o.br==null?100:o.br);state.contrast=(o.ct==null?100:o.ct);state.saturation=(o.sa==null?100:o.sa);
+  state.brightness=(o.br==null?100:o.br);state.contrast=(o.ct==null?100:o.ct);state.saturation=(o.sa==null?100:o.sa);state.hue=o.hu||0;state.sepia=o.se||0;state.gray=o.gr||0;
   state.zoom=o.zoom||1;state.rotation=o.rot||0;state.flip=!!o.flip;
   $("bandToggle").setAttribute("aria-pressed",String(state.band));
   $("bismillahToggle").setAttribute("aria-pressed",String(state.bismillah));
@@ -1814,7 +1837,7 @@ function applySnap(o){
   $("zoomLabel").textContent="Zoom "+Math.round(state.zoom*100)+"%";
   /* clips wapas lao — array wohi rakho (timeline bhi isi ko dekhti hai) */
   clips.length=0;
-  (o.clips||[]).forEach(function(c){clips.push({file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:c.trimStart,trimEnd:c.trimEnd,gapBefore:c.gapBefore,isImage:!!c.isImage,img:c.img||null});});
+  (o.clips||[]).forEach(function(c){var nc={file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:c.trimStart,trimEnd:c.trimEnd,gapBefore:c.gapBefore,isImage:!!c.isImage,img:c.img||null};var fx=fxOf(c);for(var k in fx)nc[k]=fx[k];clips.push(nc);});
   activeClip=(typeof o.active==="number"&&o.active>=0&&o.active<clips.length)?o.active:(clips.length?0:-1);
   state.loaded=clips.length>0;
   exportBtn.disabled=!clips.length;
@@ -1880,37 +1903,108 @@ document.addEventListener("keydown",function(e){
 });
 function fmt(t){if(!isFinite(t)||t<0)t=0;var m=Math.floor(t/60),s=Math.floor(t%60);return m+":"+(s<10?"0":"")+s;}
 function setStatus(el,msg,cls){el.textContent=msg||"";el.className="status"+(cls?" "+cls:"");}
-function targetSize(){var q=parseInt($("qualitySel").value,10);var ac=(typeof clips!=="undefined")?clips[activeClip]:null;var vw,vh;if(ac&&ac.isImage&&ac.img&&(ac.img.naturalWidth||ac.img.width)){vw=ac.img.naturalWidth||ac.img.width;vh=ac.img.naturalHeight||ac.img.height;}else{vw=video.videoWidth||1280;vh=video.videoHeight||720;}if(state.ratio==="9:16")return q===720?{w:720,h:1280}:{w:540,h:960};if(state.ratio==="16:9")return q===720?{w:1280,h:720}:{w:854,h:480};if(state.ratio==="1:1")return q===720?{w:720,h:720}:{w:540,h:540};if(state.ratio==="4:5")return q===720?{w:720,h:900}:{w:576,h:720};var scale=Math.min(1,1280/Math.max(vw,vh));return{w:Math.round(vw*scale/2)*2,h:Math.round(vh*scale/2)*2};}
+function targetSize(){var q=parseInt($("qualitySel").value,10);var ac=(typeof clips!=="undefined")?clips[activeClip]:null;var vw,vh;if(ac&&ac.isImage&&ac.img&&(ac.img.naturalWidth||ac.img.width)){vw=ac.img.naturalWidth||ac.img.width;vh=ac.img.naturalHeight||ac.img.height;}else{vw=video.videoWidth||1280;vh=video.videoHeight||720;}
+/* PHASE 2: 1080p bhi — quality 1080 ho to Full HD size milta hai
+   (tez WebCodecs export ke liye behtareen; purana recorder rasta
+   bhi yehi size istemal karega lekin phone par sust ho sakta hai). */
+if(state.ratio==="9:16")return q===1080?{w:1080,h:1920}:(q===720?{w:720,h:1280}:{w:540,h:960});if(state.ratio==="16:9")return q===1080?{w:1920,h:1080}:(q===720?{w:1280,h:720}:{w:854,h:480});if(state.ratio==="1:1")return q===1080?{w:1080,h:1080}:(q===720?{w:720,h:720}:{w:540,h:540});if(state.ratio==="4:5")return q===1080?{w:1080,h:1350}:(q===720?{w:720,h:900}:{w:576,h:720});var cap=(q===1080?1920:1280);var scale=Math.min(1,cap/Math.max(vw,vh));return{w:Math.round(vw*scale/2)*2,h:Math.round(vh*scale/2)*2};}
 function applyCanvasSize(){if(!state.loaded)return;var s=targetSize();canvas.width=s.w;canvas.height=s.h;$("canvasMeta").textContent=s.w+" × "+s.h+" • "+(state.ratio==="orig"?"Original":state.ratio);drawFrame();}
 function wrapText(text,maxWidth,font){ctx.font=font;var words=text.split(/\s+/).filter(Boolean);var lines=[],line="";for(var i=0;i<words.length;i++){var test=line?line+" "+words[i]:words[i];if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=words[i];}else line=test;}if(line)lines.push(line);return lines;}
+/* ===== PHASE 2: canvas layer helpers (Ken Burns + transitions) =====
+   drawClipLayer aik clip ko canvas par draw karta hai — active clip ke
+   liye bhi aur crossfade mein aane wale agle clip ke liye bhi, taake dono
+   paths (preview + dono exports) hamesha aik jaisi tasveer dein. */
+function clipFilterStr(){return "brightness("+(state.brightness/100)+") contrast("+(state.contrast/100)+") saturate("+(state.saturation/100)+")"+(state.hue?" hue-rotate("+state.hue+"deg)":"")+(state.sepia?" sepia("+(state.sepia/100)+")":"")+(state.gray?" grayscale("+(state.gray/100)+")":"");}
+function kbTransform(c,prog,W,H){
+  /* Ken Burns: prog 0..1 (clip ke andar guzra hua hissa) */
+  var kb=(c&&c.kb)||"";if(!kb)return {s:1,x:0,y:0};
+  var p=Math.max(0,Math.min(1,prog||0));
+  if(kb==="in")return {s:1+0.3*p,x:0,y:0};
+  if(kb==="out")return {s:1.3-0.3*p,x:0,y:0};
+  if(kb==="left")return {s:1.18,x:(0.5-p)*0.16*W,y:0};
+  if(kb==="right")return {s:1.18,x:(p-0.5)*0.16*W,y:0};
+  if(kb==="up")return {s:1.18,x:0,y:(0.5-p)*0.16*H};
+  if(kb==="down")return {s:1.18,x:0,y:(p-0.5)*0.16*H};
+  return {s:1,x:0,y:0};
+}
+function clipLocalTime(c){
+  if(!c)return 0;
+  if(c.isImage)return Math.max(0,imgPos-(c.trimStart||0));
+  return Math.max(0,(video.currentTime||0)-(c.trimStart||0));
+}
+function activeKbProgress(){
+  var c=clips[activeClip];if(!c)return 0;
+  var len=clipLenOf(c);if(!(len>0))return 0;
+  return Math.max(0,Math.min(1,clipLocalTime(c)/len));
+}
+function drawClipLayer(c,srcEl,prog,alpha){
+  if(!srcEl)return;
+  var W=canvas.width,H=canvas.height;
+  var isVid=(srcEl===video||srcEl===altVideo);
+  var vw=isVid?srcEl.videoWidth:(srcEl.naturalWidth||srcEl.width);
+  var vh=isVid?srcEl.videoHeight:(srcEl.naturalHeight||srcEl.height);
+  if(!vw||!vh)return;
+  var rotated=(state.rotation%180!==0);
+  var baseW=rotated?H:W, baseH=rotated?W:H;
+  var kb=kbTransform(c,prog,W,H);
+  var adjFilter=clipFilterStr();
+  ctx.save();
+  if(alpha!=null&&alpha<1)ctx.globalAlpha=Math.max(0,Math.min(1,alpha));
+  if(state.fit==="fit"){
+    /* Pura Video mode: peeche wahi video dhundli (blur) aur gehri karke
+       cover bhar do, taake khali kala hissa na aaye aur kuch kate bhi na. */
+    ctx.save();
+    ctx.filter=adjFilter+" blur(24px)";
+    ctx.translate(W/2+kb.x,H/2+kb.y);ctx.rotate(state.rotation*Math.PI/180);if(state.flip)ctx.scale(-1,1);ctx.scale(state.zoom*kb.s,state.zoom*kb.s);
+    var bs=Math.max(baseW/vw,baseH/vh)*1.1;var bw2=vw*bs,bh2=vh*bs;
+    try{ctx.drawImage(srcEl,-bw2/2,-bh2/2,bw2,bh2);}catch(e){}
+    ctx.restore();ctx.filter="none";
+    ctx.save();ctx.fillStyle="rgba(0,0,0,0.35)";ctx.fillRect(0,0,W,H);ctx.restore();
+  }
+  ctx.save();
+  ctx.filter=adjFilter;
+  ctx.translate(W/2+kb.x,H/2+kb.y);ctx.rotate(state.rotation*Math.PI/180);if(state.flip)ctx.scale(-1,1);ctx.scale(state.zoom*kb.s,state.zoom*kb.s);
+  var scale=(state.fit==="fit")?Math.min(baseW/vw,baseH/vh):Math.max(baseW/vw,baseH/vh);var dw=vw*scale,dh=vh*scale;
+  try{ctx.drawImage(srcEl,-dw/2,-dh/2,dw,dh);}catch(e){}
+  ctx.restore();ctx.filter="none";
+  ctx.restore();
+}
+/* Transition: agle clip ka 'transition' (seconds) batata hai ke is clip
+   ke aakhri itne seconds mein agla clip kitna ghul (crossfade) kar aaye.
+   Window ke andar ho to {nx, p (0..1 ghulav), srcTime, prog} warna null. */
+function transitionInfo(){
+  var ac=clips[activeClip], nx=clips[activeClip+1];
+  if(!ac||!nx||!(nx.transition>0))return null;
+  var len=clipLenOf(ac);if(!(len>0))return null;
+  var rem=len-clipLocalTime(ac), td=nx.transition;
+  if(rem<0||rem>=td)return null;
+  var srcOff=(td-rem)*(clipRate(nx)/Math.max(0.05,clipRate(ac)));
+  return {nx:nx,p:1-rem/td,srcTime:(nx.trimStart||0)+srcOff,prog:(clipLenOf(nx)>0?Math.max(0,Math.min(1,srcOff/clipLenOf(nx))):0)};
+}
+function syncAltVideo(nx,wantSrc){
+  if(altManual)return;
+  try{
+    if(altVideo.getAttribute("data-fsrc")!==nx.url){altVideo.setAttribute("data-fsrc",nx.url);altVideo.src=nx.url;altVideo.load();}
+    altVideo.playbackRate=clipRate(nx);
+    var playing=(!video.paused&&!video.ended)||imgPlaying;
+    if(playing){if(altVideo.paused&&altVideo.readyState>=2){var pr=altVideo.play();if(pr&&pr.catch)pr.catch(function(){});}}
+    else if(!altVideo.paused)altVideo.pause();
+    if(altVideo.readyState>=1&&!altVideo.seeking&&Math.abs((altVideo.currentTime||0)-wantSrc)>0.45){try{altVideo.currentTime=wantSrc;}catch(e){}}
+  }catch(e){}
+}
+function drawTransitionLayer(){
+  var ti=transitionInfo();if(!ti)return;
+  var nx=ti.nx, srcEl=null;
+  if(nx.isImage){srcEl=nx.img;if(!srcEl)return;}
+  else{syncAltVideo(nx,ti.srcTime);if(altVideo.readyState<2||altVideo.getAttribute("data-fsrc")!==nx.url)return;srcEl=altVideo;}
+  drawClipLayer(nx,srcEl,ti.prog,ti.p);
+}
 function drawFrame(){
   if(!state.loaded)return;var W=canvas.width,H=canvas.height;ctx.save();ctx.fillStyle="#000";ctx.fillRect(0,0,W,H);ctx.restore();
   var acF=clips[activeClip];
   var srcEl=(acF&&acF.isImage&&acF.img)?acF.img:video;
-  var vw=srcEl===video?video.videoWidth:(srcEl.naturalWidth||srcEl.width);
-  var vh=srcEl===video?video.videoHeight:(srcEl.naturalHeight||srcEl.height);
-  if(vw&&vh){
-    var rotated=(state.rotation%180!==0);
-    var baseW=rotated?H:W, baseH=rotated?W:H;
-    var adjFilter="brightness("+(state.brightness/100)+") contrast("+(state.contrast/100)+") saturate("+(state.saturation/100)+")";
-    if(state.fit==="fit"){
-      /* Pura Video mode: peeche wahi video dhundli (blur) aur gehri karke
-         cover bhar do, taake khali kala hissa na aaye aur kuch kate bhi na. */
-      ctx.save();
-      ctx.filter=adjFilter+" blur(24px)";
-      ctx.translate(W/2,H/2);ctx.rotate(state.rotation*Math.PI/180);if(state.flip)ctx.scale(-1,1);ctx.scale(state.zoom,state.zoom);
-      var bs=Math.max(baseW/vw,baseH/vh)*1.1;var bw2=vw*bs,bh2=vh*bs;
-      try{ctx.drawImage(srcEl,-bw2/2,-bh2/2,bw2,bh2);}catch(e){}
-      ctx.restore();ctx.filter="none";
-      ctx.save();ctx.fillStyle="rgba(0,0,0,0.35)";ctx.fillRect(0,0,W,H);ctx.restore();
-    }
-    ctx.save();
-    ctx.filter=adjFilter;
-    ctx.translate(W/2,H/2);ctx.rotate(state.rotation*Math.PI/180);if(state.flip)ctx.scale(-1,1);ctx.scale(state.zoom,state.zoom);
-    var scale=(state.fit==="fit")?Math.min(baseW/vw,baseH/vh):Math.max(baseW/vw,baseH/vh);var dw=vw*scale,dh=vh*scale;
-    try{ctx.drawImage(srcEl,-dw/2,-dh/2,dw,dh);}catch(e){}
-    ctx.restore();ctx.filter="none";
-  }
+  drawClipLayer(acF,srcEl,activeKbProgress(),1);
+  drawTransitionLayer();
   if(window.__drawOverlays){try{window.__drawOverlays(ctx,W,H);}catch(e){}}
   drawEditorCaption();
   var title=$("titleText").value.trim(),sub=$("subText").value.trim(),fs=parseInt($("fontSize").value,10),pad=Math.round(W*0.05);
@@ -1933,10 +2027,41 @@ function drawFrame(){
    Default OFF — user khud ON kare to hi chalega. */
 var edCapOn=false, edCapMove="static", edCapCache=null;
 function edCapBuild(text,total){
+  /* PHASE 2: agar Groq Whisper ne ASAL word timings diye hain aur script
+     ka har lafz un se milta hai, to cues unhi asal waqton se banti hain
+     (relative hisse ko video ki kul lambai par phaila kar) — warna purana
+     harf-ginti wala andaza istemal hota hai. */
+  var rt=(window.__realWordTimings?window.__realWordTimings(text):null);
+  if(rt&&rt.words&&rt.words.length&&rt.dur>0){
+    var sc=total/rt.dur;
+    return rt.words.map(function(o){return {w:o.w,start:Math.max(0,o.start*sc),end:Math.min(total,Math.max(o.start*sc+0.1,o.end*sc))};});
+  }
   var words=text.split(/\s+/).filter(Boolean);
-  var tot=0,i; for(i=0;i<words.length;i++)tot+=Math.max(2,words[i].length);
-  var t=0;
-  return words.map(function(w){var d=tot?total*(Math.max(2,w.length)/tot):0;var o={w:w,start:t,end:Math.min(total,t+d)};t+=d;return o;});
+  if(!words.length)return [];
+  var ws=words.map(function(w){return Math.max(2,w.replace(/[^A-Za-z0-9\u0600-\u06FF]/g,"").length);});
+  var sum=ws.reduce(function(a,b){return a+b;},0)||1, out=[], t=0;
+  words.forEach(function(w,i){var d=(total*(ws[i]/sum));out.push({w:w,start:t,end:t+d});t+=d;});
+  if(out.length)out[out.length-1].end=total;
+  return out;
+}
+/* PHASE 2: captions ki SRT file (YouTube/players mein upload hoti hai) */
+function srtTimeStr(t){
+  t=Math.max(0,t||0);var h=Math.floor(t/3600),m=Math.floor((t%3600)/60),sf=Math.floor(t%60),ms=Math.round((t-Math.floor(t))*1000);
+  if(ms>=1000){ms=0;sf++;}
+  function p2(n){return (n<10?"0":"")+n;}
+  return p2(h)+":"+p2(m)+":"+p2(sf)+","+(ms<100?"0":"")+(ms<10?"0":"")+ms;
+}
+function buildSRT(words){
+  var cues=[],cur=[],cs=0;
+  function flush(){if(!cur.length)return;cues.push({start:cs,end:cur[cur.length-1].end,text:cur.map(function(o){return o.w;}).join(" ")});cur=[];}
+  words.forEach(function(o,i){
+    if(!cur.length)cs=o.start;
+    cur.push(o);
+    var dur=o.end-cs, sent=/[.!?\u061F\u06D4]$/.test(o.w);
+    if((cur.length>=7||dur>=3.2||(sent&&cur.length>=3&&dur>=0.9))&&i<words.length-1)flush();
+  });
+  flush();
+  return cues.map(function(c,i){return (i+1)+"\n"+srtTimeStr(c.start)+" --> "+srtTimeStr(Math.max(c.end,c.start+0.4))+"\n"+c.text;}).join("\n\n")+"\n";
 }
 function edCapIdx(words,t){for(var i=0;i<words.length;i++){if(t<words[i].end)return i;}return words.length-1;}
 function edCapFont(base,cur){return (cur?"700 "+Math.round(base*1.15):"700 "+base)+"px 'Noto Nastaliq Urdu', serif";}
@@ -1972,7 +2097,7 @@ function drawEditorCaption(){
   var ckey=text.length+"|"+text.slice(0,48)+"|"+Math.round(total*10);
   if(!edCapCache||edCapCache.key!==ckey)edCapCache={key:ckey,words:edCapBuild(text,total)};
   var words=edCapCache.words; if(!words.length)return;
-  var t=Math.min(total,Math.max(0,combinedNow()));
+  var t=(capTimeOverride!=null)?Math.min(total,Math.max(0,capTimeOverride)):Math.min(total,Math.max(0,combinedNow()));
   var idx=edCapIdx(words,t);
   var W=canvas.width,H=canvas.height;
   var baseFont=Math.max(20,Math.round(Math.min(W,H)*0.06));
@@ -2047,6 +2172,25 @@ if(edCapMoveSeg)edCapMoveSeg.querySelectorAll("button").forEach(function(b){
     drawFrame();
   });
 });
+var edCapSrtBtn=$("edCapSrtBtn");
+if(edCapSrtBtn)edCapSrtBtn.addEventListener("click",function(){
+  var text=($("voScript")?$("voScript").value:"")||"";
+  if(!text.trim()){setStatus(edCapStatus,"SRT ke liye pehle Voice Over / Captions wale hisse mein script likhein ya transcription karein.","err");return;}
+  var total=combinedTotal();
+  if(!(total>0)){
+    var rt0=(window.__realWordTimings?window.__realWordTimings(text):null);
+    total=rt0?rt0.dur:0;
+  }
+  if(!(total>0)){setStatus(edCapStatus,"SRT ke liye pehle koi video/clip import karein (waqt ki lambai chahiye).","err");return;}
+  var words=edCapBuild(text,total);
+  if(!words.length){setStatus(edCapStatus,"Captions nahi ban sakein.","err");return;}
+  var srt=buildSRT(words);
+  var url=URL.createObjectURL(new Blob([srt],{type:"text/plain;charset=utf-8"}));
+  var a=document.createElement("a");a.href=url;a.download="captions.srt";document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(url);},4000);
+  var realRT=!!(window.__realWordTimings&&window.__realWordTimings(text));
+  setStatus(edCapStatus,"✅ captions.srt download ho gayi — "+(realRT?"yeh ASAL Whisper timings par bani hai.":"yeh script ke andaze par bani hai (Whisper timings hon to asal waqt aata hai)."),"ok");
+});
 var rafId=null;function loop(){drawFrame();if(!video.paused&&!video.ended)rafId=requestAnimationFrame(loop);else rafId=null;}function startLoop(){if(!rafId)rafId=requestAnimationFrame(loop);}
 /* ===== Multi-clip join ===== */
 var clips=[],activeClip=-1,loadingClip=false;
@@ -2074,7 +2218,7 @@ function imgTick(){
   if(!imgPlaying)return;
   var c=clips[activeClip];
   if(!c||!c.isImage){imgPlaying=false;return;}
-  var rate=parseFloat($("speedSel").value)||1;
+  var rate=clipRate(c);
   var now=performance.now();
   imgPos+=(now-imgStamp)/1000*rate;imgStamp=now;
   var end=c.trimEnd||c.duration||0;
@@ -2222,7 +2366,7 @@ function imageInsertIndex(){
       var local=pt-acc,c=clips[i];
       if(local>0.3&&local<d-0.3){
         var src=(c.trimStart||0)+local;
-        var right={file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:src,trimEnd:c.trimEnd||c.duration||0,gapBefore:0,isImage:!!c.isImage,img:c.img||null};
+        var right={file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:src,trimEnd:c.trimEnd||c.duration||0,gapBefore:0,isImage:!!c.isImage,img:c.img||null};var rfx=(window.__fxOf?window.__fxOf(c):{});for(var rk in rfx)right[rk]=rfx[rk];
         c.trimEnd=src;
         clips.splice(i+1,0,right);
         return i+1;
@@ -2266,7 +2410,7 @@ if(slideshowBtn)slideshowBtn.addEventListener("click",function(){
   setStatus(editorStatus,"Slideshow mode: gallery se kai tasveerein aik sath chunein — har tasveer 3 second ki clip banegi. Phir Export dabayein, tasveeron ki video tayyar. (Tasveer ka time timeline mein select karke 3/5/10 second kar sakte hain.)","ok");
   $("imageInput").click();
 });
-video.addEventListener("loadedmetadata",function(){state.loaded=true;state.duration=video.duration||0;stageEmpty.classList.add("hidden");canvas.classList.remove("hidden");transport.classList.remove("hidden");var ph=$("transportPlaceholder");if(ph)ph.classList.add("hidden");trimStartEl.max=state.duration;trimEndEl.max=state.duration;var c=clips[activeClip];if(c){if(!c.duration){c.duration=state.duration;}if(!c.trimEnd)c.trimEnd=state.duration;c.duration=state.duration;trimStartEl.value=c.trimStart||0;trimEndEl.value=c.trimEnd||state.duration;}else{trimStartEl.value=0;trimEndEl.value=state.duration;}updateTrimLabels();exportBtn.disabled=false;video.volume=parseFloat($("volumeSlider").value);video.playbackRate=parseFloat($("speedSel").value);applyCanvasSize();var seekT=(seekAfterLoad!==null?seekAfterLoad:(parseFloat(trimStartEl.value)||0));seekAfterLoad=null;video.currentTime=seekT;loadingClip=false;renderClipList();updateTransport();setStatus(editorStatus,clips.length>1?("Sab clips aik hi video hain — kul waqt "+fmt(combinedTotal())+". Play dabayein to poori video aik sath chalegi; kisi hisse ko trim karna ho to timeline ya list se select karein."):("Video load ho gayi — ab trim, text, filter set karke Export karein."),"ok");if(advanceWanted){advanceWanted=false;if(!state.exporting){video.play();playBtn.textContent="❚❚";}}pushHistory();drawThumbFromVideo();});
+video.addEventListener("loadedmetadata",function(){state.loaded=true;state.duration=video.duration||0;stageEmpty.classList.add("hidden");canvas.classList.remove("hidden");transport.classList.remove("hidden");var ph=$("transportPlaceholder");if(ph)ph.classList.add("hidden");trimStartEl.max=state.duration;trimEndEl.max=state.duration;var c=clips[activeClip];if(c){if(!c.duration){c.duration=state.duration;}if(!c.trimEnd)c.trimEnd=state.duration;c.duration=state.duration;trimStartEl.value=c.trimStart||0;trimEndEl.value=c.trimEnd||state.duration;}else{trimStartEl.value=0;trimEndEl.value=state.duration;}updateTrimLabels();exportBtn.disabled=false;video.volume=Math.max(0,Math.min(1,parseFloat($("volumeSlider").value)*((c&&c.vol!=null)?c.vol:1)));video.playbackRate=clipRate(c);applyCanvasSize();var seekT=(seekAfterLoad!==null?seekAfterLoad:(parseFloat(trimStartEl.value)||0));seekAfterLoad=null;video.currentTime=seekT;loadingClip=false;renderClipList();updateTransport();setStatus(editorStatus,clips.length>1?("Sab clips aik hi video hain — kul waqt "+fmt(combinedTotal())+". Play dabayein to poori video aik sath chalegi; kisi hisse ko trim karna ho to timeline ya list se select karein."):("Video load ho gayi — ab trim, text, filter set karke Export karein."),"ok");if(advanceWanted){advanceWanted=false;if(!state.exporting){video.play();playBtn.textContent="❚❚";}}pushHistory();drawThumbFromVideo();});
 video.addEventListener("error",function(){setStatus(editorStatus,"Ye file browser mein nahi khul saki. MP4 format try karein.","err");});
 video.addEventListener("timeupdate",function(){if(!state.exporting){updateTransport();var end=parseFloat(trimEndEl.value);if(state.playClipOnly&&video.currentTime>=end){video.pause();state.playClipOnly=false;}else if(!video.paused&&activeClip>=0&&clips[activeClip]){var ce=clips[activeClip].trimEnd||clips[activeClip].duration||0;if(ce>0&&video.currentTime>=ce-0.03){if(activeClip<clips.length-1)advanceToNext();else if(state.loop)restartCombined();else video.pause();}}}if(!rafId)drawFrame();});
 video.addEventListener("play",startLoop);video.addEventListener("seeked",drawFrame);
@@ -2294,8 +2438,8 @@ $("bismillahToggle").addEventListener("click",function(){state.bismillah=!state.
 $("fontSize").addEventListener("input",function(){$("fontSizeOut").textContent=this.value;drawFrame();});$("fontSize").addEventListener("change",pushHistory);
 $("qualitySel").addEventListener("change",applyCanvasSize);
 /* New pro controls */
-$("speedSel").addEventListener("change",function(){video.playbackRate=parseFloat(this.value);});
-$("volumeSlider").addEventListener("input",function(){video.volume=parseFloat(this.value);video.muted=false;state.muted=false;$("muteBtn").setAttribute("aria-pressed","false");$("muteBtn").textContent="🔊 Sound";});
+$("speedSel").addEventListener("change",function(){video.playbackRate=clipRate(clips[activeClip]);});
+$("volumeSlider").addEventListener("input",function(){var acv=clips[activeClip];video.volume=Math.max(0,Math.min(1,parseFloat(this.value)*((acv&&acv.vol!=null)?acv.vol:1)));video.muted=false;state.muted=false;$("muteBtn").setAttribute("aria-pressed","false");$("muteBtn").textContent="🔊 Sound";});
 $("muteBtn").addEventListener("click",function(){state.muted=!state.muted;video.muted=state.muted;this.setAttribute("aria-pressed",String(state.muted));this.textContent=state.muted?"🔇 Muted":"🔊 Sound";});
 $("loopBtn").addEventListener("click",function(){state.loop=!state.loop;this.setAttribute("aria-pressed",String(state.loop));});
 $("rotateBtn").addEventListener("click",function(){state.rotation=(state.rotation+90)%360;drawFrame();pushHistory();});
@@ -2304,8 +2448,15 @@ function setZoom(z){state.zoom=Math.min(3,Math.max(0.5,z));$("zoomLabel").textCo
 $("zoomInBtn").addEventListener("click",function(){setZoom(state.zoom+0.25);pushHistory();});$("zoomOutBtn").addEventListener("click",function(){setZoom(state.zoom-0.25);pushHistory();});
 function bindAdj(id,out,prop){$(id).addEventListener("input",function(){state[prop]=parseInt(this.value,10);$(out).textContent=this.value+"%";drawFrame();});$(id).addEventListener("change",pushHistory);}
 bindAdj("brightnessSlider","brightnessOut","brightness");bindAdj("contrastSlider","contrastOut","contrast");bindAdj("saturationSlider","saturationOut","saturation");
-function setFilter(b,c,s){state.brightness=b;state.contrast=c;state.saturation=s;$("brightnessSlider").value=b;$("contrastSlider").value=c;$("saturationSlider").value=s;$("brightnessOut").textContent=b+"%";$("contrastOut").textContent=c+"%";$("saturationOut").textContent=s+"%";drawFrame();}
+function setFilter(b,c,s,hu,se,gr){state.brightness=b;state.contrast=c;state.saturation=s;state.hue=hu||0;state.sepia=se||0;state.gray=gr||0;$("brightnessSlider").value=b;$("contrastSlider").value=c;$("saturationSlider").value=s;$("brightnessOut").textContent=b+"%";$("contrastOut").textContent=c+"%";$("saturationOut").textContent=s+"%";drawFrame();}
 $("filterNoneBtn").addEventListener("click",function(){setFilter(100,100,100);pushHistory();});$("filterWarmBtn").addEventListener("click",function(){setFilter(108,105,118);pushHistory();});$("filterVividBtn").addEventListener("click",function(){setFilter(105,112,145);pushHistory();});$("filterSoftBtn").addEventListener("click",function(){setFilter(112,92,88);pushHistory();});
+/* PHASE 2: mazeed rang presets (hue / sepia / grayscale ke sath) */
+var filterBW=$("filterBWBtn"), filterVintage=$("filterVintageBtn"), filterSepia=$("filterSepiaBtn"), filterDrama=$("filterDramaBtn"), filterFade=$("filterFadeBtn");
+if(filterBW)filterBW.addEventListener("click",function(){setFilter(102,106,90,0,0,100);pushHistory();});
+if(filterVintage)filterVintage.addEventListener("click",function(){setFilter(106,94,82,-10,55,0);pushHistory();});
+if(filterSepia)filterSepia.addEventListener("click",function(){setFilter(110,98,90,0,85,0);pushHistory();});
+if(filterDrama)filterDrama.addEventListener("click",function(){setFilter(96,126,112,0,0,0);pushHistory();});
+if(filterFade)filterFade.addEventListener("click",function(){setFilter(114,88,94,0,25,0);pushHistory();});
 var templates={tilawat:{t:"خوبصورت تلاوتِ قرآن",s:"دل کو سکون دینے والی آواز"},naat:{t:"دلکش نعتِ رسول ﷺ",s:"عقیدت و محبت کے ساتھ سنیں"},bayan:{t:"ایمان افروز بیان",s:"مکمل بیان کے لیے چینل وزٹ کریں"},dua:{t:"قبولیت کی دعا",s:"آمین لکھ کر شریک ہوں"}};
 document.querySelectorAll("[data-tpl]").forEach(function(btn){btn.addEventListener("click",function(){var tpl=templates[btn.getAttribute("data-tpl")];if(!tpl)return;$("titleText").value=tpl.t;$("subText").value=tpl.s;drawFrame();pushHistory();});});
 var ytId="";$("ytCheckBtn").addEventListener("click",function(){var url=$("ytLink").value.trim();var m=url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);var thumb=$("ytThumb"),msg=$("ytMsg");if(!m){ytId="";thumb.style.display="none";msg.textContent="Ye YouTube ka durust link nahi laga. watch ya shorts wala poora link paste karein.";return;}ytId=m[1];thumb.src="https://i.ytimg.com/vi/"+ytId+"/hqdefault.jpg";thumb.style.display="block";thumb.onerror=function(){thumb.style.display="none";};msg.textContent="Video pehchan li gayi (ID: "+ytId+"). Ab is video ki file phone mein save karke upar Import se load karein — aur Thumbnail tab mein video ke matn se title/tags banayein.";});
@@ -2347,10 +2498,23 @@ try{
   }
 }catch(e){}
 function pickMime(){var c=["video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];for(var i=0;i<c.length;i++){if(window.MediaRecorder&&MediaRecorder.isTypeSupported(c[i]))return c[i];}return "";}
-exportBtn.addEventListener("click",function(){
-  if(!state.loaded||state.exporting)return;
+function dispatchRecorderExport(){
   if(clips.length>1){exportJoined();return;}
   if(clips.length===1&&clips[0].isImage){exportImageSingle();return;}
+  exportSingleRecorder();
+}
+exportBtn.addEventListener("click",function(){
+  if(!state.loaded||state.exporting)return;
+  /* PHASE 2: WebCodecs ho to pehle TEZ export try karo — fail ho to
+     khud purane recorder raste par wapas (user ko tooti export kabhi nahi). */
+  if(fastExportAvailable()){
+    exportFast().then(function(done){if(!done)dispatchRecorderExport();});
+    return;
+  }
+  dispatchRecorderExport();
+});
+function exportSingleRecorder(){
+  if(!state.loaded||state.exporting)return;
   if(!window.MediaRecorder||!canvas.captureStream){setStatus(editorStatus,"Is browser mein export support nahi hai. Chrome mein page khol kar try karein.","err");return;}
   var mime=pickMime();if(!mime){setStatus(editorStatus,"Is phone par recording format support nahi mila. Chrome update karke try karein.","err");return;}
   var start=parseFloat(trimStartEl.value),end=parseFloat(trimEndEl.value),clipDur=end-start;
@@ -2366,9 +2530,9 @@ exportBtn.addEventListener("click",function(){
   rec.onstop=function(){if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;var ext=mime.indexOf("mp4")>=0?"mp4":"webm";var blob=new Blob(chunks,{type:mime.split(";")[0]});var a=document.createElement("a");var name=($("titleText").value.trim()||"meri-video").replace(/[\\/:*?"<>|]/g,"").slice(0,40);a.href=URL.createObjectURL(blob);a.download=name+"."+ext;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){try{URL.revokeObjectURL(a.href);}catch(e){}},4000);prog.value=100;setStatus(estatus,"Ho gaya! No watermark video download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, "+ext.toUpperCase()+"). Ab YouTube app se upload kar dein.","ok");setStatus(editorStatus,"");};
   (function(){var __os=rec.onstop;rec.onstop=function(){wakeLockOff();exportCancelDone();if(cancelled){chunks.length=0;prog.value=0;if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;setStatus(estatus,"Export cancel kar diya gaya — koi file download nahi hui.","err");setStatus(editorStatus,"");return;}__os();};})();
   video.pause();video.currentTime=start;var started=false;
-  function begin(){if(started)return;started=true;video.removeEventListener("seeked",begin);var prevRate=video.playbackRate;video.playbackRate=parseFloat($("speedSel").value);rec.start(250);video.play();if(mergeUsed&&window.__mergePlay)window.__mergePlay(combinedOffset(activeClip));startLoop();var tick=setInterval(function(){var done=Math.min(1,(video.currentTime-start)/clipDur);prog.value=Math.round(done*100);setStatus(estatus,"Export ho raha hai… "+Math.round(done*100)+"% — page khula rakhein.");if(video.currentTime>=end||video.ended){clearInterval(tick);video.pause();setTimeout(function(){if(rec.state!=="inactive")rec.stop();},150);}},200);setTimeout(function(){clearInterval(tick);if(rec.state!=="inactive"){video.pause();rec.stop();}},(clipDur+4)*1000/Math.max(0.5,parseFloat($("speedSel").value)));exportCancelHook=function(){cancelled=true;clearInterval(tick);try{video.pause();}catch(e){}if(rec.state!=="inactive")rec.stop();};}
+  function begin(){if(started)return;started=true;video.removeEventListener("seeked",begin);var prevRate=video.playbackRate;video.playbackRate=clipRate(clips[activeClip]);rec.start(250);video.play();if(mergeUsed&&window.__mergePlay)window.__mergePlay(combinedOffset(activeClip));startLoop();var tick=setInterval(function(){var done=Math.min(1,(video.currentTime-start)/clipDur);prog.value=Math.round(done*100);setStatus(estatus,"Export ho raha hai… "+Math.round(done*100)+"% — page khula rakhein.");if(video.currentTime>=end||video.ended){clearInterval(tick);video.pause();setTimeout(function(){if(rec.state!=="inactive")rec.stop();},150);}},200);setTimeout(function(){clearInterval(tick);if(rec.state!=="inactive"){video.pause();rec.stop();}},(clipDur+4)*1000/Math.max(0.25,clipRate(clips[activeClip])));exportCancelHook=function(){cancelled=true;clearInterval(tick);try{video.pause();}catch(e){}if(rec.state!=="inactive")rec.stop();};}
   video.addEventListener("seeked",begin);setTimeout(begin,900);
-});
+}
 /* Gemini — Title / Description / Tags (Thumbnail tab mein)
    ===== META SKILL: Gemini ko di jane wali POORI hidayat =====
    Usool: title/description/tags hamesha video ke ASAL MATN se banein
@@ -2453,7 +2617,7 @@ function exportImageSingle(){
   (function(){var __os=rec.onstop;rec.onstop=function(){wakeLockOff();exportCancelDone();if(cancelled){chunks.length=0;prog.value=0;if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;setStatus(estatus,"Image export cancel kar diya gaya — koi file download nahi hui.","err");setStatus(editorStatus,"");return;}__os();};})();
   imgPos=s;drawFrame();
   rec.start(250);if(mergeUsed&&window.__mergePlay)window.__mergePlay(0);
-  var rate=Math.max(0.5,parseFloat($("speedSel").value)||1),t0=performance.now(),done=false;
+  var rate=Math.max(0.25,clipRate(c)),t0=performance.now(),done=false;
   var drawInt=setInterval(function(){drawFrame();var frac=Math.min(1,(performance.now()-t0)/1000*rate/clipDur);prog.value=Math.round(frac*100);setStatus(estatus,"Image export ho raha hai… "+Math.round(frac*100)+"% — page khula rakhein.");},120);
   setTimeout(function(){if(done)return;done=true;clearInterval(drawInt);setTimeout(function(){if(rec.state!=="inactive")rec.stop();},150);},clipDur*1000/rate+250);exportCancelHook=function(){cancelled=true;done=true;clearInterval(drawInt);if(rec.state!=="inactive")rec.stop();};
 }
@@ -2463,6 +2627,7 @@ function exportJoined(){
   if(!window.MediaRecorder||!canvas.captureStream){setStatus(editorStatus,"Is browser mein export support nahi hai. Chrome mein page khol kar try karein.","err");return;}
   var mime=pickMime();if(!mime){setStatus(editorStatus,"Is phone par recording format support nahi mila. Chrome update karke try karein.","err");return;}
   var total=0;clips.forEach(function(c,i){total+=Math.max(0.3,(c.trimEnd||c.duration||0)-(c.trimStart||0));if(i>0)total+=(c.gapBefore||0);});
+  var totalOutEst=0;clips.forEach(function(c,i){totalOutEst+=clipLenOf(c)/Math.max(0.25,clipRate(c));if(i>0)totalOutEst+=(c.gapBefore||0)/Math.max(0.25,clipRate(c));});
   var prevActive=activeClip;
   applyCanvasSize();state.exporting=true;state.playClipOnly=false;exportBtn.disabled=true;
   var wrap=$("exportProgressWrap"),prog=$("exportProgress"),estatus=$("exportStatus");wrap.classList.remove("hidden");prog.value=0;setStatus(estatus,"Join export shuru… "+clips.length+" clips jod rahe hain, page khula rakhein.");wakeLockOn();exportCancelArm();
@@ -2502,7 +2667,7 @@ function exportJoined(){
       ctx.save();ctx.fillStyle="#000";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.restore();
       setStatus(estatus,"Join ho raha hai… clip "+(idx+1)+"/"+clips.length+" se pehle "+fmt(gap)+" ka khali hissa (gap) record ho raha hai.");
       elapsed+=gap;
-      setTimeout(function(){if(!finished)playClipNow();},gap*1000/Math.max(0.5,parseFloat($("speedSel").value)||1));
+      setTimeout(function(){if(!finished)playClipNow();},gap*1000/Math.max(0.25,clipRate(c)));
       return;
     }
     playClipNow();
@@ -2512,7 +2677,7 @@ function exportJoined(){
     var s=c.trimStart||0,e=c.trimEnd||c.duration||3;
     activeClip=idx;imgPos=s;drawFrame();
     if(rec.state==="inactive"){rec.start(250);if(mergeUsed&&window.__mergePlay)window.__mergePlay(0);}
-    var rate=Math.max(0.5,parseFloat($("speedSel").value)||1),t0=performance.now();
+    var rate=Math.max(0.25,clipRate(c)),t0=performance.now();
     setStatus(estatus,"Join ho raha hai… image clip "+(idx+1)+"/"+clips.length+" (tasveer "+fmt(e-s)+") record ho rahi hai.");
     var drawInt=setInterval(function(){
       if(finished){clearInterval(drawInt);return;}
@@ -2528,7 +2693,7 @@ function exportJoined(){
     var s=c.trimStart||0,e=c.trimEnd||c.duration||0;
     loadAndSeek(c,s,function(){
       if(finished)return;
-      video.playbackRate=parseFloat($("speedSel").value)||1;
+      video.playbackRate=clipRate(c);
       if(rec.state==="inactive"){rec.start(250);if(mergeUsed&&window.__mergePlay)window.__mergePlay(0);}
       video.play();startLoop();
       var tick=setInterval(function(){
@@ -2538,9 +2703,322 @@ function exportJoined(){
       },200);
     });
   }
-  setTimeout(finish,(total+clips.length*5+6)*1000/Math.max(0.5,parseFloat($("speedSel").value)||1));
+  setTimeout(finish,(totalOutEst+clips.length*5+6)*1000);
   playNext();
 }
+/* ===== PHASE 2: WebCodecs TEZ EXPORT (asal MP4) =====
+   Recorder wala export video ko real-time chala kar record karta hai
+   (10 minute ki video = 10 minute intezar). Yeh rasta har frame ko
+   seek karke khud draw + encode karta hai — aksar real-time se kai
+   guna tez — aur mp4-muxer se ASAL MP4 file deta hai.
+   GOLDEN RULE: WebCodecs / muxer / encoder mein zara si bhi dikkat ho
+   to yeh function false deta hai aur Export button khud purane
+   MediaRecorder raste par chala jata hai — tooti export kabhi nahi.
+   Audio: saari awazein (clip ki awaz us ki speed/volume/fade ke sath,
+   timeline ke uploaded tracks, replace/merge track) pehle
+   OfflineAudioContext mein mix hoti hain, phir AAC encode hoti hain.
+   Music ducking bhi isi mix mein lagta hai. */
+var FAST_FPS=30;
+var fastMuxerPromise=null;
+function fastExportAvailable(){
+  return !!(window.VideoEncoder&&window.VideoFrame&&window.EncodedVideoChunk&&window.AudioEncoder&&window.AudioData&&window.OfflineAudioContext);
+}
+function loadMp4Muxer(){
+  if(!fastMuxerPromise){
+    fastMuxerPromise=import("https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.1/build/mp4-muxer.mjs").catch(function(e){fastMuxerPromise=null;throw e;});
+  }
+  return fastMuxerPromise;
+}
+function fastSeekEl(v,t){
+  return new Promise(function(res){
+    var done=false;
+    function fin(){if(done)return;done=true;try{v.removeEventListener("seeked",fin);}catch(e){}res();}
+    v.addEventListener("seeked",fin);
+    try{v.currentTime=t;}catch(e){fin();return;}
+    setTimeout(fin,650);
+  });
+}
+function fastEnsureSrc(v,c){
+  return new Promise(function(res){
+    if(v.src===c.url&&v.readyState>=1){res();return;}
+    var done=false;
+    function fin(){if(done)return;done=true;try{v.removeEventListener("loadeddata",fin);v.removeEventListener("error",fin);}catch(e){}res();}
+    v.addEventListener("loadeddata",fin);v.addEventListener("error",fin);
+    try{v.src=c.url;v.load();}catch(e){fin();return;}
+    setTimeout(fin,4000);
+  });
+}
+/* Offline mix: {buf, hasAudio} — hasAudio false ho to MP4 bina audio track ke */
+function fastBuildMix(segs,totalOut){
+  var SR=48000;
+  var off=new OfflineAudioContext(2,Math.max(1,Math.ceil(totalOut*SR)),SR);
+  var decCtx=new (window.AudioContext||window.webkitAudioContext)();
+  var tl=(window.__tlAudioMix?window.__tlAudioMix():null);
+  var hasReplace=!!(tl&&tl.replaceActive);
+  var origMuted=!!(tl&&tl.origMuted);
+  var duckOn=!tl||tl.duckOn!==false;
+  var voiceWins=[], jobs=[];
+  function decodeFile(f){
+    return f.arrayBuffer().then(function(ab){return decCtx.decodeAudioData(ab);});
+  }
+  function place(buf,when,offset,dur,rate,gainVal,fadeIn,fadeOut,duckWins){
+    if(!(dur>0.01)||!buf)return;
+    var src=off.createBufferSource();src.buffer=buf;
+    try{src.playbackRate.value=rate||1;}catch(e){}
+    var g=off.createGain(), t0=when, t1=when+dur, gv=(gainVal==null?1:gainVal);
+    g.gain.setValueAtTime(fadeIn>0?0.0001:gv,t0);
+    if(fadeIn>0)g.gain.linearRampToValueAtTime(gv,Math.min(t1,t0+fadeIn));
+    if(fadeOut>0){g.gain.setValueAtTime(gv,Math.max(t0,t1-fadeOut));g.gain.linearRampToValueAtTime(0.0001,t1);}
+    if(duckWins&&duckWins.length){
+      duckWins.forEach(function(w){
+        var ds=Math.max(t0,w[0]), de=Math.min(t1,w[1]);
+        if(de-ds<0.05)return;
+        var dl=gv*0.25;
+        try{
+          g.gain.setValueAtTime(gv,Math.max(t0,ds-0.12));
+          g.gain.linearRampToValueAtTime(dl,ds);
+          g.gain.setValueAtTime(dl,de);
+          g.gain.linearRampToValueAtTime(gv,Math.min(t1,de+0.18));
+        }catch(e){}
+      });
+    }
+    src.connect(g);g.connect(off.destination);
+    try{src.start(t0,offset||0,(dur*(rate||1))+0.15);}catch(e){try{src.start(t0,offset||0);}catch(_){}}
+  }
+  /* Pehle voice windows tay karo (ducking inhi par chalegi) */
+  if(!hasReplace&&!origMuted){
+    segs.forEach(function(sg){if(!sg.c.isImage&&sg.c.file)voiceWins.push([sg.outStart,sg.outStart+sg.outDur]);});
+  }
+  if(tl&&tl.tracks){
+    tl.tracks.forEach(function(a){
+      if(!a.srcFile||a.fromClip!=null||a.combined)return;
+      var kind=a.kind||(a.isMerge?"voice":"music");
+      if(kind==="voice")voiceWins.push([a.start||0,(a.start||0)+(a.dur||0)]);
+    });
+  }
+  if(!hasReplace&&!origMuted){
+    segs.forEach(function(sg){
+      if(sg.c.isImage||!sg.c.file)return;
+      var c=sg.c;
+      jobs.push(decodeFile(c.file).then(function(buf){
+        place(buf,sg.outStart,c.trimStart||0,sg.outDur,sg.rate,(c.vol==null?1:c.vol),c.fadeIn||0,c.fadeOut||0,null);
+      }).catch(function(){}));
+    });
+  }
+  if(tl&&tl.tracks){
+    tl.tracks.forEach(function(a){
+      if(!a.srcFile||a.fromClip!=null||a.combined)return;
+      var kind=a.kind||(a.isMerge?"voice":"music");
+      jobs.push(decodeFile(a.srcFile).then(function(buf){
+        place(buf,a.start||0,a.srcStart||0,a.dur||0,1,(a.vol==null?1:a.vol),0,0,(kind==="music"&&duckOn)?voiceWins:null);
+      }).catch(function(){}));
+    });
+  }
+  var hasAudio=jobs.length>0;
+  return Promise.all(jobs).then(function(){return off.startRendering();}).then(function(buf){
+    try{decCtx.close();}catch(e){}
+    return {buf:buf,hasAudio:hasAudio};
+  });
+}
+function exportFast(){
+  return new Promise(function(resolve){
+    var settled=false;
+    function done(ok){if(settled)return;settled=true;resolve(ok);}
+    var segs=[], totalOut=0;
+    try{
+      clips.forEach(function(c,i){
+        var len=clipLenOf(c), rate=Math.max(0.25,clipRate(c));
+        var gapOut=(i>0)?(c.gapBefore||0)/rate:0;
+        var outDur=len/rate;
+        segs.push({c:c,i:i,gapOut:gapOut,outDur:outDur,rate:rate,outStart:totalOut+gapOut});
+        totalOut+=gapOut+outDur;
+      });
+    }catch(e){done(false);return;}
+    /* Bohat lambi video par memory mehfooz nahi — purana rasta */
+    if(!clips.length||!(totalOut>0.4)||totalOut>900){done(false);return;}
+    var totalFrames=Math.max(1,Math.round(totalOut*FAST_FPS));
+    loadMp4Muxer().then(function(M){
+      return fastExportRun(M,segs,totalOut,totalFrames);
+    }).then(function(){done(true);}).catch(function(e){
+      try{console.warn("Tez export fail — purana rasta chalega:",e);}catch(_){}
+      done(false);
+    });
+  });
+}
+function fastExportRun(M,segs,totalOut,totalFrames){
+  return new Promise(function(resolveRun,rejectRun){
+    applyCanvasSize();
+    var W=canvas.width,H=canvas.height;
+    var prevActive=activeClip;
+    var estatus=$("exportStatus"), prog=$("exportProgress"), wrap=$("exportProgressWrap");
+    state.exporting=true;exportBtn.disabled=true;
+    wrap.classList.remove("hidden");prog.value=0;
+    setStatus(estatus,"Tez export tayyar ho raha hai… (WebCodecs — asal MP4, video dobara chalaye baghair)");
+    wakeLockOn();exportCancelArm();
+    var cancelled=false, failed=null;
+    exportCancelHook=function(){cancelled=true;};
+    stopImgPlayback();try{video.pause();}catch(e){}
+    var muxer=null, vEnc=null, aEnc=null;
+    var framesDone=0, outCursor=0;
+    function cleanup(){
+      capTimeOverride=null;altManual=false;
+      try{if(vEnc&&vEnc.state!=="closed")vEnc.close();}catch(e){}
+      try{if(aEnc&&aEnc.state!=="closed")aEnc.close();}catch(e){}
+      wakeLockOff();exportCancelDone();
+      state.exporting=false;exportBtn.disabled=false;
+    }
+    function fail(err){
+      cleanup();
+      try{loadClip(prevActive);}catch(e){}
+      rejectRun(err||new Error("fast export fail"));
+    }
+    function bp(){
+      if(vEnc&&vEnc.encodeQueueSize>10)return new Promise(function(r){setTimeout(r,12);}).then(bp);
+      return Promise.resolve();
+    }
+    function pushFrame(){
+      var ts=Math.round(outCursor*1e6);
+      var frame=new VideoFrame(canvas,{timestamp:ts,duration:Math.round(1e6/FAST_FPS)});
+      try{vEnc.encode(frame,{keyFrame:(framesDone%60===0)});}finally{frame.close();}
+      outCursor+=1/FAST_FPS;framesDone++;
+      if(framesDone%6===0||framesDone===totalFrames){
+        prog.value=Math.min(100,Math.round(framesDone/totalFrames*100));
+        setStatus(estatus,"Tez export ho raha hai… "+Math.min(100,Math.round(framesDone/totalFrames*100))+"% — MP4 ban raha hai, page khula rakhein.");
+      }
+    }
+    function runSegment(si){
+      if(cancelled)return Promise.reject({__cancelled:true});
+      if(failed)throw failed;
+      if(si>=segs.length)return Promise.resolve();
+      var sg=segs[si], c=sg.c;
+      var gapFrames=Math.round(sg.gapOut*FAST_FPS);
+      var segFrames=Math.max(1,Math.round(sg.outDur*FAST_FPS));
+      activeClip=sg.i;
+      function gapStep(g){
+        if(cancelled)return Promise.reject({__cancelled:true});
+        if(g>=gapFrames)return segStep(0);
+        ctx.save();ctx.fillStyle="#000";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.restore();
+        pushFrame();
+        return Promise.resolve().then(function(){return gapStep(g+1);});
+      }
+      function segStep(f){
+        if(cancelled)return Promise.reject({__cancelled:true});
+        if(failed)throw failed;
+        if(f>=segFrames)return runSegment(si+1);
+        var srcEnd=(c.trimEnd||c.duration||0);
+        var srcT=(c.trimStart||0)+(f/FAST_FPS)*sg.rate;
+        if(srcT>srcEnd)srcT=srcEnd;
+        var prep;
+        if(c.isImage){imgPos=srcT;prep=Promise.resolve();}
+        else prep=fastSeekEl(video,srcT);
+        return prep.then(function(){
+          if(cancelled)throw {__cancelled:true};
+          capTimeOverride=sg.outStart+f/FAST_FPS;
+          var ti=transitionInfo(), altPrep=Promise.resolve();
+          if(ti&&!ti.nx.isImage){
+            altManual=true;
+            altPrep=fastEnsureSrc(altVideo,ti.nx).then(function(){
+              altVideo.setAttribute("data-fsrc",ti.nx.url);
+              return fastSeekEl(altVideo,ti.srcTime);
+            });
+          }
+          return altPrep;
+        }).then(function(){
+          if(cancelled)throw {__cancelled:true};
+          capTimeOverride=sg.outStart+f/FAST_FPS;
+          drawFrame();
+          pushFrame();
+          return bp().then(function(){return segStep(f+1);});
+        });
+      }
+      var segStart;
+      if(c.isImage)segStart=Promise.resolve();
+      else segStart=fastEnsureSrc(video,c);
+      return segStart.then(function(){return gapStep(0);});
+    }
+    /* Pehle audio mix (fail ho to poora tez rasta fail = fallback) */
+    fastBuildMix(segs,totalOut).then(function(mix){
+      if(cancelled)throw {__cancelled:true};
+      var wantAudio=!!(mix&&mix.hasAudio);
+      muxer=new M.Muxer({
+        target:new M.ArrayBufferTarget(),
+        video:{codec:"avc",width:W,height:H},
+        audio:wantAudio?{codec:"aac",sampleRate:48000,numberOfChannels:2}:undefined,
+        fastStart:"in-memory"
+      });
+      var vCfg={codec:"avc1.640028",width:W,height:H,bitrate:bitrateForQuality(),framerate:FAST_FPS,hardwareAcceleration:"prefer-hardware",latencyMode:"quality"};
+      return VideoEncoder.isConfigSupported(vCfg).then(function(sup){
+        if(sup&&sup.supported)return vCfg;
+        vCfg.codec="avc1.42001f";vCfg.hardwareAcceleration="prefer-software";
+        return VideoEncoder.isConfigSupported(vCfg).then(function(sup2){
+          if(sup2&&sup2.supported)return vCfg;
+          throw new Error("H.264 encoder support nahi");
+        });
+      }).then(function(cfg){
+        vEnc=new VideoEncoder({
+          output:function(chunk,meta){try{muxer.addVideoChunk(chunk,meta);}catch(e){failed=failed||e;}},
+          error:function(e){failed=failed||e;}
+        });
+        vEnc.configure(cfg);
+        if(!wantAudio)return null;
+        var aCfg={codec:"mp4a.40.2",sampleRate:48000,numberOfChannels:2,bitrate:128000};
+        return AudioEncoder.isConfigSupported(aCfg).then(function(asup){
+          if(!asup||!asup.supported)throw new Error("AAC encoder support nahi");
+          aEnc=new AudioEncoder({
+            output:function(chunk,meta){try{muxer.addAudioChunk(chunk,meta);}catch(e){failed=failed||e;}},
+            error:function(e){failed=failed||e;}
+          });
+          aEnc.configure(aCfg);
+          /* Mix ko 0.5s ke tukron mein AAC encode karo */
+          var buf=mix.buf, SR=buf.sampleRate, NCH=Math.min(2,buf.numberOfChannels);
+          var chans=[];for(var ci=0;ci<NCH;ci++)chans.push(buf.getChannelData(ci));
+          var step=Math.floor(SR/2);
+          for(var o0=0;o0<buf.length;o0+=step){
+            var n=Math.min(step,buf.length-o0);
+            var data=new Float32Array(n*NCH);
+            for(var cj=0;cj<NCH;cj++)data.set(chans[cj].subarray(o0,o0+n),cj*n);
+            var ad=new AudioData({format:"f32-planar",sampleRate:SR,numberOfFrames:n,timestamp:Math.round(o0/SR*1e6),data:data.buffer});
+            aEnc.encode(ad);ad.close();
+          }
+          return aEnc.flush();
+        });
+      });
+    }).then(function(){
+      if(cancelled)throw {__cancelled:true};
+      if(failed)throw failed;
+      return runSegment(0);
+    }).then(function(){
+      if(cancelled)throw {__cancelled:true};
+      if(failed)throw failed;
+      return vEnc.flush();
+    }).then(function(){
+      muxer.finalize();
+      var blob=new Blob([muxer.target.buffer],{type:"video/mp4"});
+      var a=document.createElement("a");
+      a.href=URL.createObjectURL(blob);a.download="procut-video.mp4";
+      document.body.appendChild(a);a.click();a.remove();
+      setTimeout(function(){try{URL.revokeObjectURL(a.href);}catch(e){}},4000);
+      prog.value=100;
+      setStatus(estatus,"Ho gaya! Tez export mukammal — asal MP4 download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, koi watermark nahi).","ok");
+      setStatus(editorStatus,"");
+      cleanup();
+      try{loadClip(prevActive);}catch(e){}
+      resolveRun(true);
+    }).catch(function(err){
+      if(err&&err.__cancelled){
+        cleanup();
+        prog.value=0;
+        setStatus(estatus,"Tez export cancel kar diya gaya — koi file download nahi hui.","err");
+        setStatus(editorStatus,"");
+        try{loadClip(prevActive);}catch(e){}
+        resolveRun(true);
+        return;
+      }
+      fail(err);
+    });
+  });
+}
+
 /* ===== Audio extract ===== */
 var audioRange="trim";var noiseOn=false;
 document.querySelectorAll("[data-audiorange]").forEach(function(btn){btn.addEventListener("click",function(){document.querySelectorAll("[data-audiorange]").forEach(function(b){b.setAttribute("aria-pressed","false");});btn.setAttribute("aria-pressed","true");audioRange=btn.getAttribute("data-audiorange");});});
@@ -2800,17 +3278,17 @@ function draftImgBlob(img){
 function draftBuild(){
   var snap=snapshot();
   var rec={ v:1, savedAt:Date.now(),
-    ui:{ t:snap.t, s:snap.s, fs:snap.fs, c:snap.c, p:snap.p, b:snap.b, bi:snap.bi, ratio:snap.ratio, fit:snap.fit, br:snap.br, ct:snap.ct, sa:snap.sa, zoom:snap.zoom, rot:snap.rot, flip:snap.flip, active:snap.active },
-    clips:snap.clips.map(function(c){ return { file:c.file||null, name:c.name, size:c.size, duration:c.duration, trimStart:c.trimStart||0, trimEnd:c.trimEnd||0, gapBefore:c.gapBefore||0, isImage:!!c.isImage }; }),
+    ui:{ t:snap.t, s:snap.s, fs:snap.fs, c:snap.c, p:snap.p, b:snap.b, bi:snap.bi, ratio:snap.ratio, fit:snap.fit, br:snap.br, ct:snap.ct, sa:snap.sa, hu:snap.hu||0, se:snap.se||0, gr:snap.gr||0, zoom:snap.zoom, rot:snap.rot, flip:snap.flip, active:snap.active },
+    clips:snap.clips.map(function(c){ return { file:c.file||null, name:c.name, size:c.size, duration:c.duration, trimStart:c.trimStart||0, trimEnd:c.trimEnd||0, gapBefore:c.gapBefore||0, isImage:!!c.isImage, speed:(c.speed==null?null:c.speed), vol:(c.vol==null?1:c.vol), fadeIn:c.fadeIn||0, fadeOut:c.fadeOut||0, transition:c.transition||0, kb:c.kb||"" }; }),
     extra:{ quality:($("qualitySel")||{}).value||"720", speed:($("speedSel")||{}).value||"1", volume:($("volumeSlider")||{}).value||"1", voScript:($("voScript")||{}).value||"", edCapOn:!!edCapOn, edCapMove:edCapMove||"static" },
     tl:null };
   var tl=snap.tl;
   if(!tl) return Promise.resolve(rec);
-  var audios=(tl.audios||[]).map(function(a){ return { id:a.id, name:a.name, start:a.start, dur:a.dur, srcStart:a.srcStart||0, fromClip:a.fromClip, combined:!!a.combined, srcFile:a.srcFile||null, isMerge:!!a.isMerge }; });
+  var audios=(tl.audios||[]).map(function(a){ return { id:a.id, name:a.name, start:a.start, dur:a.dur, srcStart:a.srcStart||0, fromClip:a.fromClip, combined:!!a.combined, srcFile:a.srcFile||null, isMerge:!!a.isMerge, vol:(a.vol==null?1:a.vol), kind:a.kind||"" }; });
   var ovs=(tl.overlays||[]);
   return Promise.all(ovs.map(function(o){ return draftImgBlob(o.img); })).then(function(blobs){
     rec.tl={ audios:audios,
-      overlays:ovs.map(function(o,i){ return { id:o.id, name:o.name, start:o.start, end:o.end, opacity:o.opacity, pos:o.pos||"tr", fixed:!!o.fixed, imgBlob:blobs[i]||null }; }),
+      overlays:ovs.map(function(o,i){ return { id:o.id, name:o.name, start:o.start, end:o.end, opacity:o.opacity, pos:o.pos||"tr", fixed:!!o.fixed, sticker:!!o.sticker, imgBlob:blobs[i]||null }; }),
       inPt:tl.inPt, outPt:tl.outPt, origMuted:!!tl.origMuted, mergeId:tl.mergeId, replaceId:tl.replaceId, uidNext:tl.uidNext };
     return rec;
   });
@@ -2842,7 +3320,7 @@ function draftLoadImg(src){
 function draftRestore(rec){
   draftRestoring=true;
   var clipPromises=(rec.clips||[]).map(function(c){
-    var nc={ file:c.file||null, name:c.name, size:c.size, url:"", duration:c.duration||0, trimStart:c.trimStart||0, trimEnd:c.trimEnd||0, gapBefore:c.gapBefore||0, isImage:!!c.isImage, img:null };
+    var nc={ file:c.file||null, name:c.name, size:c.size, url:"", duration:c.duration||0, trimStart:c.trimStart||0, trimEnd:c.trimEnd||0, gapBefore:c.gapBefore||0, isImage:!!c.isImage, img:null, speed:(c.speed==null?null:c.speed), vol:(c.vol==null?1:c.vol), fadeIn:c.fadeIn||0, fadeOut:c.fadeOut||0, transition:c.transition||0, kb:c.kb||"" };
     try{ if(c.file) nc.url=URL.createObjectURL(c.file); }catch(e){}
     if(nc.isImage&&nc.url) return draftLoadImg(nc.url).then(function(img){ nc.img=img; return nc; });
     return Promise.resolve(nc);
@@ -2850,12 +3328,12 @@ function draftRestore(rec){
   var tlPromise=Promise.resolve(null);
   if(rec.tl){
     var audios=(rec.tl.audios||[]).map(function(a){
-      var na={ id:a.id, name:a.name, start:a.start, dur:a.dur, srcStart:a.srcStart||0, fromClip:a.fromClip, combined:!!a.combined, srcFile:a.srcFile||null, el:null, isMerge:!!a.isMerge };
+      var na={ id:a.id, name:a.name, start:a.start, dur:a.dur, srcStart:a.srcStart||0, fromClip:a.fromClip, combined:!!a.combined, srcFile:a.srcFile||null, el:null, isMerge:!!a.isMerge, vol:(a.vol==null?1:a.vol), kind:a.kind||"" };
       try{ if(a.srcFile){ var el=new Audio(); el.preload="auto"; el.src=URL.createObjectURL(a.srcFile); na.el=el; } }catch(e){}
       return na;
     });
     var ovPromises=(rec.tl.overlays||[]).map(function(o){
-      var no={ id:o.id, name:o.name, start:o.start, end:o.end, opacity:o.opacity, img:null, pos:o.pos||"tr", fixed:!!o.fixed };
+      var no={ id:o.id, name:o.name, start:o.start, end:o.end, opacity:o.opacity, img:null, pos:o.pos||"tr", fixed:!!o.fixed, sticker:!!o.sticker };
       if(o.imgBlob){ var u=""; try{ u=URL.createObjectURL(o.imgBlob); }catch(e){} if(u) return draftLoadImg(u).then(function(img){ no.img=img; return no; }); }
       return Promise.resolve(no);
     });
@@ -2865,7 +3343,7 @@ function draftRestore(rec){
   }
   return Promise.all([Promise.all(clipPromises),tlPromise]).then(function(parts){
     var ui=rec.ui||{};
-    var snapObj={ t:ui.t||"", s:ui.s||"", fs:ui.fs||58, c:ui.c||"#ffffff", p:ui.p||"bottom", b:!!ui.b, bi:!!ui.bi, ratio:ui.ratio||"9:16", fit:ui.fit||"cover", br:(ui.br==null?100:ui.br), ct:(ui.ct==null?100:ui.ct), sa:(ui.sa==null?100:ui.sa), zoom:ui.zoom||1, rot:ui.rot||0, flip:!!ui.flip, active:(typeof ui.active==="number"?ui.active:0), clips:parts[0], tl:parts[1] };
+    var snapObj={ t:ui.t||"", s:ui.s||"", fs:ui.fs||58, c:ui.c||"#ffffff", p:ui.p||"bottom", b:!!ui.b, bi:!!ui.bi, ratio:ui.ratio||"9:16", fit:ui.fit||"cover", br:(ui.br==null?100:ui.br), ct:(ui.ct==null?100:ui.ct), sa:(ui.sa==null?100:ui.sa), hu:ui.hu||0, se:ui.se||0, gr:ui.gr||0, zoom:ui.zoom||1, rot:ui.rot||0, flip:!!ui.flip, active:(typeof ui.active==="number"?ui.active:0), clips:parts[0], tl:parts[1] };
     applySnap(snapObj);
     var ex=rec.extra||{};
     try{ if(ex.quality&&$("qualitySel")) $("qualitySel").value=ex.quality; }catch(e){}
@@ -2967,6 +3445,7 @@ var allSel=false; /* true = poori video (sab clips) aik hi select hai */
 var audios=[],overlays=[],uid=1;
 var inPt=null,outPt=null;
 var origMuted=false;
+var duckOn=true; /* PHASE 2: music ducking — voice ke doran music khud halki */
 var mergeTrack=null,replaceTrack=null;
 
 /* ---------- Undo/Redo bridge: main editor ki history ke liye ----------
@@ -2977,8 +3456,8 @@ var mergeTrack=null,replaceTrack=null;
 function hist(){try{if(window.__pushHistory)window.__pushHistory();}catch(e){}}
 window.__tlSnapshot=function(){
   return {
-    audios:audios.map(function(a){return {id:a.id,name:a.name,start:a.start,dur:a.dur,srcStart:a.srcStart||0,fromClip:a.fromClip,combined:!!a.combined,srcFile:a.srcFile||null,el:a.el||null,isMerge:!!a.isMerge};}),
-    overlays:overlays.map(function(o){return {id:o.id,name:o.name,start:o.start,end:o.end,opacity:o.opacity,img:o.img,pos:o.pos||"tr",fixed:!!o.fixed};}),
+    audios:audios.map(function(a){return {id:a.id,name:a.name,start:a.start,dur:a.dur,srcStart:a.srcStart||0,fromClip:a.fromClip,combined:!!a.combined,srcFile:a.srcFile||null,el:a.el||null,isMerge:!!a.isMerge,vol:(a.vol==null?1:a.vol),kind:a.kind||""};}),
+    overlays:overlays.map(function(o){return {id:o.id,name:o.name,start:o.start,end:o.end,opacity:o.opacity,img:o.img,pos:o.pos||"tr",fixed:!!o.fixed,sticker:!!o.sticker};}),
     inPt:inPt,outPt:outPt,origMuted:origMuted,
     mergeId:mergeTrack?mergeTrack.id:null,replaceId:replaceTrack?replaceTrack.id:null,
     uidNext:uid
@@ -2986,8 +3465,8 @@ window.__tlSnapshot=function(){
 };
 window.__tlRestore=function(tl){
   if(tl){
-    audios=tl.audios.map(function(a){return {id:a.id,name:a.name,start:a.start,dur:a.dur,srcStart:a.srcStart,fromClip:a.fromClip,combined:a.combined,srcFile:a.srcFile,el:a.el,isMerge:a.isMerge};});
-    overlays=tl.overlays.map(function(o){return {id:o.id,name:o.name,start:o.start,end:o.end,opacity:o.opacity,img:o.img,pos:o.pos||"tr",fixed:!!o.fixed};});
+    audios=tl.audios.map(function(a){return {id:a.id,name:a.name,start:a.start,dur:a.dur,srcStart:a.srcStart,fromClip:a.fromClip,combined:a.combined,srcFile:a.srcFile,el:a.el,isMerge:a.isMerge,vol:(a.vol==null?1:a.vol),kind:a.kind||""};});
+    overlays=tl.overlays.map(function(o){return {id:o.id,name:o.name,start:o.start,end:o.end,opacity:o.opacity,img:o.img,pos:o.pos||"tr",fixed:!!o.fixed,sticker:!!o.sticker};});
     inPt=tl.inPt;outPt=tl.outPt;origMuted=!!tl.origMuted;
     if(tl.uidNext)uid=tl.uidNext;
     mergeTrack=audios.filter(function(x){return x.id===tl.mergeId;})[0]||null;
@@ -3186,7 +3665,7 @@ function moveClipToPlayhead(fromIdx){
       var local=pt-acc,c=cs[i];
       if(local>0.3&&local<d-0.3){
         var src=(c.trimStart||0)+local;
-        var right={file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:src,trimEnd:c.trimEnd||c.duration||0,gapBefore:0,isImage:!!c.isImage,img:c.img||null};
+        var right={file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:src,trimEnd:c.trimEnd||c.duration||0,gapBefore:0,isImage:!!c.isImage,img:c.img||null};var rfx=(window.__fxOf?window.__fxOf(c):{});for(var rk in rfx)right[rk]=rfx[rk];
         c.trimEnd=src;cs.splice(i+1,0,right);ins=i+1;
       }else ins=local<=0.3?i:i+1;
       break;
@@ -3305,6 +3784,11 @@ function renderContext(){
     box.appendChild(ctxBtn("＋ Clip Add Karein",function(){var fi=$("fileInput");if(fi)fi.click();}));
     box.appendChild(ctxBtn("🎵 Audio Add Karein",function(){$("tlAudioInput").click();}));
     box.appendChild(ctxBtn("🏷️ Logo Add Karein",function(){$("tlLogoInput").click();}));
+    label("😀 Stickers — Emoji Ya Tasveer Wala Movable Sticker");
+    ["❤️","⭐","🔥","👍","🎉","👏"].forEach(function(em){
+      box.appendChild(ctxBtn(em+" Sticker",function(){addEmojiSticker(em);}));
+    });
+    box.appendChild(ctxBtn("🖼 Tasveer Sticker Add Karein",function(){$("tlStickerInput").click();}));
     box.appendChild(ctxBtn("🎧 Audio Alag (Track)",doExtractAudio));
     box.appendChild(ctxBtn("🎧 Sab Clips Ki Aik Audio (Track)",doCombinedTrack));
     box.appendChild(ctxBtn("T Text Lagayein",function(){if(window.__switchSub)window.__switchSub("props");}));
@@ -3314,6 +3798,47 @@ function renderContext(){
   if(sel.type==="video"){
     var c=cs[sel.index];if(!c){sel=null;renderContext();return;}
     label("Clip "+(sel.index+1)+" select hai — "+c.name);
+    /* PHASE 2: is clip ki apni settings (speed / volume / fade / transition / Ken Burns) */
+    (function(){
+      label("⚙ Clip Settings — Speed / Volume / Fade / Transition / Zoom-Pan");
+      var gsp=parseFloat(($("speedSel")||{}).value)||1;
+      [0.25,0.5,0.75,1,1.25,1.5,2].forEach(function(v){
+        box.appendChild(ctxBtn("⏩ "+v+"×",function(){
+          c.speed=v;
+          if(E.active()===sel.index){try{video.playbackRate=v;}catch(e){}}
+          renderContext();setStatus("Is clip ki speed "+v+"× ho gayi (sirf ye clip). Global speed par wapas karna ho to “Global Speed” dabayein.","ok");hist();
+        },(c.speed==null?gsp:c.speed)===v));
+      });
+      box.appendChild(ctxBtn("⏩ Global Speed ("+gsp+"×)",function(){
+        c.speed=null;
+        if(E.active()===sel.index){try{video.playbackRate=gsp;}catch(e){}}
+        renderContext();setStatus("Is clip ki speed ab global speed ("+gsp+"×) ke sath hai.","ok");hist();
+      },c.speed==null));
+      var vlab=document.createElement("span");vlab.className="hint";vlab.style.margin="0";vlab.textContent="Volume:";box.appendChild(vlab);
+      var vr=document.createElement("input");vr.type="range";vr.min="0";vr.max="100";vr.value=Math.round((c.vol==null?1:c.vol)*100);vr.setAttribute("aria-label","Clip volume");
+      vr.addEventListener("input",function(){
+        c.vol=parseInt(vr.value,10)/100;
+        if(E.active()===sel.index){var gv=parseFloat(($("volumeSlider")||{}).value);if(!isNaN(gv))video.volume=Math.max(0,Math.min(1,gv*c.vol));}
+      });
+      vr.addEventListener("change",function(){hist();});
+      box.appendChild(vr);
+      [0,0.5,1,2].forEach(function(v){
+        box.appendChild(ctxBtn("🌅 Fade In: "+(v===0?"OFF":v+"s"),function(){c.fadeIn=v;renderContext();setStatus("Is clip ki awaz shuru mein "+(v===0?"baghair fade ke chalegi.":"narmi se ("+v+"s mein) buland hogi — tez export mein lagta hai."),"ok");hist();},(c.fadeIn||0)===v));
+      });
+      [0,0.5,1,2].forEach(function(v){
+        box.appendChild(ctxBtn("🌇 Fade Out: "+(v===0?"OFF":v+"s"),function(){c.fadeOut=v;renderContext();setStatus("Is clip ki awaz aakhir mein "+(v===0?"baghair fade ke chalegi.":"narmi se ("+v+"s mein) halki hogi — tez export mein lagta hai."),"ok");hist();},(c.fadeOut||0)===v));
+      });
+      if(sel.index>0){
+        [0,0.5,1].forEach(function(v){
+          box.appendChild(ctxBtn("🌗 Fade Transition: "+(v===0?"OFF":v+"s"),function(){c.transition=v;E.draw();renderContext();setStatus(v===0?"Pichle clip se fade (ghulav) band ho gaya.":"Ab ye clip pichle clip ke aakhir mein "+v+" second ghul (crossfade) kar aayega — preview mein bhi dikhega.","ok");hist();},(c.transition||0)===v));
+        });
+      }else{
+        var th=document.createElement("span");th.className="hint";th.style.margin="0";th.textContent="Fade Transition: ye pehla clip hai — transition doosre clip se lagta hai.";box.appendChild(th);
+      }
+      [["","🚫 Zoom/Pan OFF"],["in","🔍 Zoom In"],["out","🔎 Zoom Out"],["left","◀ Pan Left"],["right","Pan Right ▶"],["up","▲ Pan Up"],["down","Pan Down ▼"]].forEach(function(pr){
+        box.appendChild(ctxBtn(pr[1],function(){c.kb=pr[0];E.draw();renderContext();setStatus(pr[0]===""?"Ken Burns (zoom/pan) band ho gaya.":"Ken Burns lag gaya — clip chalte hue tasveer ahista harkat karegi. Preview mein Play dabayein to harkat dikhegi.","ok");hist();},(c.kb||"")===pr[0]));
+      });
+    })();
     if(c.isImage){
       var durLab=document.createElement("span");durLab.className="hint";durLab.style.margin="0";durLab.textContent="🖼 Ye TASVEER clip hai — ab ye "+fmt(cDur(c))+" dikhegi. Time badlein:";box.appendChild(durLab);
       [3,5,10].forEach(function(sec){
@@ -3352,6 +3877,17 @@ function renderContext(){
       box.appendChild(ctxBtn("Trim Right (Playhead Tak) ⏭",function(){trimAudioToPlayhead(a,"r");}));
     }
     box.appendChild(ctxBtn(origMuted?"🔊 Original Sound ON Karein":"🔇 Original Sound Mute Karein",function(){origMuted=!origMuted;applyMute();setStatus(origMuted?"Original video ki awaz mute hai — sirf alag audio track sunai dega.":"Original sound wapas ON hai.","ok");renderContext();hist();}));
+    /* PHASE 2: track ki qisam (music/voice), volume aur music ducking */
+    if(!a.combined){
+      box.appendChild(ctxBtn("🎵 Ye Music Track Hai",function(){a.kind="music";renderContext();setStatus("Track MUSIC tay ho gaya — voice wale hisse mein ye khud halka ho jayega (ducking ON ho to).","ok");hist();},trackKind(a)==="music"));
+      box.appendChild(ctxBtn("🎙 Ye Voice Track Hai",function(){a.kind="voice";renderContext();setStatus("Track VOICE tay ho gaya — is ke doran music tracks khud halke ho jayenge (ducking ON ho to).","ok");hist();},trackKind(a)==="voice"));
+      var avlab=document.createElement("span");avlab.className="hint";avlab.style.margin="0";avlab.textContent="Track Volume:";box.appendChild(avlab);
+      var avr=document.createElement("input");avr.type="range";avr.min="0";avr.max="100";avr.value=Math.round((a.vol==null?1:a.vol)*100);avr.setAttribute("aria-label","Track volume");
+      avr.addEventListener("input",function(){a.vol=parseInt(avr.value,10)/100;});
+      avr.addEventListener("change",function(){hist();});
+      box.appendChild(avr);
+    }
+    box.appendChild(ctxBtn(duckOn?"🦆 Music Ducking: ON":"🦆 Music Ducking: OFF",function(){duckOn=!duckOn;renderContext();setStatus(duckOn?"Ducking ON — jahan voice chalegi wahan music track khud halka ho jayega (preview + tez export).":"Ducking OFF — music apni asal volume par rahega.","ok");hist();},duckOn));
     if(a.el)box.appendChild(ctxBtn(replaceTrack===a?"🔊 Video Ka Sound Wapas ON (Merge Khatam)":"🔇 Sirf Ye Audio — Video Ka Sound Band",function(){var turnOn=replaceTrack!==a;setReplace(turnOn?a:null);setStatus(turnOn?"Merge ON — ab preview aur export dono mein sirf is audio ki awaz chalegi, video ka apna sound band hai.":"Merge OFF — video ka apna sound wapas ON hai.","ok");renderContext();hist();},true));
     if(a.combined)box.appendChild(ctxBtn("⬇ Poori Audio Download Karein (WAV)",function(){downloadCombined();},true));
     if(a.srcFile&&!a.combined)box.appendChild(ctxBtn("⬇ Ye Audio Download Karein (WAV)",function(){downloadTrackAudio(a);},true));
@@ -3362,8 +3898,8 @@ function renderContext(){
   if(sel.type==="overlay"){
     var o=overlays.filter(function(x){return x.id===sel.id;})[0];if(!o){sel=null;renderContext();return;}
     var posNames={tr:"Upar Right",tl:"Upar Left",br:"Neeche Right",bl:"Neeche Left"};
-    label(o.fixed?("Logo select hai — "+o.name+" • 📌 POORI VIDEO PAR FIXED (jagah: "+(posNames[o.pos]||"Upar Right")+")"):("Logo select hai — "+o.name+" • "+fmt(o.start)+" → "+fmt(o.end)));
-    var posLab=document.createElement("span");posLab.className="hint";posLab.style.margin="0";posLab.textContent="Logo kis kone mein rahe?";box.appendChild(posLab);
+    label(o.fixed?((o.sticker?"Sticker":"Logo")+" select hai — "+o.name+" • 📌 POORI VIDEO PAR FIXED (jagah: "+(posNames[o.pos]||"Upar Right")+")"):((o.sticker?"Sticker":"Logo")+" select hai — "+o.name+" • "+fmt(o.start)+" → "+fmt(o.end)));
+    var posLab=document.createElement("span");posLab.className="hint";posLab.style.margin="0";posLab.textContent="Kis kone mein rahe?";box.appendChild(posLab);
     [["tr","↗ Upar Right"],["tl","↖ Upar Left"],["br","↘ Neeche Right"],["bl","↙ Neeche Left"]].forEach(function(pr){
       box.appendChild(ctxBtn(pr[1],function(){o.pos=pr[0];renderContext();E.draw();updateLogoMeta();setStatus("Logo ki jagah tay ho gayi: "+posNames[pr[0]]+" kona — ab logo wahi fixed rahega, agay-peeche nahi hoga.","ok");hist();},(o.pos||"tr")===pr[0]));
     });
@@ -3386,7 +3922,7 @@ function doSplit(){
   var pt=projectTime(),off=offsetOf(i);
   var src=(c.trimStart||0)+(pt-off);
   if(src<=(c.trimStart||0)+0.15||src>=(c.trimEnd||c.duration||0)-0.15){setStatus("Split nahi hua — playhead ko clip ke beech mein le ja kar try karein.","err");return;}
-  var right={file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:src,trimEnd:c.trimEnd||c.duration,isImage:!!c.isImage,img:c.img||null,gapBefore:0};
+  var right={file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:src,trimEnd:c.trimEnd||c.duration,isImage:!!c.isImage,img:c.img||null,gapBefore:0};var rfx2=(window.__fxOf?window.__fxOf(c):{});for(var rk2 in rfx2)right[rk2]=rfx2[rk2];
   c.trimEnd=src;cs.splice(i+1,0,right);
   if(E.active()===i)syncTrimInputs(c);
   E.renderList();sel={type:"video",index:i+1};fitMode=fitMode;render();renderContext();
@@ -3407,7 +3943,7 @@ function doSplitAudio(a){
   if(!a||a.combined)return;
   var pt=projectTime(),local=pt-(a.start||0);
   if(local<=0.15||local>=(a.dur||0)-0.15){setStatus("Split nahi hua — playhead ko audio track ke beech mein le ja kar try karein (start ya end ke bilkul paas split nahi hota).","err");return;}
-  var right={id:uid++,name:a.name,start:pt,dur:a.dur-local,srcStart:(a.srcStart||0)+local,fromClip:a.fromClip,combined:false,srcFile:a.srcFile||null,isMerge:false};
+  var right={id:uid++,name:a.name,start:pt,dur:a.dur-local,srcStart:(a.srcStart||0)+local,fromClip:a.fromClip,combined:false,srcFile:a.srcFile||null,isMerge:false,vol:(a.vol==null?1:a.vol),kind:a.kind||""};
   if(a.el){var el2=new Audio();el2.preload="auto";el2.src=a.el.src;right.el=el2;}
   a.dur=local;
   var idx=audios.indexOf(a);if(idx<0)idx=audios.length-1;
@@ -3430,7 +3966,7 @@ function trimAudioToPlayhead(a,side){
 function doDuplicate(){
   var cs=clips();if(!sel||sel.type!=="video")return;
   var c=cs[sel.index];if(!c)return;
-  cs.splice(sel.index+1,0,{file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:c.trimStart,trimEnd:c.trimEnd,isImage:!!c.isImage,img:c.img||null,gapBefore:0});
+  var dup={file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:c.trimStart,trimEnd:c.trimEnd,isImage:!!c.isImage,img:c.img||null,gapBefore:0};var dfx=(window.__fxOf?window.__fxOf(c):{});for(var dk in dfx)dup[dk]=dfx[dk];cs.splice(sel.index+1,0,dup);
   E.renderList();sel={type:"video",index:sel.index+1};render();renderContext();setStatus("Clip duplicate ho gaya.","ok");hist();
 }
 function doDeleteVideo(){
@@ -3455,7 +3991,7 @@ function doExtractAudio(){
   var cs=clips();var i=(sel&&sel.type==="video")?sel.index:E.active();
   var c=cs[i];if(!c){setStatus("Pehle koi clip select karein.","err");return;}
   if(c.isImage){setStatus("Ye image (tasveer) clip hai — is mein koi awaz nahi hoti, is liye audio alag nahi ho sakta. Kisi video clip ka audio alag karein.","err");return;}
-  audios.push({id:uid++,name:c.name.replace(/\.[^.]+$/,"")+" (audio)",start:offsetOf(i),dur:cDur(c),fromClip:i,srcFile:c.file,srcStart:c.trimStart||0});
+  audios.push({id:uid++,name:c.name.replace(/\.[^.]+$/,"")+" (audio)",start:offsetOf(i),dur:cDur(c),fromClip:i,srcFile:c.file,srcStart:c.trimStart||0,vol:1,kind:"voice"});
   sel={type:"audio",id:uid-1};
   render();renderContext();
   setStatus("Audio alag track mein aa gaya — ab ye video se alag trim / move ho sakta hai, aur “⬇ Ye Audio Download Karein (WAV)” button se is ki file bhi download ho jayegi. Original sound mute karna ho to Mute button use karein.","ok");
@@ -3466,7 +4002,7 @@ function doExtractAudio(){
 /* ---------- sab clips ki AIK combined audio track ---------- */
 function doCombinedTrack(){
   if(!clips().length){setStatus("Pehle clips load karein.","err");return;}
-  audios.push({id:uid++,name:"Sab clips ki aik audio",start:0,dur:total(),combined:true});
+  audios.push({id:uid++,name:"Sab clips ki aik audio",start:0,dur:total(),combined:true,vol:1,kind:"voice"});
   sel={type:"audio",id:uid-1};render();renderContext();
   setStatus("Sab clips ki AIK combined audio track bann gaya — poori video jitna lamba, teeno videos ki awaz aik sath. Neeche “⬇ Poori Audio Download Karein (WAV)” se is ki aik hi file download ho jayegi.","ok");
   hist();
@@ -3514,7 +4050,7 @@ function updateMergeUI(){
 }
 function addUploadedAudio(f,startAt,makeReplace){
   var url=URL.createObjectURL(f);var el=new Audio();el.preload="auto";el.src=url;
-  var item={id:uid++,name:f.name,start:startAt,dur:5,srcFile:f,srcStart:0,el:el,isMerge:!!makeReplace};
+  var item={id:uid++,name:f.name,start:startAt,dur:5,srcFile:f,srcStart:0,el:el,isMerge:!!makeReplace,vol:1,kind:(makeReplace?"voice":"music")};
   el.addEventListener("loadedmetadata",function(){
     item.dur=(isFinite(el.duration)&&el.duration>0)?el.duration:item.dur;
     if(makeReplace&&mergeTrack&&mergeTrack!==item){
@@ -3542,6 +4078,52 @@ function syncBgAudio(){
     if(el.paused){try{el.currentTime=Math.min(want,Math.max(0,(el.duration||want)-0.05));}catch(e){}var p=el.play();if(p&&p.catch)p.catch(function(){});}
     else if(Math.abs(el.currentTime-want)>0.45){try{el.currentTime=want;}catch(e){}}
   }else if(!el.paused)el.pause();
+}
+
+/* ===== PHASE 2: tez export ke liye audio mix ki maloomat ===== */
+window.__tlAudioMix=function(){
+  return {
+    origMuted:!!origMuted,
+    replaceActive:!!replaceTrack,
+    duckOn:duckOn,
+    tracks:audios.map(function(a){return {srcFile:a.srcFile||null,start:a.start||0,dur:a.dur||0,srcStart:a.srcStart||0,vol:(a.vol==null?1:a.vol),kind:a.kind||(a.isMerge?"voice":"music"),isMerge:!!a.isMerge,fromClip:(a.fromClip==null?null:a.fromClip),combined:!!a.combined};})
+  };
+};
+/* ===== PHASE 2: sab audio tracks ki preview awaz + music ducking =====
+   Pehle sirf replace (merge) track preview mein chalta tha; ab har
+   uploaded track apni jagah par sunai deta hai. Jo track "music" hai,
+   us ka volume voice wale hisse ke doran khud 25% par aa jata hai
+   (ducking) — narmi se, achanak nahi. */
+function trackKind(a){return a.kind||(a.isMerge?"voice":"music");}
+function voiceActiveAt(pt){
+  if(replaceTrack&&replaceTrack.el){var l0=pt-(replaceTrack.start||0);if(l0>=-0.05&&l0<=(replaceTrack.dur||0)+0.05)return true;}
+  for(var i=0;i<audios.length;i++){var a=audios[i];if(a!==replaceTrack&&trackKind(a)==="voice"){var l2=pt-(a.start||0);if(l2>=-0.05&&l2<=(a.dur||0)+0.05)return true;}}
+  if(!origMuted&&!replaceTrack)return true; /* video ki apni awaz bhi voice hai */
+  return false;
+}
+function syncAllAudio(){
+  if(E.isExporting&&E.isExporting())return;
+  var pt=projectTime();
+  var playing=(!video.paused&&!video.ended)||(window.__editorImg&&window.__editorImg.playing());
+  var vAct=voiceActiveAt(pt);
+  audios.forEach(function(a){
+    if(!a.el||a===replaceTrack)return; /* replaceTrack ki play/seek syncBgAudio karta hai */
+    var local=pt-(a.start||0), inRange=local>=-0.05&&local<=(a.dur||0)+0.05;
+    if(playing&&inRange){
+      var want=(a.srcStart||0)+Math.max(0,local);
+      if(a.el.paused){try{a.el.currentTime=Math.min(want,Math.max(0,(a.el.duration||want)-0.05));}catch(e){}var p=a.el.play();if(p&&p.catch)p.catch(function(){});}
+      else if(Math.abs(a.el.currentTime-want)>0.45){try{a.el.currentTime=want;}catch(e){}}
+    }else if(!a.el.paused)a.el.pause();
+  });
+  audios.forEach(function(a){
+    if(!a.el)return;
+    var base=(a.vol==null?1:a.vol), target=base;
+    if(duckOn&&trackKind(a)==="music"&&vAct)target=base*0.25;
+    var cur=(typeof a._g==="number")?a._g:target;
+    var nv=cur+(target-cur)*0.25;
+    a._g=nv;
+    try{a.el.volume=Math.max(0,Math.min(1,nv));}catch(e){}
+  });
 }
 /* export ke liye hooks (main editor script inhein call karta hai) */
 window.__hasMerge=function(){return !!replaceTrack;};
@@ -3572,7 +4154,7 @@ $("tlKeepBtn").addEventListener("click",function(){
     var segStart=acc+gapOf(c,i),d=cDur(c),s=segStart,e=segStart+d;acc=e;
     var os=Math.max(a,s),oe=Math.min(b,e);
     if(oe-os>=0.2){
-      var nc={file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:(c.trimStart||0)+(os-s),trimEnd:(c.trimStart||0)+(oe-s),isImage:!!c.isImage,img:c.img||null,gapBefore:0};
+      var nc={file:c.file,name:c.name,size:c.size,url:c.url,duration:c.duration,trimStart:(c.trimStart||0)+(os-s),trimEnd:(c.trimStart||0)+(oe-s),isImage:!!c.isImage,img:c.img||null,gapBefore:0};var nfx=(window.__fxOf?window.__fxOf(c):{});for(var nk in nfx)nc[nk]=nfx[nk];
       keep.push(nc);
     }
   });
@@ -3650,6 +4232,42 @@ $("tlLogoInput").addEventListener("change",function(ev){
   img.onerror=function(){setStatus("Ye image nahi khul saki — PNG logo try karein.","err");};
   img.src=url;
 });
+/* ---------- PHASE 2: stickers (emoji / tasveer) ----------
+   Sticker bhi overlay hi hai (sticker:true) — is liye wahi purani
+   machinery chalti hai: timeline ki Logo line mein drag/trim,
+   kone ke buttons, opacity slider. Farq sirf size (thora bara) aur
+   waqt (playhead se 5 second, fixed nahi) ka hai. */
+function addEmojiSticker(em){
+  try{
+    var cv=document.createElement("canvas");cv.width=256;cv.height=256;
+    var cx=cv.getContext("2d");cx.font="200px serif";cx.textAlign="center";cx.textBaseline="middle";
+    cx.fillText(em,128,140);
+    var img=new Image();
+    img.onload=function(){
+      var pt=projectTime(),tot=total();
+      overlays.push({id:uid++,name:"Sticker "+em,img:img,start:pt,end:Math.min(Math.max(tot,pt+1),pt+5),opacity:1,pos:"br",fixed:false,sticker:true});
+      sel={type:"overlay",id:uid-1};render();renderContext();E.draw();
+      setStatus("Sticker lag gaya — timeline ki Logo wali line mein isay drag karke jagah badlein, kinare kheench kar time badlein; upar ke buttons se kona aur opacity badalta hai.","ok");
+      hist();
+    };
+    img.src=cv.toDataURL("image/png");
+  }catch(e){setStatus("Sticker nahi bann saka — is browser mein masla hai.","err");}
+}
+var tlStickerInput=$("tlStickerInput");
+if(tlStickerInput)tlStickerInput.addEventListener("change",function(ev){
+  var f=ev.target.files&&ev.target.files[0];ev.target.value="";if(!f)return;
+  var url=URL.createObjectURL(f);var img=new Image();
+  img.onload=function(){
+    var pt=projectTime(),tot=total();
+    overlays.push({id:uid++,name:"Sticker — "+f.name,img:img,start:pt,end:Math.min(Math.max(tot,pt+1),pt+5),opacity:1,pos:"br",fixed:false,sticker:true});
+    sel={type:"overlay",id:uid-1};render();renderContext();E.draw();
+    setStatus("Tasveer sticker lag gaya — timeline ki Logo wali line mein drag karke jagah badlein, kinare kheench kar time badlein.","ok");
+    hist();
+  };
+  img.onerror=function(){setStatus("Ye image nahi khul saki.","err");};
+  img.src=url;
+});
+
 
 /* ---------- overlay drawing on preview + export canvas ----------
    Fixed logo: waqt ki qaid nahi — jab bhi koi clip load hai, logo
@@ -3663,7 +4281,7 @@ window.__drawOverlays=function(ctx,W,H){
     if(!o.img)return;
     if(o.fixed){if(!hasClips)return;}
     else if(pt<o.start||pt>o.end)return;
-    var w=W*0.18,h=w*((o.img.naturalHeight||o.img.height||100)/(o.img.naturalWidth||o.img.width||100));
+    var w=W*(o.sticker?0.22:0.18),h=w*((o.img.naturalHeight||o.img.height||100)/(o.img.naturalWidth||o.img.width||100));
     var mx=Math.round(W*0.03),my=Math.round(H*0.03);
     var pos=o.pos||"tr";
     var x=(pos==="tl"||pos==="bl")?mx:(W-w-mx);
@@ -3680,6 +4298,7 @@ function loopSync(){
   if(s!==lastSig){lastSig=s;render();renderContext();}
   else syncPlayhead();
   syncBgAudio();
+  syncAllAudio();
   requestAnimationFrame(loopSync);
 }
 render();renderContext();updateMergeUI();updateLogoMeta();requestAnimationFrame(loopSync);
@@ -4406,8 +5025,22 @@ function trSendChunk(key,mime,b64,onEvent){
    "wtoobig" (file bari). */
 var WHISPER_MODEL="whisper-large-v3-turbo";
 var WHISPER_URL="https://api.groq.com/openai/v1/audio/transcriptions";
+/* PHASE 2: Whisper ke ASAL word timings — editor captions aur SRT file
+   inhi asal waqton se bante hain (harf-ginti wale andaze ki jagah).
+   trLastChunkWords: aakhri hisse ke lafz (chunk offset judna baqi).
+   __realWordTimings tab hi timings deta hai jab script ka har lafz
+   transcription se HU-BA-HU mile — warna null (andaza chalega). */
+var trWordTimings=[], trLastChunkWords=null, trRunAudioDur=0;
+window.__realWordTimings=function(text){
+  var T=window.__trWordTimings;
+  if(!T||!T.words||!T.words.length||!(T.dur>0))return null;
+  var ws=(text||"").split(/\s+/).filter(Boolean);
+  if(ws.length!==T.words.length)return null;
+  for(var i=0;i<ws.length;i++){if(ws[i]!==T.words[i].w)return null;}
+  return T;
+};
 function trSendWhisperChunk(gkey,blob,fname,onEvent){
-  function attempt(n){
+  function attempt(n,verbose){
     if(voTrCancelled)return Promise.reject({name:"AbortError"});
     var ctrl=new AbortController();voTrController=ctrl;
     var timedOut=false;
@@ -4415,18 +5048,22 @@ function trSendWhisperChunk(gkey,blob,fname,onEvent){
     var fd=new FormData();
     fd.append("file",blob,fname||"chunk.wav");
     fd.append("model",WHISPER_MODEL);
-    fd.append("response_format","json");
+    if(verbose){fd.append("response_format","verbose_json");fd.append("timestamp_granularities[]","word");}
+    else fd.append("response_format","json");
     fd.append("temperature","0");
     return fetch(WHISPER_URL,{method:"POST",signal:ctrl.signal,headers:{"Authorization":"Bearer "+gkey},body:fd})
     .then(function(r){clearTimeout(timer);return r.text().then(function(tx){return{ok:r.ok,status:r.status,tx:tx};});})
     .then(function(res){
       if(!res.ok){
+        /* verbose_json par 400 aaye to wahi hissa saada json se dobara —
+           transcription kabhi rukti nahi, sirf timings nahi milte. */
+        if(res.status===400&&verbose)return attempt(n,false);
         if(res.status===401||res.status===403)throw{status:"wkey",detail:res.tx};
         if(res.status===413)throw{status:"wtoobig",detail:res.tx};
         if(res.status===429||res.status>=500){
           if(n<1){
             if(onEvent)onEvent("wbusy",res.status);
-            return wait(res.status===429?20000:15000).then(function(){return attempt(n+1);});
+            return wait(res.status===429?20000:15000).then(function(){return attempt(n+1,verbose);});
           }
           throw{status:res.status===429?"wlimit":"wbusy",detail:res.tx};
         }
@@ -4435,6 +5072,12 @@ function trSendWhisperChunk(gkey,blob,fname,onEvent){
       var json=null;try{json=JSON.parse(res.tx);}catch(e){}
       var out=json&&typeof json.text==="string"?json.text.trim():"";
       if(!out)throw{status:"noaudio",detail:res.tx};
+      trLastChunkWords=null;
+      if(json&&json.words&&json.words.length){
+        var wl=[];
+        json.words.forEach(function(w){var tw=(w.word||"").trim();if(tw)wl.push({w:tw,start:(+w.start)||0,end:(+w.end)||0});});
+        if(wl.length)trLastChunkWords=wl;
+      }
       if(onEvent)onEvent("model",WHISPER_MODEL);
       return out;
     })
@@ -4446,13 +5089,13 @@ function trSendWhisperChunk(gkey,blob,fname,onEvent){
       /* timeout ya network — aik dobara koshish */
       if(n<1){
         if(onEvent)onEvent("retry",timedOut);
-        return wait(1500).then(function(){return attempt(n+1);});
+        return wait(1500).then(function(){return attempt(n+1,verbose);});
       }
       if(timedOut)throw{status:"timeout",detail:""};
       throw{status:0,detail:(err&&err.message)||"network"};
     });
   }
-  return attempt(0);
+  return attempt(0,true);
 }
 /* ---------- Tareeqa dispatcher ----------
    trRunMethod: is run ka chuna hua tareeqa ("gemini" / "whisper").
@@ -4496,6 +5139,7 @@ voAudioInput.addEventListener("change",function(){
   /* Is run ka tareeqa aur keys — Gemini key na ho lekin Groq key ho
      to seedha Whisper chala do, user ko khali error na mile. */
   trRunMethod=trMethod(); trRunKey=currentKey(); trRunGkey=currentGroqKey(); trAutoFb=false;
+  trWordTimings=[]; trLastChunkWords=null; trRunAudioDur=0; window.__trWordTimings=null;
   if(trRunMethod==="gemini"&&!trRunKey&&trRunGkey)trRunMethod="whisper";
   if(trRunMethod==="whisper"&&!trRunGkey){showTrError("wnokey","");setV(voTrStatus,T("Groq key نہیں ملی — نیچے لال خانہ پڑھیں۔","No Groq key found — read the red box below."),"err");return;}
   if(trRunMethod==="gemini"&&!trRunKey){showTrError(401,"");setV(voTrStatus,T("Gemini key نہیں ملی — نیچے لال خانہ پڑھیں۔","No Gemini key found — read the red box below."),"err");return;}
@@ -4525,6 +5169,7 @@ voAudioInput.addEventListener("change",function(){
     return getCtx().decodeAudioData(ab).then(function(buf){return buf;},function(){return null;});
   }).then(function(buf){
     var texts=[];
+    if(buf&&buf.duration>0&&isFinite(buf.duration))trRunAudioDur=buf.duration;
     if(buf&&buf.duration>0&&isFinite(buf.duration)){
       /* Phone par chhoti karo: 16 kHz mono, 60 second ke hisse —
          har hissa bari bari bhejo taake memory halki rahe, har
@@ -4557,6 +5202,7 @@ voAudioInput.addEventListener("change",function(){
             });
           })
           .then(function(t){
+            if(trLastChunkWords){trLastChunkWords.forEach(function(w){trWordTimings.push({w:w.w,start:(i*CH)+w.start,end:(i*CH)+w.end});});trLastChunkWords=null;}
             texts.push(t);voTrProgress.value=Math.round(texts.length/total*100);
             setV(voTrStatus,T("حصہ "+(i+1)+" از "+total+" مکمل ✓"+(trUsedModel?" — model: "+trUsedModel:""),"Part "+(i+1)+" of "+total+" done ✓"+(trUsedModel?" — model: "+trUsedModel:"")));
           });
@@ -4578,12 +5224,13 @@ voAudioInput.addEventListener("change",function(){
         else if(type==="fallback")setV(voTrStatus,T("پہلا model busy رہا، اب backup model ("+info+") آزمایا جا رہا ہے…","The first model stayed busy, now trying the backup model ("+info+")…"));
         else if(type==="retry")setV(voTrStatus,T("جواب آنے میں دیر ہو گئی — خود دوبارہ کوشش ہو رہی ہے…","The reply is late — retrying automatically…"));
       });
-    }).then(function(t){texts.push(t);voTrProgress.value=100;return texts;});
+    }).then(function(t){if(trLastChunkWords){trWordTimings=trLastChunkWords.map(function(w){return {w:w.w,start:w.start,end:w.end};});trLastChunkWords=null;if(!trRunAudioDur&&trWordTimings.length)trRunAudioDur=trWordTimings[trWordTimings.length-1].end;}texts.push(t);voTrProgress.value=100;return texts;});
   }).then(function(texts){
     voTrBusy=false;trHideProgress();
     var out=texts.join("\n").trim();
     if(!out){trFail("noaudio","");return;}
     voScript.value=out;updateCounts();
+    if(trWordTimings.length){window.__trWordTimings={words:trWordTimings,dur:(trRunAudioDur>0?trRunAudioDur:(trWordTimings[trWordTimings.length-1].end||0))};}
     var methodLabel=trUsedWhisper&&trUsedGemini?"Gemini + Whisper (Groq) backup":(trUsedWhisper?"Whisper (Groq)":"Gemini");
     setV(voTrStatus,T("✓ متن تیار ہے — نیچے خانے میں آ گیا ہے۔ اب حصہ 2 میں آواز چن کر حصہ 3 سے وائس اوور بنائیں۔","✓ Script ready — it is in the box below. Now pick a voice in section 2 and generate the voice over in section 3.")+T(" — طریقہ: "," — method: ")+methodLabel+(trUsedModel?T(" — کامیاب model: "," — model used: ")+trUsedModel:""),"ok");
   }).catch(function(e){
