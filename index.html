@@ -2641,6 +2641,20 @@ try{
     if(document.readyState==="complete")__swReg(); else window.addEventListener("load",__swReg);
   }
 }catch(e){}
+/* Export mukammal hone par ek bara SABZ download button progress wale
+   hisse mein reh jata hai — khud-kar download ka notification miss ho
+   jaye to bhi user button dabakar file pakki le sakta hai. */
+function showDlButton(url,filename){
+  try{
+    var wrap=$("exportProgressWrap"); if(!wrap)return;
+    var old=document.getElementById("exportDlBtn"); if(old)old.remove();
+    var a=document.createElement("a");
+    a.id="exportDlBtn"; a.href=url; a.download=filename||"procut-video.mp4";
+    a.textContent="⬇ Video Download Karein — yahan dabayein";
+    a.style.cssText="display:block;text-align:center;margin-top:10px;padding:14px;border-radius:10px;background:#22c55e;color:#06280f;font-weight:700;font-size:16px;text-decoration:none";
+    wrap.appendChild(a);
+  }catch(e){}
+}
 function pickMime(){var c=["video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];for(var i=0;i<c.length;i++){if(window.MediaRecorder&&MediaRecorder.isTypeSupported(c[i]))return c[i];}return "";}
 function dispatchRecorderExport(){
   if(clips.length>1){exportJoined();return;}
@@ -2671,7 +2685,7 @@ function exportSingleRecorder(){
   if(window.__hasMerge&&window.__hasMerge()&&!mergeUsed)estatus.textContent+=" (Note: merge audio is browser mein export mein capture nahi ho saka — video ka apna sound record hoga. Chrome mein try karein.)";
   var chunks=[],rec,cancelled=false;try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:bitrateForQuality()});}catch(e){state.exporting=false;exportBtn.disabled=false;wakeLockOff();exportCancelDone();setStatus(editorStatus,"Recorder shuru nahi ho saka: "+e.message,"err");return;}
   rec.ondataavailable=function(ev){if(ev.data&&ev.data.size)chunks.push(ev.data);};
-  rec.onstop=function(){if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;var ext=mime.indexOf("mp4")>=0?"mp4":"webm";var blob=new Blob(chunks,{type:mime.split(";")[0]});var a=document.createElement("a");var name=($("titleText").value.trim()||"meri-video").replace(/[\\/:*?"<>|]/g,"").slice(0,40);a.href=URL.createObjectURL(blob);a.download=name+"."+ext;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){try{URL.revokeObjectURL(a.href);}catch(e){}},4000);prog.value=100;setStatus(estatus,"Ho gaya! No watermark video download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, "+ext.toUpperCase()+"). Ab YouTube app se upload kar dein.","ok");setStatus(editorStatus,"");};
+  rec.onstop=function(){if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;var ext=mime.indexOf("mp4")>=0?"mp4":"webm";var blob=new Blob(chunks,{type:mime.split(";")[0]});var a=document.createElement("a");var name=($("titleText").value.trim()||"meri-video").replace(/[\\/:*?"<>|]/g,"").slice(0,40);a.href=URL.createObjectURL(blob);a.download=name+"."+ext;document.body.appendChild(a);a.click();a.remove();showDlButton(a.href,a.download);prog.value=100;setStatus(estatus,"Ho gaya! No watermark video download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, "+ext.toUpperCase()+"). Ab YouTube app se upload kar dein.","ok");setStatus(editorStatus,"");};
   (function(){var __os=rec.onstop;rec.onstop=function(){wakeLockOff();exportCancelDone();if(cancelled){chunks.length=0;prog.value=0;if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;setStatus(estatus,"Export cancel kar diya gaya — koi file download nahi hui.","err");setStatus(editorStatus,"");return;}__os();};})();
   video.pause();video.currentTime=start;var started=false;
   function begin(){if(started)return;started=true;video.removeEventListener("seeked",begin);var prevRate=video.playbackRate;video.playbackRate=clipRate(clips[activeClip]);rec.start(250);video.play();if(mergeUsed&&window.__mergePlay)window.__mergePlay(combinedOffset(activeClip));startLoop();var tick=setInterval(function(){var done=Math.min(1,(video.currentTime-start)/clipDur);prog.value=Math.round(done*100);setStatus(estatus,"Export ho raha hai… "+Math.round(done*100)+"% — page khula rakhein.");if(video.currentTime>=end||video.ended){clearInterval(tick);video.pause();setTimeout(function(){if(rec.state!=="inactive")rec.stop();},150);}},200);setTimeout(function(){clearInterval(tick);if(rec.state!=="inactive"){video.pause();rec.stop();}},(clipDur+4)*1000/Math.max(0.25,clipRate(clips[activeClip])));exportCancelHook=function(){cancelled=true;clearInterval(tick);try{video.pause();}catch(e){}if(rec.state!=="inactive")rec.stop();};}
@@ -2757,7 +2771,7 @@ function exportImageSingle(){
   if(window.__hasMerge&&window.__hasMerge()&&window.__getMergeAudioTrack){var mtrack2=window.__getMergeAudioTrack();if(mtrack2){stream.addTrack(mtrack2);mergeUsed=true;}}
   var chunks=[],rec,cancelled=false;try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:bitrateForQuality()});}catch(err){state.exporting=false;exportBtn.disabled=false;wakeLockOff();exportCancelDone();setStatus(editorStatus,"Recorder shuru nahi ho saka: "+err.message,"err");return;}
   rec.ondataavailable=function(ev){if(ev.data&&ev.data.size)chunks.push(ev.data);};
-  rec.onstop=function(){if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;var ext=mime.indexOf("mp4")>=0?"mp4":"webm";var blob=new Blob(chunks,{type:mime.split(";")[0]});var a=document.createElement("a");var name=($("titleText").value.trim()||"meri-video").replace(/[\\/:*?"<>|]/g,"").slice(0,40);a.href=URL.createObjectURL(blob);a.download=name+"."+ext;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){try{URL.revokeObjectURL(a.href);}catch(e){}},4000);prog.value=100;setStatus(estatus,"Ho gaya! Tasveer ki video download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, "+ext.toUpperCase()+", koi watermark nahi).","ok");setStatus(editorStatus,"");};
+  rec.onstop=function(){if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;var ext=mime.indexOf("mp4")>=0?"mp4":"webm";var blob=new Blob(chunks,{type:mime.split(";")[0]});var a=document.createElement("a");var name=($("titleText").value.trim()||"meri-video").replace(/[\\/:*?"<>|]/g,"").slice(0,40);a.href=URL.createObjectURL(blob);a.download=name+"."+ext;document.body.appendChild(a);a.click();a.remove();showDlButton(a.href,a.download);prog.value=100;setStatus(estatus,"Ho gaya! Tasveer ki video download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, "+ext.toUpperCase()+", koi watermark nahi).","ok");setStatus(editorStatus,"");};
   (function(){var __os=rec.onstop;rec.onstop=function(){wakeLockOff();exportCancelDone();if(cancelled){chunks.length=0;prog.value=0;if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;setStatus(estatus,"Image export cancel kar diya gaya — koi file download nahi hui.","err");setStatus(editorStatus,"");return;}__os();};})();
   imgPos=s;drawFrame();
   rec.start(250);if(mergeUsed&&window.__mergePlay)window.__mergePlay(0);
@@ -2789,7 +2803,7 @@ function exportJoined(){
   var chunks=[],rec;
   try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:bitrateForQuality()});}catch(e){state.exporting=false;exportBtn.disabled=false;wakeLockOff();exportCancelDone();setStatus(editorStatus,"Recorder shuru nahi ho saka: "+e.message,"err");return;}
   rec.ondataavailable=function(ev){if(ev.data&&ev.data.size)chunks.push(ev.data);};
-  rec.onstop=function(){if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;var ext=mime.indexOf("mp4")>=0?"mp4":"webm";var blob=new Blob(chunks,{type:mime.split(";")[0]});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="joined-video."+ext;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){try{URL.revokeObjectURL(a.href);}catch(e){}},4000);prog.value=100;setStatus(estatus,"Ho gaya! "+clips.length+" clips jud kar aik video download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, "+ext.toUpperCase()+", koi watermark nahi).","ok");setStatus(editorStatus,"");loadClip(prevActive);};
+  rec.onstop=function(){if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;var ext=mime.indexOf("mp4")>=0?"mp4":"webm";var blob=new Blob(chunks,{type:mime.split(";")[0]});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="joined-video."+ext;document.body.appendChild(a);a.click();a.remove();showDlButton(a.href,a.download);prog.value=100;setStatus(estatus,"Ho gaya! "+clips.length+" clips jud kar aik video download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, "+ext.toUpperCase()+", koi watermark nahi).","ok");setStatus(editorStatus,"");loadClip(prevActive);};
   (function(){var __os=rec.onstop;rec.onstop=function(){wakeLockOff();exportCancelDone();if(cancelled){chunks.length=0;prog.value=0;if(window.__mergeStop)window.__mergeStop();state.exporting=false;exportBtn.disabled=false;setStatus(estatus,"Join export cancel kar diya gaya — koi file download nahi hui.","err");setStatus(editorStatus,"");loadClip(prevActive);return;}__os();};})();
   var idx=0,elapsed=0,finished=false,cancelled=false;
   function finish(){if(finished)return;finished=true;video.pause();setTimeout(function(){if(rec.state!=="inactive")rec.stop();},200);}
@@ -2944,12 +2958,14 @@ function fastBuildMix(segs,totalOut){
       if(kind==="voice")voiceWins.push([a.start||0,(a.start||0)+(a.dur||0)]);
     });
   }
+  var placedCount=0;
   if(!hasReplace&&!origMuted){
     segs.forEach(function(sg){
       if(sg.c.isImage||!sg.c.file)return;
       var c=sg.c;
       jobs.push(decodeFile(c.file).then(function(buf){
         place(buf,sg.outStart,c.trimStart||0,sg.outDur,sg.rate,(c.vol==null?1:c.vol),c.fadeIn||0,c.fadeOut||0,null);
+        placedCount++;
       }).catch(function(){}));
     });
   }
@@ -2959,11 +2975,18 @@ function fastBuildMix(segs,totalOut){
       var kind=a.kind||(a.isMerge?"voice":"music");
       jobs.push(decodeFile(a.srcFile).then(function(buf){
         place(buf,a.start||0,a.srcStart||0,a.dur||0,1,(a.vol==null?1:a.vol),0,0,(kind==="music"&&duckOn)?voiceWins:null);
+        placedCount++;
       }).catch(function(){}));
     });
   }
   var hasAudio=jobs.length>0;
-  return Promise.all(jobs).then(function(){return off.startRendering();}).then(function(buf){
+  return Promise.all(jobs).then(function(){
+    /* Sab audio decode fail ho jayein to khamosh video kabhi mat banao —
+       tez rasta yahin rok do taake recorder wala rasta (jo chalte hue
+       video se awaz pakarta hai) khud chal jaye. */
+    if(jobs.length>0&&placedCount===0)throw new Error("Audio decode nahi ho saka");
+    return off.startRendering();
+  }).then(function(buf){
     try{decCtx.close();}catch(e){}
     return {buf:buf,hasAudio:hasAudio};
   });
@@ -2976,7 +2999,7 @@ function exportFast(){
     function done(ok){if(settled)return;settled=true;window.__fastBusy=false;resolve(ok);}
     /* Fori feedback: progress patti pehle lamhe se dikhe — library load
        hone tak khamoshi nahi (slow net par ye marhala lamba lagta hai). */
-    try{var __w=$("exportProgressWrap"),__p=$("exportProgress"),__s=$("exportStatus");if(__w)__w.classList.remove("hidden");if(__p)__p.value=0;if(__s)setStatus(__s,"Tez export ki tayyari — library load ho rahi hai… (slow net par thora waqt lag sakta hai)");}catch(e){}
+    try{var __w=$("exportProgressWrap"),__p=$("exportProgress"),__s=$("exportStatus");if(__w)__w.classList.remove("hidden");if(__p)__p.value=0;var __old=document.getElementById("exportDlBtn");if(__old)__old.remove();if(__s)setStatus(__s,"Tez export ki tayyari — library load ho rahi hai… (slow net par thora waqt lag sakta hai)");}catch(e){}
     var segs=[], totalOut=0;
     try{
       clips.forEach(function(c,i){
@@ -3148,12 +3171,11 @@ function fastExportRun(M,segs,totalOut,totalFrames){
     }).then(function(){
       muxer.finalize();
       var blob=new Blob([muxer.target.buffer],{type:"video/mp4"});
-      var a=document.createElement("a");
-      a.href=URL.createObjectURL(blob);a.download="procut-video.mp4";
-      document.body.appendChild(a);a.click();a.remove();
-      setTimeout(function(){try{URL.revokeObjectURL(a.href);}catch(e){}},4000);
+      var dlUrl=URL.createObjectURL(blob);
+      try{var a=document.createElement("a");a.href=dlUrl;a.download="procut-video.mp4";document.body.appendChild(a);a.click();a.remove();}catch(e){}
+      showDlButton(dlUrl,"procut-video.mp4");
       prog.value=100;
-      setStatus(estatus,"Ho gaya! Tez export mukammal — asal MP4 download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, koi watermark nahi).","ok");
+      setStatus(estatus,"Ho gaya! Tez export mukammal — neeche wale SABZ button se asal MP4 download karein ("+(blob.size/1048576).toFixed(1)+" MB, koi watermark nahi).","ok");
       setStatus(editorStatus,"");
       cleanup();
       try{loadClip(prevActive);}catch(e){}
