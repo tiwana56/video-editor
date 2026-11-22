@@ -580,6 +580,215 @@ ol.steps li{color:#d8e1ee}
   .hist-btn{min-width:66px;padding:0 10px}
 }
 </style>
+<style>
+/* ===== FINAL — PROFESSIONAL FIXED APP SHELL (Premiere / DaVinci pattern) =====
+   Usool: PAGE SCROLL BILKUL NAHI. Poora layout 100dvh mein fixed hai —
+   topbar + tab bar fixed, preview monitor hamesha upar fixed, neeche
+   panels / timeline apni fixed jagah par. Sirf kisi panel ke ANDAR
+   scroll hota hai (Properties / Media ka internal scroll, timeline ka
+   horizontal scroll). Buttons compact, lambi maloomati lines khatam —
+   madad Madad tab mein mehfooz hai. Export / canvas pixels untouched. */
+html,body{height:100dvh!important;max-height:100dvh;overflow:hidden!important}
+body{display:flex!important;flex-direction:column}
+.app{flex:1 1 auto!important;min-height:0!important;overflow:hidden!important;padding:6px 8px 8px!important;display:flex;flex-direction:column}
+.view{flex:1 1 auto;min-height:0;overflow:hidden!important}
+.view-scroll{overflow-y:auto!important;overflow-x:hidden;padding:2px 1px 10px}
+.view-scroll .panel{margin-bottom:8px}
+/* --- Topbar compact --- */
+.topbar{padding:6px 10px!important;gap:8px}
+.logo{width:32px!important;height:32px!important}
+.logo img{width:32px!important;height:32px!important}
+.brand h1{font-size:15px!important}
+.btn-export{min-height:36px!important;padding:7px 14px!important;font-size:13.5px!important;border-radius:8px!important}
+.btn-install{min-height:36px!important;padding:7px 10px!important;font-size:12.5px!important;border-radius:8px!important}
+.select-dark{min-height:36px!important;padding:6px 8px!important;font-size:13px!important}
+.icon-btn-top{width:36px!important;height:36px!important;border-radius:8px!important}
+.hist-btn{min-width:64px!important;padding:0 9px!important;font-size:12.5px!important;gap:5px!important}
+.badge{padding:3px 7px;font-size:10px}
+/* --- Tab bar compact --- */
+.app-nav{padding:5px 8px!important;gap:6px!important}
+.nav-btn{min-height:38px!important;padding:6px 8px!important;font-size:13px!important;border-radius:9px!important;gap:6px!important}
+.nav-btn .nav-ico{font-size:16px!important}
+@media(max-width:760px){
+  .app-nav{padding:5px 6px calc(5px + env(safe-area-inset-bottom))!important}
+  .nav-btn{min-height:48px!important;font-size:10.5px!important;padding:5px 2px!important;gap:2px!important}
+  .nav-btn .nav-ico{font-size:18px!important}
+  .topbar{flex-wrap:wrap}
+}
+/* --- Compact controls EVERYWHERE (Premiere-style dense UI) --- */
+.btn{min-height:36px!important;padding:6px 11px!important;font-size:13px!important;border-radius:8px!important;gap:6px!important}
+.btn.small{min-height:32px!important;padding:5px 10px!important;font-size:12.5px!important}
+.btn.gold{font-weight:700}
+.chip-btn{min-height:30px!important;padding:4px 9px!important;font-size:12px!important}
+.mini-select{min-height:30px!important;padding:4px 7px!important;font-size:12px!important}
+.seg{gap:5px}
+.seg button{min-height:34px!important;padding:6px 8px!important;font-size:12.5px!important;border-radius:7px!important}
+.subtab-btn{min-height:36px!important;padding:6px 8px!important;font-size:13px!important;border-radius:9px!important}
+.tool-btn{min-height:46px!important;padding:8px 10px!important;border-radius:9px!important}
+.tool-btn b{font-size:13px!important}.tool-btn span{font-size:11px!important}
+.swatch{width:32px!important;height:32px!important;border-width:2px!important}
+.play-main{width:40px!important;height:40px!important;font-size:15px!important}
+input[type="range"]{min-height:24px!important}
+input[type="text"],input[type="password"],input[type="url"],textarea,select{min-height:38px!important;padding:8px 10px!important;font-size:14px!important}
+textarea{min-height:64px}
+.clip-item{padding:6px 8px!important}
+.clip-item button{width:32px!important;height:32px!important;font-size:13px!important;border-radius:7px!important}
+.hub-btn{min-height:42px!important;padding:9px 12px!important;font-size:14px!important;border-radius:10px!important;margin-top:7px!important}
+.cut-btn{min-height:42px!important;font-size:14px!important;margin-top:7px!important}
+.cut-preview{min-height:38px!important;font-size:13.5px!important}
+.jadoo .btn{min-height:38px!important}
+.jadoo .vo-big{min-height:44px!important;font-size:15px!important}
+.jadoo .vo-filter button{min-height:36px!important;font-size:13px!important;padding:6px!important}
+.jadoo .cap-seg button{min-height:38px!important;font-size:13px!important;padding:7px!important}
+.cap-toggle-wrap{min-height:52px!important;padding:8px 12px!important}
+.cap-track{width:56px!important;height:32px!important}
+.cap-track::after{width:24px!important;height:24px!important}
+.cap-toggle-wrap input:checked + .cap-track::after{transform:translateX(-24px)}
+.pv-toggle button{min-height:28px!important;padding:3px 12px!important;font-size:12.5px!important}
+#slideshowBtn{min-height:38px!important;font-size:13.5px!important;margin-bottom:6px!important}
+.tl-total,.tl-pos{padding:4px 8px!important;font-size:12px!important}
+#tlSelectAll,#tlMergeAll{min-height:34px!important;font-size:13px!important}
+/* --- Panels dense --- */
+.panel-head{padding:7px 10px!important}
+.panel-body{padding:10px!important}
+.label{margin:10px 0 5px!important;font-size:10.5px!important}
+.divider{margin:10px -10px!important}
+.slider-row{margin-top:5px!important}
+.file-meta{margin-top:5px!important;padding:5px 8px!important;font-size:11.5px!important}
+.status{font-size:12.5px!important;margin-top:5px!important}
+/* --- Upload / file-pick COMPACT (pehle bohat jaga leti thi) --- */
+.file-pick{padding:10px 8px!important;border-radius:10px!important}
+.file-pick>span:first-child{font-size:18px!important;margin-bottom:2px!important}
+.file-pick b{font-size:14px!important}
+.file-pick span{font-size:11px!important;line-height:1.35!important}
+.import-card{padding:10px!important;margin-top:8px!important}
+.import-card video{max-height:200px!important}
+.merge-hub{padding:10px!important;margin-bottom:8px!important}
+.hub-status{font-size:13.5px!important}
+/* --- Lambi maloomati lines KHATAM (Editor mein) — sirf labels + controls ---
+   Ye paragraphs jagah kha rahe thay aur setting ke waqt screen bhar dete
+   thay. Madad tab (FAQ / checklist) mein saari tafseel mehfooz hai. */
+#view-editor .hint{display:none!important}
+#view-editor .cut-intro,#view-editor .cut-example{display:none!important}
+#view-editor .fine-box .hint{display:none!important}
+#transportPlaceholder{display:none!important}
+.frame-bar .hint{display:none!important}
+.timeline-head>span{display:none!important}
+.stage-empty{padding:14px 10px!important;font-size:13px!important}
+.stage-empty b{font-size:14px!important}
+/* --- Frame bar compact --- */
+.frame-bar{padding:6px 8px 8px!important}
+.pv-row{padding-bottom:6px!important;margin-bottom:6px!important}
+.pv-row .pv-label{font-size:10.5px!important}
+.frame-label{font-size:10.5px!important;margin:3px 0 5px!important}
+.frame-opts{gap:5px!important;padding-bottom:0!important}
+.frame-btn{min-height:42px!important;padding:5px 6px!important;font-size:13px!important;border-radius:9px!important;gap:1px!important}
+.frame-btn b{font-size:9.5px!important}
+.frame-btn .fbox{margin-bottom:1px!important}
+.fbox.f916{width:11px!important;height:19px!important}
+.fbox.f169{width:21px!important;height:12px!important}
+.fbox.f11{width:15px!important;height:15px!important}
+.fbox.f45{width:14px!important;height:18px!important}
+.fbox.forig{width:18px!important;height:13px!important}
+.frame-fit-row{margin-top:6px!important}
+.transport-bar{padding:6px 8px!important}
+.transport-tools{margin-top:6px!important;gap:5px!important;max-height:none!important;overflow:visible!important}
+.preview-top{height:32px!important;padding:0 10px!important}
+.preview-top .meta{font-size:11px!important}
+/* --- Cut box compact --- */
+.cut-box{padding:10px!important}
+.cut-step{padding:8px!important;margin-top:7px!important}
+.step-num{width:27px!important;height:27px!important;font-size:14px!important}
+.cut-step-head b{font-size:13.5px!important}
+.cut-step-head span{display:none!important}
+.cut-range{margin-top:7px!important;padding:7px 9px!important;font-size:13px!important}
+.fine-box{margin-top:8px!important;padding:9px!important}
+/* ===== EDITOR — FIXED LAYOUT (desktop) ===== */
+@media(min-width:1024px){
+  .workspace{display:grid!important;grid-template-columns:262px minmax(0,1fr) 282px!important;grid-template-rows:minmax(0,1fr) minmax(110px,30vh)!important;gap:8px!important;height:100%!important;overflow:hidden!important}
+  .workspace>.panel{overflow-y:auto!important;overflow-x:hidden;min-height:0}
+  .preview-panel{display:flex!important;flex-direction:column;overflow:hidden!important;min-height:0}
+  .stage-area{flex:1 1 auto!important;min-height:0!important;padding:8px!important}
+  canvas#stage{max-height:100%!important}
+  .timeline-panel{grid-column:1/-1;overflow-y:auto!important;overflow-x:hidden;min-height:0;margin-top:0!important}
+  .timeline-body{padding:8px 10px!important}
+  .timeline-head{padding:7px 10px!important}
+}
+/* ===== EDITOR — FIXED LAYOUT (mobile / tablet ≤1023px) =====
+   Preview upar FIXED (flex-none, kabhi scroll nahi hoti), us ke neeche
+   sub-tabs fixed, aur active panel akela apne andar scroll karta hai.
+   Poora Editor phone ki aik screen mein fit hai — page scroll nahi. */
+@media(max-width:1023px){
+  #view-editor{overflow:hidden!important;display:none}
+  #view-editor.active{display:flex!important;flex-direction:column}
+  #view-editor .workspace{display:flex!important;flex-direction:column!important;height:100%!important;flex:1 1 auto!important;min-height:0;overflow:hidden!important;gap:6px!important}
+  #view-editor .preview-panel{flex:0 0 auto!important;order:0;position:sticky;top:0;z-index:10;overflow:hidden!important;max-height:56dvh;display:flex!important;flex-direction:column}
+  #view-editor .stage-area{flex:1 1 auto;min-height:64px!important;padding:6px!important;overflow:hidden}
+  #view-editor canvas#stage{max-height:30dvh!important}
+  body.pv-small #view-editor canvas#stage{max-height:22dvh!important}
+  body.pv-small #view-editor .stage-area{max-height:none!important}
+  #view-editor .mobile-subtabs{order:1;flex:0 0 auto!important;display:flex!important;gap:6px!important}
+  #view-editor .workspace>.panel,#view-editor .workspace>.timeline-panel{order:2;flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;overflow-x:hidden;margin-top:0!important}
+  #view-editor .workspace[data-sub="media"]>.panel-media{display:block!important}
+  #view-editor .workspace[data-sub="props"]>.panel-props{display:block!important}
+  #view-editor .workspace[data-sub="trim"]>.timeline-panel{display:block!important}
+  .timeline-body{padding:8px!important}
+  .tl-wrap{max-height:220px}
+}
+@media(max-width:760px){
+  .warn-box{display:none!important}
+  .brand p{display:none!important}
+  .badges{display:none!important}
+}
+</style>
+<style>
+/* ===== FRAME / FIT BUTTONS — AIK LINE COMPACT (sublabels khatam) =====
+   Frame-size aur fit buttons ke andar ki tafseeli lines (sublabels) HTML
+   se hata di gayi hain — ab sirf chhota label hai (9:16, 16:9, Frame Bhar,
+   Pura Dikhe). Buttons aik hi line mein, do rows mein wrap NAHI hote,
+   aur mobile par screen ka bara hissa NAHI khate. Tafseel title tooltip
+   aur Madad tab mein mehfooz hai. */
+.frame-bar{padding:6px 8px 7px!important}
+.frame-opts{flex-wrap:nowrap!important;gap:5px!important;padding-bottom:0!important}
+.frame-btn{flex:1 1 0!important;min-width:0!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:5px!important;min-height:34px!important;height:34px;padding:4px 6px!important;font-size:13px!important;line-height:1!important;white-space:nowrap!important;border-radius:8px!important;overflow:hidden}
+.frame-btn b{display:none!important}
+.frame-btn .fbox{margin:0!important;flex:none}
+.fbox.f916{width:9px!important;height:15px!important}
+.fbox.f169{width:17px!important;height:10px!important}
+.fbox.f11{width:12px!important;height:12px!important}
+.fbox.f45{width:11px!important;height:14px!important}
+.fbox.forig{width:15px!important;height:11px!important}
+.frame-fit-row{margin-top:5px!important}
+.frame-fit-row .frame-btn{flex:1 1 0!important}
+.frame-label{margin:2px 0 4px!important}
+.seg-ratio{flex-wrap:nowrap!important}
+.seg-ratio button{white-space:nowrap!important;padding:6px 4px!important}
+@media(max-width:760px){
+  .frame-btn{min-height:32px!important;height:32px;font-size:12.5px!important;padding:3px 4px!important;gap:4px!important}
+  .frame-bar{padding:5px 4px 6px!important}
+  .seg-ratio button{font-size:12px!important}
+  /* Frame-SIZE row (sirf pehli .frame-opts — FIT wali nahi): paanchon
+     buttons shrink ho kar aik line mein poori fit hon. Pehle har button
+     apne content (icon + "Original") jitna phaila rehta tha, is liye
+     paanchwa button panel ke right kinare se kat jata tha. Ab min-width:0
+     + flex:1 1 0 se har button barabar hissa leta hai, aur mobile par
+     font / padding / icon thore chhote hain taake "Original" ka text bhi
+     button ke andar poora aa jaye. */
+  .frame-bar>.frame-opts{gap:4px!important}
+  .frame-bar>.frame-opts .frame-btn{min-width:0!important;flex:1 1 0!important;font-size:11.5px!important;padding:3px 2px!important;gap:2px!important}
+  .frame-bar>.frame-opts .fbox.f916{width:8px!important;height:13px!important}
+  .frame-bar>.frame-opts .fbox.f169{width:14px!important;height:8px!important}
+  .frame-bar>.frame-opts .fbox.f11{width:10px!important;height:10px!important}
+  .frame-bar>.frame-opts .fbox.f45{width:9px!important;height:12px!important}
+  .frame-bar>.frame-opts .fbox.forig{width:12px!important;height:9px!important}
+}
+@media(max-width:400px){
+  /* Bohat chhoti screens (purane phones) par aik qadam aur chhota,
+     taake 360px width par bhi "Original" kata hua na ho. */
+  .frame-bar>.frame-opts .frame-btn{font-size:10.5px!important}
+  .frame-bar>.frame-opts .fbox.forig{width:11px!important;height:8px!important}
+}
+</style>
 </head>
 <body>
 
@@ -624,7 +833,7 @@ ol.steps li{color:#d8e1ee}
         <label class="file-pick" for="fileInput">
           <span style="font-size:26px;display:block;margin-bottom:6px">＋</span>
           <b>Import Video Clips</b>
-          <span>Tap karke gallery / files se <b>aik ya kai video clips</b> chunein<br/>MP4, WebM — phone se seedha load, koi upload nahi<br/>Tasveerein lagani hon to neeche wala <b>Images Upload</b> button use karein</span>
+          <span>MP4, WebM — tap karke chunein</span>
         </label>
         <input class="hidden" type="file" id="fileInput" accept="video/*" multiple/>
         <p class="file-meta" id="fileMeta">No media imported — abhi koi video select nahi hui.</p>
@@ -659,12 +868,12 @@ ol.steps li{color:#d8e1ee}
         </div>
 
         <span class="label">Screen Size — Frame (Aspect Ratio)</span>
-        <div class="seg" role="group" aria-label="Video size">
-          <button type="button" data-ratio="9:16" aria-pressed="true">9:16 Shorts / TikTok</button>
-          <button type="button" data-ratio="16:9" aria-pressed="false">16:9 Long / YouTube</button>
-          <button type="button" data-ratio="1:1" aria-pressed="false">1:1 Square</button>
-          <button type="button" data-ratio="4:5" aria-pressed="false">4:5 Post</button>
-          <button type="button" data-ratio="orig" aria-pressed="false">Original</button>
+        <div class="seg seg-ratio" role="group" aria-label="Video size">
+          <button type="button" data-ratio="9:16" aria-pressed="true" title="9:16 — Shorts / TikTok">9:16</button>
+          <button type="button" data-ratio="16:9" aria-pressed="false" title="16:9 — Long / YouTube">16:9</button>
+          <button type="button" data-ratio="1:1" aria-pressed="false" title="1:1 — Square">1:1</button>
+          <button type="button" data-ratio="4:5" aria-pressed="false" title="4:5 — Post">4:5</button>
+          <button type="button" data-ratio="orig" aria-pressed="false" title="Original">Original</button>
         </div>
         <p class="hint"><b style="color:var(--text)">Short, TikTok ya Reels</b> ke liye <b style="color:var(--text)">9:16</b> chunein. <b style="color:var(--text)">Lambi (long) video / YouTube</b> ke liye <b style="color:var(--text)">16:9</b> chunein — warna horizontal video vertical frame mein side se kat jayegi. Yehi size preview ke neeche wale <b style="color:var(--text)">“📐 Screen Size / Frame”</b> bar se bhi badal sakte hain, aur wahan <b style="color:var(--text)">“Pura Video”</b> fit chunein to video ka koi hissa nahi katega (peeche dhundla background aa jayega).</p>
 
@@ -695,33 +904,32 @@ ol.steps li{color:#d8e1ee}
         <div class="meta"><span id="zoomLabel">Zoom 100%</span></div>
       </div>
       <div class="stage-area">
-        <div class="stage-empty" id="stageEmpty"><b>Canvas Khali Hai</b>Left panel se video import karein — ya sirf tasveerein chun kar slideshow video banayein<br/><span style="font-size:12.5px;color:var(--muted)">Video na ho to Media panel ka sunehra “Sirf Tasveeron Se Video” button dabayein</span></div>
+        <div class="stage-empty" id="stageEmpty"><b>Canvas Khali Hai</b>Media se video import karein</div>
         <canvas id="stage" width="720" height="1280" class="hidden"></canvas>
       </div>
       <div class="frame-bar" aria-label="Screen size — frame chunein">
         <div class="pv-row">
-          <span class="pv-label">👁 Preview Size — Sirf Dekhne Ke Liye (Export Waisa Hi Rahega)</span>
+          <span class="pv-label">👁 Preview Size</span>
           <div class="pv-toggle" role="group" aria-label="Preview size chunein">
             <button type="button" id="pvSmallBtn" aria-pressed="false">Chhota</button>
             <button type="button" id="pvLargeBtn" aria-pressed="false">Bara</button>
           </div>
         </div>
-        <span class="frame-label">📐 Screen Size / Frame — Video Kis Size Ki Ho?</span>
+        <span class="frame-label">📐 Frame Size</span>
         <div class="frame-opts" role="group" aria-label="Video ka size">
-          <button type="button" class="frame-btn" data-ratio="9:16" aria-pressed="true"><span class="fbox f916" aria-hidden="true"></span>9:16<b>Shorts • TikTok • Reels</b></button>
-          <button type="button" class="frame-btn" data-ratio="16:9" aria-pressed="false"><span class="fbox f169" aria-hidden="true"></span>16:9<b>Long Video • YouTube</b></button>
-          <button type="button" class="frame-btn" data-ratio="1:1" aria-pressed="false"><span class="fbox f11" aria-hidden="true"></span>1:1<b>Square Post</b></button>
-          <button type="button" class="frame-btn" data-ratio="4:5" aria-pressed="false"><span class="fbox f45" aria-hidden="true"></span>4:5<b>Portrait Post</b></button>
-          <button type="button" class="frame-btn" data-ratio="orig" aria-pressed="false"><span class="fbox forig" aria-hidden="true"></span>Original<b>Video Jaisi Hai, Waisi</b></button>
+          <button type="button" class="frame-btn" data-ratio="9:16" aria-pressed="true" title="9:16 — Shorts, TikTok, Reels"><span class="fbox f916" aria-hidden="true"></span>9:16</button>
+          <button type="button" class="frame-btn" data-ratio="16:9" aria-pressed="false" title="16:9 — Long Video, YouTube"><span class="fbox f169" aria-hidden="true"></span>16:9</button>
+          <button type="button" class="frame-btn" data-ratio="1:1" aria-pressed="false" title="1:1 — Square Post"><span class="fbox f11" aria-hidden="true"></span>1:1</button>
+          <button type="button" class="frame-btn" data-ratio="4:5" aria-pressed="false" title="4:5 — Portrait Post"><span class="fbox f45" aria-hidden="true"></span>4:5</button>
+          <button type="button" class="frame-btn" data-ratio="orig" aria-pressed="false" title="Original — Video jaisi hai, waisi"><span class="fbox forig" aria-hidden="true"></span>Original</button>
         </div>
         <div class="frame-fit-row">
-          <span class="frame-label">🖼 Video Frame Mein Kaise Fit Ho?</span>
+          <span class="frame-label">🖼 Fit</span>
           <div class="frame-opts" role="group" aria-label="Fit mode">
-            <button type="button" class="frame-btn" data-fit="cover" aria-pressed="true">Frame Bhar (Crop)<b>Frame poora bharega — side se kuch kat sakta hai</b></button>
-            <button type="button" class="frame-btn" data-fit="fit" aria-pressed="false">Pura Video Dikhe<b>Kuch nahi katega — peeche dhundla background</b></button>
+            <button type="button" class="frame-btn" data-fit="cover" aria-pressed="true" title="Frame Bhar — frame poora bharega, side se kuch kat sakta hai">Frame Bhar</button>
+            <button type="button" class="frame-btn" data-fit="fit" aria-pressed="false" title="Pura Dikhe — kuch nahi katega, peeche dhundla background">Pura Dikhe</button>
           </div>
         </div>
-        <p class="hint">Misal: mobile se bani vertical clip ka <b style="color:var(--text)">Short / TikTok</b> banana ho to <b style="color:var(--text)">9:16</b> dabayein. <b style="color:var(--text)">Lambi horizontal video</b> (TV / news / bayan wali) ko poora rakhna ho to <b style="color:var(--text)">16:9</b> dabayein — ya 9:16 ke sath <b style="color:var(--text)">“Pura Video Dikhe”</b> chunein, warna video ke dono side kat jayenge. Chuna hua size preview aur Export — dono par lagega.</p>
       </div>
       <div class="transport-bar">
         <div class="transport hidden" id="transport">
@@ -943,7 +1151,7 @@ ol.steps li{color:#d8e1ee}
           <label class="file-pick" for="impVideoInput">
             <span style="font-size:26px;display:block;margin-bottom:6px">🎬</span>
             <b>Video Upload Karein</b>
-            <span>MP4, WebM — phone se seedha load, koi upload nahi<br/>Video dalte hi us ki <b>audio khud alag</b> ho jayegi aur video ki apni awaz <b>mute</b> ho jayegi</span>
+            <span>MP4, WebM — audio khud alag ho jayegi</span>
           </label>
           <input class="hidden" type="file" id="impVideoInput" accept="video/*"/>
           <p class="file-meta" id="impVideoMeta">Abhi koi video nahi dali.</p>
@@ -969,7 +1177,7 @@ ol.steps li{color:#d8e1ee}
           <label class="file-pick" for="impAudioInput">
             <span style="font-size:26px;display:block;margin-bottom:6px">🎵</span>
             <b>Audio File Upload Karein</b>
-            <span>MP3, WAV, M4A — phone se seedha load, koi upload nahi<br/>Phir isay yahin se <b>Editor</b> mein ya <b>Voice Over</b> mein bhej dein</span>
+            <span>MP3, WAV, M4A — tap karke chunein</span>
           </label>
           <input class="hidden" type="file" id="impAudioInput" accept="audio/*"/>
           <p class="file-meta" id="impAudioMeta">Abhi koi audio file nahi dali.</p>
@@ -1102,7 +1310,7 @@ ol.steps li{color:#d8e1ee}
           <dt>Export format?</dt><dd>Android Chrome par aam taur par MP4 ya WebM — dono YouTube par upload ho jate hain.</dd>
           <dt>Gemini key mehfooz hai?</dt><dd>Key aik dafa dalne par isi browser (local storage) mein save ho jati hai taake bar bar na dalni pare — kisi server par nahi jati, sirf jawab ke waqt Google ko bheji jati hai. Browser ka data clear karein to key bhi delete ho jayegi.</dd>
           <dt>Lambi video?</dt><dd>1–3 minute ki clips sab se smooth chalti hain. Lambi tilawat se Shorts ke chhote hisse trim karein.</dd>
-          <dt>Screen size / frame kahan hai — Short, TikTok ya long video?</dt><dd>Preview ke bilkul neeche bara <b>“📐 Screen Size / Frame”</b> bar hai (Editor → Media panel mein bhi wahi option hai): <b>9:16</b> = Shorts / TikTok / Reels (vertical), <b>16:9</b> = long video / YouTube (horizontal), <b>1:1</b> = square post, <b>4:5</b> = portrait post, <b>Original</b> = video jaisi hai waisi. Agar video frame se size mein mukhtalif ho aur side se kat rahi ho to usi bar mein <b>“Pura Video Dikhe”</b> chunein — kuch nahi katega, peeche dhundla background aa jayega. Chuna hua size Export par bhi wahi lagega.</dd>
+          <dt>Screen size / frame kahan hai — Short, TikTok ya long video?</dt><dd>Preview ke bilkul neeche bara <b>“📐 Screen Size / Frame”</b> bar hai (Editor → Media panel mein bhi wahi option hai): <b>9:16</b> = Shorts / TikTok / Reels (vertical), <b>16:9</b> = long video / YouTube (horizontal), <b>1:1</b> = square post, <b>4:5</b> = portrait post, <b>Original</b> = video jaisi hai waisi. Agar video frame se size mein mukhtalif ho aur side se kat rahi ho to usi bar mein <b>“Pura Dikhe”</b> chunein — kuch nahi katega, peeche dhundla background aa jayega. Chuna hua size Export par bhi wahi lagega.</dd>
           <dt>Timeline (edit bar) aagay nazar nahi aati / scroll nahi hoti?</dt><dd>Bar par ungli rakh kar left/right slide karein — timeline scroll ho jayegi; ya timeline ke upar wale ◀ Peeche / Aagay ▶ buttons dabayein. Video chalte waqt bar khud playhead ke sath aagay barhti rehti hai, is liye agla hissa chop nahi hota. Poori video aik screen par dekhni ho to “Fit” dabayein.</dd>
           <dt>Video kaat kar chhota clip banana — sab se asan tareeqa?</dt><dd>Editor → Trim mein neeche sunehri frame wala “✂️ Video Kaato — Sirf 3 Asan Steps” khana hai. <b>Step 1:</b> video chala kar jahan se clip shuru karna hai wahan rokein aur “🟢 Yahan Se Shuru Karo” dabayein. <b>Step 2:</b> jahan khatam karna hai wahan rokein aur “🔴 Yahan Khatam Karo” dabayein — neeche wali line mein chune hue hisse ka time nazar aayega. <b>Step 3:</b> “✂️ Kaat Do” dabayein — baqi sab kat jayega, sirf wahi hissa reh jayega. Kaatne se pehle “▶ Pehle Ye Hissa Chala Kar Dekh Lo” se check bhi kar sakte hain (wo kaatega nahi, sirf dikhayega). Phone mein rakhi asal video file waisi hi rehti hai — galti ho jaye to dobara import kar lein. Neeche wale sliders sirf thora sa aage/peeche theek karne ke liye hain, aam taur par un ki zaroorat nahi.</dd>
           <dt>Kai clips aik video mein?</dt><dd>Import mein kai clips aik sath chunein — har clip ki asal lambai khud pehchan li jati hai, is liye timeline mein sab clips apni sahi jagah par barabar nazar aate hain. Har clip ka apna trim set karein, timeline mein clip ko drag karke ya Media list ke ↑ ↓ se tartib rakhein — Export sab ko jod kar aik video bana dega. Do clips ke darmiyan khali hissa (gap) chahiye to clip select karke “Gap +1s” dabayein.</dd>
