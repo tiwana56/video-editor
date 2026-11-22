@@ -10,8 +10,8 @@
    - CDN + Fonts: stale-while-revalidate (cache se foran, peeche update).
    Har cheez ehtiyaat se — koi request fail ho to page ka asal
    network rasta hi istemal hota hai. */
-var SHELL_CACHE = "procut-shell-v1";
-var RUNTIME_CACHE = "procut-runtime-v1";
+var SHELL_CACHE = "procut-shell-v2";
+var RUNTIME_CACHE = "procut-runtime-v2";
 var SHELL_FILES = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 
 self.addEventListener("install", function (ev) {
@@ -67,8 +67,15 @@ self.addEventListener("fetch", function (ev) {
   /* Navigation / index.html — network pehle, offline par cache */
   var isShellDoc = (req.mode === "navigate" || url.pathname.endsWith("index.html") || url.pathname.endsWith("/"));
   if (isShellDoc) {
+    /* Cache-bypass fetch: naya number wala URL + no-store — browser ki
+       HTTP cache se purani index.html kabhi wapas nahi aayegi. */
+    var netFetch;
+    try {
+      var fu = new URL(req.url); fu.searchParams.set("__sw", "2");
+      netFetch = fetch(fu.toString(), { cache: "no-store" });
+    } catch (e) { netFetch = fetch(req); }
     ev.respondWith(
-      fetch(req).then(function (res) {
+      netFetch.then(function (res) {
         try {
           var copy = res.clone();
           caches.open(SHELL_CACHE).then(function (cache) { cache.put("./index.html", copy); }).catch(function () {});
