@@ -480,6 +480,16 @@ ol.steps li{color:#d8e1ee}
 .jadoo details p,.jadoo details li{font-size:13px;color:#ddd2b2;line-height:1.65}
 .jadoo .vo-grid2{display:grid;grid-template-columns:1fr;gap:10px}
 @media(min-width:640px){.jadoo .vo-grid2{grid-template-columns:1fr 1fr}}
+/* ===== VOICE GENDER FILTER + SAVED LINE + PREVIEW (Voice Over tab) ===== */
+.jadoo .vo-filter{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 10px}
+.jadoo .vo-filter button{flex:1 1 96px;min-height:48px;border:1.5px solid rgba(201,162,39,.55);background:#082a1f;color:var(--sand);border-radius:11px;font-weight:700;font-size:14px;padding:9px 8px;cursor:pointer;line-height:1.4}
+.jadoo .vo-filter button[aria-pressed="true"]{background:var(--jgold2);border-color:var(--jgold2);color:#231a00}
+.jadoo .vo-filter-count{font-variant-numeric:tabular-nums;opacity:.85}
+.jadoo .vo-saved{margin:8px 0 0;font-size:13px;color:#e9dfc2}
+.jadoo .vo-saved b{color:#fff}
+.jadoo #voPreviewBtn{margin-top:10px}
+.jadoo #voPreviewPlayer{width:100%;margin-top:8px}
+.jadoo #voPreviewStatus{white-space:pre-wrap}
 /* ===== CAPTION VIDEO (تجرباتی — OPTIONAL, default OFF) ===== */
 .cap-toggle-wrap{position:relative;display:flex;align-items:center;gap:14px;width:100%;min-height:68px;padding:12px 14px;border:2px solid var(--jgold);border-radius:14px;background:rgba(0,0,0,.35);cursor:pointer}
 /* Checkbox label ke ANDAR hi rahe (position:relative wala label is ka
@@ -1104,6 +1114,12 @@ ol.steps li{color:#d8e1ee}
             <option value="gemini-3.8-flash-lite-tts">gemini-3.8-flash-lite-tts (Lite — explicit choice)</option>
           </select>
           <span class="label jx" data-ur="آواز چنیں (نام Google کے اصل voice ID ہیں)" data-en="Choose a voice (names are Google's exact voice IDs)">آواز چنیں (نام Google کے اصل voice ID ہیں)</span>
+          <div class="vo-filter" id="voFilter" role="group" aria-label="Voice filter — All / Male / Female">
+            <button type="button" data-filter="all" aria-pressed="true"><span class="jx" data-ur="سب" data-en="All">سب</span> <span class="vo-filter-count" data-count-for="all">(30)</span></button>
+            <button type="button" data-filter="male" aria-pressed="false"><span class="jx" data-ur="مردانہ (Male)" data-en="Male">مردانہ (Male)</span> <span class="vo-filter-count" data-count-for="male">(16)</span></button>
+            <button type="button" data-filter="female" aria-pressed="false"><span class="jx" data-ur="زنانہ (Female)" data-en="Female">زنانہ (Female)</span> <span class="vo-filter-count" data-count-for="female">(14)</span></button>
+            <button type="button" data-filter="other" id="voFilterOther" aria-pressed="false" style="display:none"><span class="jx" data-ur="دوسری (Other)" data-en="Other">دوسری (Other)</span> <span class="vo-filter-count" data-count-for="other">(0)</span></button>
+          </div>
           <select id="voVoice" dir="ltr">
             <option value="Kore" selected>Kore — firm</option>
             <option value="Zephyr">Zephyr — bright</option>
@@ -1136,6 +1152,10 @@ ol.steps li{color:#d8e1ee}
             <option value="Sadaltager">Sadaltager — knowledgeable</option>
             <option value="Sulafat">Sulafat — warm</option>
           </select>
+          <p class="hint vo-saved jx" id="voSavedLine" data-ur="آپ کی پسندیدہ آواز save ہے: Kore" data-en="Your saved voice: Kore">آپ کی پسندیدہ آواز save ہے: Kore</p>
+          <button class="btn block" id="voPreviewBtn" type="button"><span class="jx" id="voPreviewLabel" data-ur="🔊 Sun Kar Dekhein — sirf chhota jumla, token bachega" data-en="🔊 Hear a Preview — just a short phrase, saves tokens">🔊 Sun Kar Dekhein — sirf chhota jumla, token bachega</span></button>
+          <audio id="voPreviewPlayer" class="hidden" controls preload="metadata"></audio>
+          <p class="status" id="voPreviewStatus" role="status"></p>
           <p class="hint jx" data-ur="آواز کے ساتھ لکھے انگریزی لفظ اس ایپ کی اپنی وضاحت ہیں — Google کی تصدیق شدہ جنس یا عمر کی شناخت نہیں۔" data-en="The English words beside each voice are this app's own descriptions — not verified gender or age identities from Google.">آواز کے ساتھ لکھے انگریزی لفظ اس ایپ کی اپنی وضاحت ہیں — Google کی تصدیق شدہ جنس یا عمر کی شناخت نہیں۔</p>
           <div class="vo-grid2">
             <div>
@@ -3387,6 +3407,196 @@ function updateCounts(){
 voScript.addEventListener("input",updateCounts);
 $("voAuditionBtn").addEventListener("click",function(){voScript.value=AUDITION;updateCounts();voScript.focus();});
 $("voClearTextBtn").addEventListener("click",function(){voScript.value="";updateCounts();voScript.focus();});
+
+/* ---------- Voices: gender filter + saved settings + cached preview ----------
+   Gender Google ki OFFICIAL documentation se hai (Google Cloud
+   text-to-speech/docs/gemini-tts, "Voice options" table — Name | Gender):
+   Female (14): Achernar, Aoede, Autonoe, Callirrhoe, Despina, Erinome,
+   Gacrux, Kore, Laomedeia, Leda, Pulcherrima, Sulafat, Vindemiatrix, Zephyr
+   Male (16): Achird, Algenib, Algieba, Alnilam, Charon, Enceladus, Fenrir,
+   Iapetus, Orus, Puck, Rasalgethi, Sadachbia, Sadaltager, Schedar, Umbriel,
+   Zubenelgenubi. Jo voice is map mein na ho wo "other" group mein jati
+   hai; "other" filter tab hi dikhta hai jab us mein koi voice ho.
+   Koi automatic TTS call NAHI: na tab khulne par, na voice/setting
+   badalne par. Preview sirf button dabane par banta hai, hamesha aik
+   hi chhota fixed jumla, aur memory cache se dobara FREE bajta hai. */
+var VOICES=[
+  {id:"Kore",style:"firm",gender:"female"},
+  {id:"Zephyr",style:"bright",gender:"female"},
+  {id:"Puck",style:"upbeat",gender:"male"},
+  {id:"Charon",style:"informative",gender:"male"},
+  {id:"Fenrir",style:"excitable",gender:"male"},
+  {id:"Leda",style:"youthful",gender:"female"},
+  {id:"Orus",style:"firm",gender:"male"},
+  {id:"Aoede",style:"breezy",gender:"female"},
+  {id:"Callirrhoe",style:"easy-going",gender:"female"},
+  {id:"Autonoe",style:"bright",gender:"female"},
+  {id:"Enceladus",style:"breathy",gender:"male"},
+  {id:"Iapetus",style:"clear",gender:"male"},
+  {id:"Umbriel",style:"easy-going",gender:"male"},
+  {id:"Algieba",style:"smooth",gender:"male"},
+  {id:"Despina",style:"smooth",gender:"female"},
+  {id:"Erinome",style:"clear",gender:"female"},
+  {id:"Algenib",style:"gravelly",gender:"male"},
+  {id:"Rasalgethi",style:"informative",gender:"male"},
+  {id:"Laomedeia",style:"upbeat",gender:"female"},
+  {id:"Achernar",style:"soft",gender:"female"},
+  {id:"Alnilam",style:"firm",gender:"male"},
+  {id:"Schedar",style:"even",gender:"male"},
+  {id:"Gacrux",style:"mature",gender:"female"},
+  {id:"Pulcherrima",style:"forward",gender:"female"},
+  {id:"Achird",style:"friendly",gender:"male"},
+  {id:"Zubenelgenubi",style:"casual",gender:"male"},
+  {id:"Vindemiatrix",style:"gentle",gender:"female"},
+  {id:"Sadachbia",style:"lively",gender:"male"},
+  {id:"Sadaltager",style:"knowledgeable",gender:"male"},
+  {id:"Sulafat",style:"warm",gender:"female"}
+];
+var VOICE_LS="procut_voice", VOICE_SETTINGS_LS="procut_voice_settings";
+var voFilter="all";
+function voiceGroupOf(v){return (v&& (v.gender==="male"||v.gender==="female"))?v.gender:"other";}
+function voCounts(){var c={all:VOICES.length,male:0,female:0,other:0};VOICES.forEach(function(v){c[voiceGroupOf(v)]++;});return c;}
+function findVoice(id){var f=null;VOICES.forEach(function(v){if(v.id===id)f=v;});return f;}
+function buildVoiceOptions(preferred){
+  var sel=$("voVoice"); if(!sel)return null;
+  var list=VOICES.filter(function(v){return voFilter==="all"||voiceGroupOf(v)===voFilter;});
+  if(!list.length)list=VOICES.slice();
+  sel.innerHTML="";
+  list.forEach(function(v){
+    var o=document.createElement("option");o.value=v.id;o.textContent=v.id+" — "+v.style;sel.appendChild(o);
+  });
+  var chosen=null;
+  list.forEach(function(v){if(v.id===preferred)chosen=v.id;});
+  sel.value=chosen||list[0].id;
+  return sel.value;
+}
+function updateFilterUI(){
+  var c=voCounts();
+  panel.querySelectorAll("#voFilter [data-count-for]").forEach(function(el){
+    el.textContent="("+(c[el.getAttribute("data-count-for")]||0)+")";
+  });
+  panel.querySelectorAll("#voFilter [data-filter]").forEach(function(b){
+    b.setAttribute("aria-pressed",b.getAttribute("data-filter")===voFilter?"true":"false");
+  });
+  var ob=$("voFilterOther"); if(ob)ob.style.display=c.other>0?"":"none";
+}
+function updateSavedLine(){
+  var line=$("voSavedLine"); if(!line)return;
+  var id=$("voVoice").value;
+  var ur="آپ کی پسندیدہ آواز save ہے: "+id;
+  var en="Your saved voice: "+id;
+  line.setAttribute("data-ur",ur); line.setAttribute("data-en",en);
+  line.textContent=(lang==="en"?en:ur);
+}
+/* Preview cache — MEMORY mein hi (page band ho to khatam), key:
+   voice + model + style. Cache hit par ZERO nayi API call. */
+var PREVIEW_TEXT="السلام علیکم، یہ میری آواز ہے";
+var previewCache={}, previewBusy=false;
+function previewKey(){return $("voVoice").value+"|"+$("voModel").value+"|"+buildStyle();}
+function updatePreviewBtn(){
+  var btn=$("voPreviewBtn"), label=$("voPreviewLabel"); if(!btn||!label)return;
+  var ur,en;
+  if(previewBusy){
+    ur="⏳ Preview ban raha hai…"; en="⏳ Making preview…";
+  }else if(previewCache[previewKey()]){
+    ur="✓ Saved Preview — dobara token nahi lagega"; en="✓ Saved Preview — no tokens needed again";
+  }else{
+    ur="🔊 Sun Kar Dekhein — sirf chhota jumla, token bachega"; en="🔊 Hear a Preview — just a short phrase, saves tokens";
+  }
+  label.setAttribute("data-ur",ur); label.setAttribute("data-en",en);
+  label.textContent=(lang==="en"?en:ur);
+  btn.disabled=previewBusy;
+}
+function saveVoiceSettings(){
+  var sel=$("voVoice"); if(!sel)return;
+  lsSet(VOICE_LS,sel.value);
+  var s={
+    expr:$("voExpr").value,
+    pace:$("voPace").value,
+    accent:$("voAccent").value,
+    direction:$("voDirection").value,
+    filter:voFilter
+  };
+  lsSet(VOICE_SETTINGS_LS,JSON.stringify(s));
+  updateSavedLine(); updatePreviewBtn();
+}
+function setSelectIfValid(id,val){
+  var el=$(id); if(!el||!val)return;
+  for(var i=0;i<el.options.length;i++){if(el.options[i].value===val){el.value=val;return;}}
+}
+function restoreVoiceSettings(){
+  var s=null;
+  try{s=JSON.parse(lsGet(VOICE_SETTINGS_LS)||"null");}catch(e){s=null;}
+  if(s){
+    setSelectIfValid("voExpr",s.expr);
+    setSelectIfValid("voPace",s.pace);
+    setSelectIfValid("voAccent",s.accent);
+    if(typeof s.direction==="string")$("voDirection").value=s.direction;
+    if(s.filter==="all"||s.filter==="male"||s.filter==="female"||s.filter==="other")voFilter=s.filter;
+  }
+  var savedVoice=lsGet(VOICE_LS);
+  var found=findVoice(savedVoice);
+  if(!found){savedVoice="Kore"; found=findVoice("Kore");}
+  /* Save shuda voice jis group ki hai, filter wahi ho taake chuni
+     hui voice list mein nazar aaye. */
+  if(found&&voFilter!=="all"&&voFilter!==voiceGroupOf(found))voFilter=voiceGroupOf(found);
+  if(voFilter==="other"&&voCounts().other===0)voFilter="all";
+  buildVoiceOptions(savedVoice);
+  updateFilterUI(); updateSavedLine(); updatePreviewBtn();
+}
+panel.querySelectorAll("#voFilter [data-filter]").forEach(function(b){
+  b.addEventListener("click",function(){
+    voFilter=b.getAttribute("data-filter");
+    buildVoiceOptions($("voVoice").value);
+    updateFilterUI();
+    saveVoiceSettings();
+  });
+});
+/* Setting badalte hi save — in listeners mein koi TTS call NAHI hai,
+   sirf localStorage save + saved line / preview label ki tajdeed hai. */
+["voVoice","voExpr","voPace","voAccent"].forEach(function(id){
+  $(id).addEventListener("change",saveVoiceSettings);
+});
+$("voDirection").addEventListener("input",saveVoiceSettings);
+$("voDirection").addEventListener("change",saveVoiceSettings);
+$("voModel").addEventListener("change",updatePreviewBtn);
+$("voPreviewBtn").addEventListener("click",function(){
+  if(previewBusy)return;
+  var st=$("voPreviewStatus"), player=$("voPreviewPlayer");
+  var ck=previewKey();
+  if(previewCache[ck]){
+    player.src=previewCache[ck];
+    player.classList.remove("hidden");
+    setV(st,T("✓ Cache se chal raha hai — koi naya token nahi laga۔","✓ Playing from cache — no new tokens were used."),"ok");
+    var pp=player.play(); if(pp&&pp.catch)pp.catch(function(){});
+    updatePreviewBtn();
+    return;
+  }
+  var key=currentKey();
+  refreshKeyNote();
+  if(!key){setV(st,T("Gemini key نہیں ملی — AI Studio والے ٹیب میں اپنی key ڈالیں، وہی key یہاں خود بخود چلے گی۔","No Gemini key found — add your key in the AI Studio tab; that same key works here automatically."),"err");return;}
+  if(!AC){setV(st,T("اس browser میں AudioContext نہیں — Chrome آزمائیں۔","This browser has no AudioContext — try Chrome."),"err");return;}
+  previewBusy=true; updatePreviewBtn();
+  setV(st,T("Preview ban raha hai — sirf chhota jumla بھیجا جا رہا ہے…","Making the preview — only the short phrase is being sent…"));
+  var voice=$("voVoice").value, model=$("voModel").value, style=buildStyle();
+  var ctrl=new AbortController();
+  fetchChunk(key,model,voice,style,PREVIEW_TEXT,ctrl.signal)
+    .then(function(bytes){return getCtx().decodeAudioData(bytes.buffer.slice(0));})
+    .then(function(buf){
+      var blob=encodeWav(buf);
+      var url=URL.createObjectURL(blob);
+      previewCache[ck]=url;
+      player.src=url;
+      player.classList.remove("hidden");
+      setV(st,T("✓ Preview tayyar hai — یہی آواز دوبارہ sunne par cache se chalegi, token nahi lagega۔","✓ Preview ready — hearing this same voice again will play from cache, with no tokens used."),"ok");
+      var pp=player.play(); if(pp&&pp.catch)pp.catch(function(){});
+    })
+    .catch(function(err){
+      setV(st,errorText(err&&typeof err.status!=="undefined"?err.status:0,err&&err.detail?err.detail:(err&&err.message),key),"err");
+    })
+    .then(function(){previewBusy=false; updatePreviewBtn();});
+});
+restoreVoiceSettings();
 
 /* ---------- Audio file se matn (transcription) ----------
    User apni audio file (tilawat / naat ki clip waghera) upload karta
