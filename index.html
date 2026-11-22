@@ -1772,7 +1772,7 @@ var history=[], historyIdx=-1, applyingSnap=false;
    Ken Burns) — aik hi jagah se taake snapshot / split / duplicate /
    draft sab mein yahi fields copy hon. Default purani rawaiya jaisi:
    speed null = global speedSel, vol 1, fade/transition 0, kb "" (band). */
-function fxOf(c){return {speed:(c.speed==null?null:c.speed),vol:(c.vol==null?1:c.vol),fadeIn:c.fadeIn||0,fadeOut:c.fadeOut||0,transition:c.transition||0,kb:c.kb||""};}
+function fxOf(c){return {speed:(c.speed==null?null:c.speed),vol:(c.vol==null?1:c.vol),fadeIn:c.fadeIn||0,fadeOut:c.fadeOut||0,transition:c.transition||0,kb:c.kb||"",ck:!!c.ck,ckColor:c.ckColor||"#00b140",ckTol:(c.ckTol==null?60:c.ckTol),bgMode:c.bgMode||"",bgColor:c.bgColor||"#00b140"};}
 window.__fxOf=fxOf;
 function clipRate(c){var g=parseFloat(($("speedSel")||{}).value)||1;var r=(c&&c.speed!=null&&c.speed>0)?c.speed:g;return Math.min(2,Math.max(0.25,r));}
 function snapshot(){
@@ -1791,11 +1791,11 @@ function snapshot(){
 }
 function snapKey(o){
   try{
-    var ck=o.clips.map(function(c){return c.name+"|"+(c.isImage?"IMG":"VID")+"|"+c.duration+"|"+(c.trimStart||0).toFixed(2)+"|"+(c.trimEnd||0).toFixed(2)+"|"+(c.gapBefore||0)+"|"+(c.speed==null?"g":c.speed)+"|"+(c.vol==null?1:c.vol)+"|"+(c.fadeIn||0)+"|"+(c.fadeOut||0)+"|"+(c.transition||0)+"|"+(c.kb||"");}).join(";");
+    var ck=o.clips.map(function(c){return c.name+"|"+(c.isImage?"IMG":"VID")+"|"+c.duration+"|"+(c.trimStart||0).toFixed(2)+"|"+(c.trimEnd||0).toFixed(2)+"|"+(c.gapBefore||0)+"|"+(c.speed==null?"g":c.speed)+"|"+(c.vol==null?1:c.vol)+"|"+(c.fadeIn||0)+"|"+(c.fadeOut||0)+"|"+(c.transition||0)+"|"+(c.kb||"")+"|"+(c.ck?1:0)+"|"+(c.ckColor||"")+"|"+(c.ckTol==null?60:c.ckTol)+"|"+(c.bgMode||"")+"|"+(c.bgColor||"");}).join(";");
     var tk="";
     if(o.tl){
       tk=o.tl.audios.map(function(a){return a.id+":"+(+a.start).toFixed(2)+":"+(+a.dur).toFixed(2)+":"+(+(a.srcStart||0)).toFixed(2);}).join(";")
-        +"#"+o.tl.overlays.map(function(x){return x.id+":"+(+x.start).toFixed(2)+":"+(+x.end).toFixed(2)+":"+x.opacity+":"+(x.pos||"tr")+(x.fixed?"F":"");}).join(";")
+        +"#"+o.tl.overlays.map(function(x){return x.id+":"+(+x.start).toFixed(2)+":"+(+x.end).toFixed(2)+":"+x.opacity+":"+(x.pos||"tr")+(x.fixed?"F":"")+":"+(x.pos2||"");}).join(";")
         +"#"+(o.tl.mergeId||"")+"#"+(o.tl.replaceId||"")+"#"+o.tl.origMuted+"#"+(o.tl.inPt===null?"-":(+o.tl.inPt).toFixed(2))+"#"+(o.tl.outPt===null?"-":(+o.tl.outPt).toFixed(2));
     }
     /* "active" jaan kar key mein NAHI rakha: sirf doosri clip par tap
@@ -1937,6 +1937,121 @@ function activeKbProgress(){
   var len=clipLenOf(c);if(!(len>0))return 0;
   return Math.max(0,Math.min(1,clipLocalTime(c)/len));
 }
+/* ===== PHASE 3: Chroma Key (green screen) + AI Background Remove =====
+   Dono effects per-clip hain (clip fields: ck/ckColor/ckTol aur
+   bgMode/bgColor — fxOf se snapshot/draft mein jate hain) aur isi
+   drawClipLayer pipeline se lagte hain, is liye preview, recorder
+   export aur tez (WebCodecs) export — teeno mein aik jaisay chalte
+   hain. Processing hamesha chhoti resolution par hoti hai (chroma
+   max 960px wide, AI mask max ~640px) taake phone par mumkin ho;
+   asal frame phir canvas size par scale ho jata hai.
+   Default DONO band (ck false, bgMode "") — purani projects par
+   koi asar nahi. */
+var fxCv=document.createElement("canvas"), fxCx=fxCv.getContext("2d",{willReadFrequently:true});
+var fxBlurCv=document.createElement("canvas"), fxBlurCx=fxBlurCv.getContext("2d",{willReadFrequently:true});
+function hexRgb(hex){var h=String(hex||"#00b140").replace("#","");if(h.length===3)h=h.split("").map(function(x){return x+x;}).join("");var n=parseInt(h,16);if(isNaN(n))return [0,177,64];return [(n>>16)&255,(n>>8)&255,n&255];}
+function fxProcessFrame(c,srcEl,vw,vh){
+  try{
+    if(c.bgMode){
+      var bc=bgProcessFrame(c,srcEl,vw,vh);
+      if(bc)return bc;
+      if(!c.ck)return null; /* AI tayyar nahi/fail — chroma ho to wo try karo, warna plain frame */
+    }
+    if(c.ck)return chromaFrame(c,srcEl,vw,vh);
+  }catch(e){}
+  return null;
+}
+function chromaFrame(c,srcEl,vw,vh){
+  var maxW=960,sc=Math.min(1,maxW/Math.max(1,vw));
+  var w=Math.max(2,Math.round(vw*sc)),h=Math.max(2,Math.round(vh*sc));
+  if(fxCv.width!==w||fxCv.height!==h){fxCv.width=w;fxCv.height=h;}
+  fxCx.drawImage(srcEl,0,0,w,h);
+  var img; try{img=fxCx.getImageData(0,0,w,h);}catch(e){return null;}
+  var d=img.data,col=hexRgb(c.ckColor),tol=(c.ckTol==null?60:c.ckTol)/100;
+  var hi=Math.max(8,tol*380), lo=hi*0.45;
+  var kr=col[0],kg=col[1],kb2=col[2];
+  var greenKey=(kg>kr+20&&kg>kb2+20);
+  for(var i=0;i<d.length;i+=4){
+    var dr=d[i]-kr,dg=d[i+1]-kg,db=d[i+2]-kb2;
+    var dist=Math.sqrt(dr*dr+dg*dg+db*db);
+    if(dist<=lo){d[i+3]=0;}
+    else if(dist<hi){
+      var a=(dist-lo)/(hi-lo);
+      if(a<d[i+3]/255)d[i+3]=Math.round(255*a);
+      /* kinare par sabz rang ka asar (spill) kam karo */
+      if(greenKey){var m=Math.max(d[i],d[i+2]);if(d[i+1]>m)d[i+1]=m;}
+    }
+  }
+  fxCx.putImageData(img,0,0);
+  return fxCv;
+}
+/* --- AI Background: MediaPipe ImageSegmenter (selfie segmenter) ---
+   Library + model CDN se lazy load hote hain (sirf jab user feature
+   ON kare). Load fail ho jaye to status "failed" — feature khud band
+   rawaiya ikhtiyar karta hai (frames plain aate hain) aur UI mein
+   wajah dikhti hai. GPU delegate fail ho to CPU par dobara try. */
+var SEG_BUNDLE_URL="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs";
+var SEG_WASM_URL="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm";
+var SEG_MODEL_URL="https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite";
+var segState={status:"idle",seg:null,err:""};
+window.__segState=segState;
+function ensureSegmenter(){
+  if(segState.status!=="idle")return;
+  segState.status="loading";
+  function attempt(del){
+    return import(SEG_BUNDLE_URL).then(function(mod){
+      return mod.FilesetResolver.forVisionTasks(SEG_WASM_URL).then(function(fs){
+        return mod.ImageSegmenter.createFromOptions({baseOptions:{modelAssetPath:SEG_MODEL_URL,delegate:del},runningMode:"IMAGE",outputCategoryMask:true,outputConfidenceMasks:false});
+      });
+    });
+  }
+  attempt("GPU").catch(function(){return attempt("CPU");}).then(function(seg){
+    segState.seg=seg;segState.status="ready";
+    try{drawFrame();}catch(e){}
+    try{if(window.__segUiRefresh)window.__segUiRefresh();}catch(e){}
+  }).catch(function(err){
+    segState.status="failed";segState.err=String((err&&err.message)||err||"");
+    try{if(window.__segUiRefresh)window.__segUiRefresh();}catch(e){}
+  });
+}
+window.__ensureSegmenter=ensureSegmenter;
+var segInCv=document.createElement("canvas"), segInCx=segInCv.getContext("2d",{willReadFrequently:true});
+function bgProcessFrame(c,srcEl,vw,vh){
+  if(segState.status==="idle"){ensureSegmenter();return null;}
+  if(segState.status!=="ready"||!segState.seg)return null;
+  var sc=Math.min(1,640/Math.max(1,vw),Math.sqrt(520000/Math.max(1,vw*vh)));
+  var w=Math.max(2,Math.round(vw*sc)),h=Math.max(2,Math.round(vh*sc));
+  if(segInCv.width!==w||segInCv.height!==h){segInCv.width=w;segInCv.height=h;}
+  segInCx.drawImage(srcEl,0,0,w,h);
+  var res; try{res=segState.seg.segment(segInCv);}catch(e){segState.status="failed";segState.err=String((e&&e.message)||e||"");try{if(window.__segUiRefresh)window.__segUiRefresh();}catch(_){} return null;}
+  if(!res||!res.categoryMask)return null;
+  var mask=res.categoryMask,mw=mask.width||0,mh=mask.height||0,mdata=null;
+  try{mdata=mask.getAsUint8Array();}catch(e){}
+  if(!mdata||!mw||!mh){try{mask.close();}catch(e){} return null;}
+  var srcImg; try{srcImg=segInCx.getImageData(0,0,w,h);}catch(e){try{mask.close();}catch(_){} return null;}
+  var sd=srcImg.data, blurD=null;
+  if(c.bgMode==="blur"){
+    if(fxBlurCv.width!==w||fxBlurCv.height!==h){fxBlurCv.width=w;fxBlurCv.height=h;}
+    fxBlurCx.save(); try{fxBlurCx.filter="blur(16px)";}catch(e){}
+    fxBlurCx.drawImage(srcEl,0,0,w,h); fxBlurCx.restore();
+    try{blurD=fxBlurCx.getImageData(0,0,w,h).data;}catch(e){blurD=null;}
+  }
+  var bgc=hexRgb(c.bgColor);
+  for(var y=0;y<h;y++){
+    var my=Math.min(mh-1,(y*mh/h)|0), mrow=my*mw;
+    for(var x=0;x<w;x++){
+      var mx=Math.min(mw-1,(x*mw/w)|0);
+      if(mdata[mrow+mx]>0)continue; /* shakhs (person) — asal pixel rehne do */
+      var idx=(y*w+x)*4;
+      if(blurD){sd[idx]=blurD[idx];sd[idx+1]=blurD[idx+1];sd[idx+2]=blurD[idx+2];}
+      else{sd[idx]=bgc[0];sd[idx+1]=bgc[1];sd[idx+2]=bgc[2];}
+      sd[idx+3]=255;
+    }
+  }
+  try{mask.close();}catch(e){}
+  segInCx.putImageData(srcImg,0,0);
+  return segInCv;
+}
 function drawClipLayer(c,srcEl,prog,alpha){
   if(!srcEl)return;
   var W=canvas.width,H=canvas.height;
@@ -1944,6 +2059,11 @@ function drawClipLayer(c,srcEl,prog,alpha){
   var vw=isVid?srcEl.videoWidth:(srcEl.naturalWidth||srcEl.width);
   var vh=isVid?srcEl.videoHeight:(srcEl.naturalHeight||srcEl.height);
   if(!vw||!vh)return;
+  /* PHASE 3: is clip par chroma/background effect ho to pehle
+     processed frame banao — main draw usi ko istemal karega
+     (dhundli background wali teh ab bhi asal frame se banti hai). */
+  var drawSrc=srcEl;
+  if(c&&(c.ck||c.bgMode)){var pc=fxProcessFrame(c,srcEl,vw,vh);if(pc)drawSrc=pc;}
   var rotated=(state.rotation%180!==0);
   var baseW=rotated?H:W, baseH=rotated?W:H;
   var kb=kbTransform(c,prog,W,H);
@@ -1965,7 +2085,7 @@ function drawClipLayer(c,srcEl,prog,alpha){
   ctx.filter=adjFilter;
   ctx.translate(W/2+kb.x,H/2+kb.y);ctx.rotate(state.rotation*Math.PI/180);if(state.flip)ctx.scale(-1,1);ctx.scale(state.zoom*kb.s,state.zoom*kb.s);
   var scale=(state.fit==="fit")?Math.min(baseW/vw,baseH/vh):Math.max(baseW/vw,baseH/vh);var dw=vw*scale,dh=vh*scale;
-  try{ctx.drawImage(srcEl,-dw/2,-dh/2,dw,dh);}catch(e){}
+  try{ctx.drawImage(drawSrc,-dw/2,-dh/2,dw,dh);}catch(e){}
   ctx.restore();ctx.filter="none";
   ctx.restore();
 }
@@ -3279,7 +3399,7 @@ function draftBuild(){
   var snap=snapshot();
   var rec={ v:1, savedAt:Date.now(),
     ui:{ t:snap.t, s:snap.s, fs:snap.fs, c:snap.c, p:snap.p, b:snap.b, bi:snap.bi, ratio:snap.ratio, fit:snap.fit, br:snap.br, ct:snap.ct, sa:snap.sa, hu:snap.hu||0, se:snap.se||0, gr:snap.gr||0, zoom:snap.zoom, rot:snap.rot, flip:snap.flip, active:snap.active },
-    clips:snap.clips.map(function(c){ return { file:c.file||null, name:c.name, size:c.size, duration:c.duration, trimStart:c.trimStart||0, trimEnd:c.trimEnd||0, gapBefore:c.gapBefore||0, isImage:!!c.isImage, speed:(c.speed==null?null:c.speed), vol:(c.vol==null?1:c.vol), fadeIn:c.fadeIn||0, fadeOut:c.fadeOut||0, transition:c.transition||0, kb:c.kb||"" }; }),
+    clips:snap.clips.map(function(c){ return { file:c.file||null, name:c.name, size:c.size, duration:c.duration, trimStart:c.trimStart||0, trimEnd:c.trimEnd||0, gapBefore:c.gapBefore||0, isImage:!!c.isImage, speed:(c.speed==null?null:c.speed), vol:(c.vol==null?1:c.vol), fadeIn:c.fadeIn||0, fadeOut:c.fadeOut||0, transition:c.transition||0, kb:c.kb||"", ck:!!c.ck, ckColor:c.ckColor||"#00b140", ckTol:(c.ckTol==null?60:c.ckTol), bgMode:c.bgMode||"", bgColor:c.bgColor||"#00b140" }; }),
     extra:{ quality:($("qualitySel")||{}).value||"720", speed:($("speedSel")||{}).value||"1", volume:($("volumeSlider")||{}).value||"1", voScript:($("voScript")||{}).value||"", edCapOn:!!edCapOn, edCapMove:edCapMove||"static" },
     tl:null };
   var tl=snap.tl;
@@ -3288,7 +3408,7 @@ function draftBuild(){
   var ovs=(tl.overlays||[]);
   return Promise.all(ovs.map(function(o){ return draftImgBlob(o.img); })).then(function(blobs){
     rec.tl={ audios:audios,
-      overlays:ovs.map(function(o,i){ return { id:o.id, name:o.name, start:o.start, end:o.end, opacity:o.opacity, pos:o.pos||"tr", fixed:!!o.fixed, sticker:!!o.sticker, imgBlob:blobs[i]||null }; }),
+      overlays:ovs.map(function(o,i){ return { id:o.id, name:o.name, start:o.start, end:o.end, opacity:o.opacity, pos:o.pos||"tr", pos2:o.pos2||"", fixed:!!o.fixed, sticker:!!o.sticker, imgBlob:blobs[i]||null }; }),
       inPt:tl.inPt, outPt:tl.outPt, origMuted:!!tl.origMuted, mergeId:tl.mergeId, replaceId:tl.replaceId, uidNext:tl.uidNext };
     return rec;
   });
@@ -3320,7 +3440,7 @@ function draftLoadImg(src){
 function draftRestore(rec){
   draftRestoring=true;
   var clipPromises=(rec.clips||[]).map(function(c){
-    var nc={ file:c.file||null, name:c.name, size:c.size, url:"", duration:c.duration||0, trimStart:c.trimStart||0, trimEnd:c.trimEnd||0, gapBefore:c.gapBefore||0, isImage:!!c.isImage, img:null, speed:(c.speed==null?null:c.speed), vol:(c.vol==null?1:c.vol), fadeIn:c.fadeIn||0, fadeOut:c.fadeOut||0, transition:c.transition||0, kb:c.kb||"" };
+    var nc={ file:c.file||null, name:c.name, size:c.size, url:"", duration:c.duration||0, trimStart:c.trimStart||0, trimEnd:c.trimEnd||0, gapBefore:c.gapBefore||0, isImage:!!c.isImage, img:null, speed:(c.speed==null?null:c.speed), vol:(c.vol==null?1:c.vol), fadeIn:c.fadeIn||0, fadeOut:c.fadeOut||0, transition:c.transition||0, kb:c.kb||"", ck:!!c.ck, ckColor:c.ckColor||"#00b140", ckTol:(c.ckTol==null?60:c.ckTol), bgMode:c.bgMode||"", bgColor:c.bgColor||"#00b140" };
     try{ if(c.file) nc.url=URL.createObjectURL(c.file); }catch(e){}
     if(nc.isImage&&nc.url) return draftLoadImg(nc.url).then(function(img){ nc.img=img; return nc; });
     return Promise.resolve(nc);
@@ -3333,7 +3453,7 @@ function draftRestore(rec){
       return na;
     });
     var ovPromises=(rec.tl.overlays||[]).map(function(o){
-      var no={ id:o.id, name:o.name, start:o.start, end:o.end, opacity:o.opacity, img:null, pos:o.pos||"tr", fixed:!!o.fixed, sticker:!!o.sticker };
+      var no={ id:o.id, name:o.name, start:o.start, end:o.end, opacity:o.opacity, img:null, pos:o.pos||"tr", pos2:o.pos2||"", fixed:!!o.fixed, sticker:!!o.sticker };
       if(o.imgBlob){ var u=""; try{ u=URL.createObjectURL(o.imgBlob); }catch(e){} if(u) return draftLoadImg(u).then(function(img){ no.img=img; return no; }); }
       return Promise.resolve(no);
     });
@@ -3457,7 +3577,7 @@ function hist(){try{if(window.__pushHistory)window.__pushHistory();}catch(e){}}
 window.__tlSnapshot=function(){
   return {
     audios:audios.map(function(a){return {id:a.id,name:a.name,start:a.start,dur:a.dur,srcStart:a.srcStart||0,fromClip:a.fromClip,combined:!!a.combined,srcFile:a.srcFile||null,el:a.el||null,isMerge:!!a.isMerge,vol:(a.vol==null?1:a.vol),kind:a.kind||""};}),
-    overlays:overlays.map(function(o){return {id:o.id,name:o.name,start:o.start,end:o.end,opacity:o.opacity,img:o.img,pos:o.pos||"tr",fixed:!!o.fixed,sticker:!!o.sticker};}),
+    overlays:overlays.map(function(o){return {id:o.id,name:o.name,start:o.start,end:o.end,opacity:o.opacity,img:o.img,pos:o.pos||"tr",pos2:o.pos2||"",fixed:!!o.fixed,sticker:!!o.sticker};}),
     inPt:inPt,outPt:outPt,origMuted:origMuted,
     mergeId:mergeTrack?mergeTrack.id:null,replaceId:replaceTrack?replaceTrack.id:null,
     uidNext:uid
@@ -3466,7 +3586,7 @@ window.__tlSnapshot=function(){
 window.__tlRestore=function(tl){
   if(tl){
     audios=tl.audios.map(function(a){return {id:a.id,name:a.name,start:a.start,dur:a.dur,srcStart:a.srcStart,fromClip:a.fromClip,combined:a.combined,srcFile:a.srcFile,el:a.el,isMerge:a.isMerge,vol:(a.vol==null?1:a.vol),kind:a.kind||""};});
-    overlays=tl.overlays.map(function(o){return {id:o.id,name:o.name,start:o.start,end:o.end,opacity:o.opacity,img:o.img,pos:o.pos||"tr",fixed:!!o.fixed,sticker:!!o.sticker};});
+    overlays=tl.overlays.map(function(o){return {id:o.id,name:o.name,start:o.start,end:o.end,opacity:o.opacity,img:o.img,pos:o.pos||"tr",pos2:o.pos2||"",fixed:!!o.fixed,sticker:!!o.sticker};});
     inPt=tl.inPt;outPt=tl.outPt;origMuted=!!tl.origMuted;
     if(tl.uidNext)uid=tl.uidNext;
     mergeTrack=audios.filter(function(x){return x.id===tl.mergeId;})[0]||null;
@@ -3762,6 +3882,9 @@ if(mgBtn)mgBtn.addEventListener("click",function(){
 function ctxBtn(label,fn,gold){
   var b=document.createElement("button");b.type="button";b.className="btn small"+(gold?" gold":"");b.textContent=label;b.addEventListener("click",fn);return b;
 }
+/* PHASE 3: AI segmenter ki halat badle (load/ready/fail) to context
+   panel dobara bane taake status ki line taaza ho jaye. */
+window.__segUiRefresh=function(){try{renderContext();}catch(e){}};
 function renderContext(){
   var box=$("tlContext");box.innerHTML="";
   var cs=clips();
@@ -3789,6 +3912,9 @@ function renderContext(){
       box.appendChild(ctxBtn(em+" Sticker",function(){addEmojiSticker(em);}));
     });
     box.appendChild(ctxBtn("🖼 Tasveer Sticker Add Karein",function(){$("tlStickerInput").click();}));
+    box.appendChild(ctxBtn("🕌 Bismillah Card (Shuru Mein)",function(){addTitleCard("bismillah");}));
+    box.appendChild(ctxBtn("🎬 Intro Card (Shuru Mein)",function(){addTitleCard("intro");}));
+    box.appendChild(ctxBtn("🙏 End Card — Shukriya (Aakhir Mein)",function(){addTitleCard("end");}));
     box.appendChild(ctxBtn("🎧 Audio Alag (Track)",doExtractAudio));
     box.appendChild(ctxBtn("🎧 Sab Clips Ki Aik Audio (Track)",doCombinedTrack));
     box.appendChild(ctxBtn("T Text Lagayein",function(){if(window.__switchSub)window.__switchSub("props");}));
@@ -3838,6 +3964,53 @@ function renderContext(){
       [["","🚫 Zoom/Pan OFF"],["in","🔍 Zoom In"],["out","🔎 Zoom Out"],["left","◀ Pan Left"],["right","Pan Right ▶"],["up","▲ Pan Up"],["down","Pan Down ▼"]].forEach(function(pr){
         box.appendChild(ctxBtn(pr[1],function(){c.kb=pr[0];E.draw();renderContext();setStatus(pr[0]===""?"Ken Burns (zoom/pan) band ho gaya.":"Ken Burns lag gaya — clip chalte hue tasveer ahista harkat karegi. Preview mein Play dabayein to harkat dikhegi.","ok");hist();},(c.kb||"")===pr[0]));
       });
+    })();
+    /* PHASE 3: Chroma Key (green screen) + AI Background remove/replace */
+    (function(){
+      label("🎨 Green Screen / Background (naya — Phase 3)");
+      box.appendChild(ctxBtn(c.ck?"🟩 Chroma Key: ON":"🟩 Chroma Key: OFF",function(){
+        c.ck=!c.ck; if(c.ck)c.bgMode="";
+        E.draw();renderContext();
+        setStatus(c.ck?"Chroma Key ON — is clip ke peeche ka rang gayab ho jayega. Neeche se Key Rang aur Tolerance theek karein, phir Play dabayein.":"Chroma Key band ho gaya.","ok");hist();
+      },!!c.ck));
+      if(c.ck){
+        var kl=document.createElement("span");kl.className="hint";kl.style.margin="0";kl.textContent="Key Rang (jo gayab ho):";box.appendChild(kl);
+        var kc=document.createElement("input");kc.type="color";kc.value=c.ckColor||"#00b140";kc.setAttribute("aria-label","Chroma key rang");
+        kc.addEventListener("input",function(){c.ckColor=kc.value;E.draw();});
+        kc.addEventListener("change",function(){hist();});
+        box.appendChild(kc);
+        var tl2=document.createElement("span");tl2.className="hint";tl2.style.margin="0";tl2.textContent="Tolerance (rang kitna mile to gayab ho):";box.appendChild(tl2);
+        var tr=document.createElement("input");tr.type="range";tr.min="10";tr.max="100";tr.value=(c.ckTol==null?60:c.ckTol);tr.setAttribute("aria-label","Chroma tolerance");
+        tr.addEventListener("input",function(){c.ckTol=parseInt(tr.value,10);E.draw();});
+        tr.addEventListener("change",function(){hist();});
+        box.appendChild(tr);
+      }
+      var ss=(window.__segState||{status:"idle"});
+      var bgm=c.bgMode||"";
+      box.appendChild(ctxBtn("🚫 Background: Asli",function(){
+        c.bgMode="";E.draw();renderContext();setStatus("Background apni asal halat mein rahega.","ok");hist();
+      },bgm===""));
+      box.appendChild(ctxBtn("🎨 Background: Rang Badlein (AI)",function(){
+        c.bgMode="color";c.ck=false;if(window.__ensureSegmenter)window.__ensureSegmenter();
+        E.draw();renderContext();setStatus("AI background ON — shakhs reh jayega, peeche sirf chuna hua rang hoga. Model pehli dafa internet se load hoga (thora waqt), phir Play dabayein.","ok");hist();
+      },bgm==="color"));
+      box.appendChild(ctxBtn("🌫 Background: Blur (AI)",function(){
+        c.bgMode="blur";c.ck=false;if(window.__ensureSegmenter)window.__ensureSegmenter();
+        E.draw();renderContext();setStatus("AI background blur ON — shakhs saaf, peeche ka manzar dhundla ho jayega. Model pehli dafa internet se load hoga.","ok");hist();
+      },bgm==="blur"));
+      if(bgm==="color"){
+        var bl=document.createElement("span");bl.className="hint";bl.style.margin="0";bl.textContent="Background ka rang:";box.appendChild(bl);
+        var bc=document.createElement("input");bc.type="color";bc.value=c.bgColor||"#00b140";bc.setAttribute("aria-label","Background rang");
+        bc.addEventListener("input",function(){c.bgColor=bc.value;E.draw();});
+        bc.addEventListener("change",function(){hist();});
+        box.appendChild(bc);
+      }
+      var sh=document.createElement("span");sh.className="hint";sh.style.margin="0";
+      if(ss.status==="failed")sh.textContent="⚠ AI Background is phone/browser par load NAHI ho saka ("+(ss.err||"network/model")+") — ye feature yahan band hai. Chroma Key istemal karein, wo baghair internet ke chalta hai.";
+      else if(ss.status==="loading")sh.textContent="⏳ AI model load ho raha hai… internet chahiye, chand second se aik minute lag sakta hai. Load hote hi background khud badal jayega.";
+      else if(ss.status==="ready")sh.textContent="✓ AI model tayyar hai. Note: Background AI phone par SLOW chal sakta hai — chhoti clips par behtareen natija milega; export mein waqt zyada lagega.";
+      else sh.textContent="AI Background: pehli dafa model (~chand MB) internet se load hoga. Phone par ye SLOW ho sakta hai — chhoti clips ke liye behtar hai.";
+      box.appendChild(sh);
     })();
     if(c.isImage){
       var durLab=document.createElement("span");durLab.className="hint";durLab.style.margin="0";durLab.textContent="🖼 Ye TASVEER clip hai — ab ye "+fmt(cDur(c))+" dikhegi. Time badlein:";box.appendChild(durLab);
@@ -3902,6 +4075,12 @@ function renderContext(){
     var posLab=document.createElement("span");posLab.className="hint";posLab.style.margin="0";posLab.textContent="Kis kone mein rahe?";box.appendChild(posLab);
     [["tr","↗ Upar Right"],["tl","↖ Upar Left"],["br","↘ Neeche Right"],["bl","↙ Neeche Left"]].forEach(function(pr){
       box.appendChild(ctxBtn(pr[1],function(){o.pos=pr[0];renderContext();E.draw();updateLogoMeta();setStatus("Logo ki jagah tay ho gayi: "+posNames[pr[0]]+" kona — ab logo wahi fixed rahega, agay-peeche nahi hoga.","ok");hist();},(o.pos||"tr")===pr[0]));
+    });
+    /* PHASE 3: position keyframes — glide (shuru kona -> aakhir kona) */
+    var mvLab=document.createElement("span");mvLab.className="hint";mvLab.style.margin="0";mvLab.textContent="🚶 Glide (harkat) — khatam kis kone par ho? (Band = aik hi jagah rahe)";box.appendChild(mvLab);
+    box.appendChild(ctxBtn("🚫 Glide Band",function(){o.pos2="";renderContext();E.draw();setStatus("Glide band — overlay aik hi kone mein rahega.","ok");hist();},!(o.pos2||"")));
+    [["tr","➡↗ Upar Right Par Khatam"],["tl","➡↖ Upar Left Par Khatam"],["br","➡↘ Neeche Right Par Khatam"],["bl","➡↙ Neeche Left Par Khatam"]].forEach(function(pr){
+      box.appendChild(ctxBtn(pr[1],function(){o.pos2=pr[0];renderContext();E.draw();setStatus("Glide tay ho gaya — overlay "+(posNames[o.pos]||"Upar Right")+" se ahista "+(posNames[pr[0]]||"")+" ki taraf jayega "+(o.fixed?"(poori video ke doran).":"(apne waqt ke andar).")+" Play karke dekhein.","ok");hist();},(o.pos2||"")===pr[0]));
     });
     if(!o.fixed)box.appendChild(ctxBtn("↔ Poori Video Par Failayein",function(){o.start=0;o.end=total();render();renderContext();E.draw();hist();}));
     if(!o.fixed)box.appendChild(ctxBtn("📌 Fixed Karo — Poori Video, Aik Jagah",function(){o.fixed=true;o.start=0;o.end=total();render();renderContext();E.draw();updateLogoMeta();setStatus("Logo FIXED ho gaya — ab ye poori video par aik hi kone mein rahega, na gayab hoga na hilega.","ok");hist();},true));
@@ -4269,6 +4448,77 @@ if(tlStickerInput)tlStickerInput.addEventListener("change",function(ev){
 });
 
 
+/* ---------- PHASE 3: Title Cards (tayyar presets) ----------
+   Card canvas par ban kar aik IMAGE CLIP ban jata hai — wahi purani
+   machinery (trim/split/duration/Undo/draft) is par bhi chalti hai.
+   Bismillah aur Intro card video ke SHURU mein, End card AAKHIR mein
+   lagta hai. Card 4 second ka hota hai (tasveer clip ke time buttons
+   se badal sakta hai). Size preview canvas jaisa, warna 1080x1920. */
+function addTitleCard(kind){
+  try{
+    var stage=$("stage");
+    var W=(stage&&stage.width)||1080, H=(stage&&stage.height)||1920;
+    var cv=document.createElement("canvas");cv.width=W;cv.height=H;
+    var x=cv.getContext("2d");
+    var g=x.createLinearGradient(0,0,0,H);
+    if(kind==="bismillah"){g.addColorStop(0,"#06231a");g.addColorStop(1,"#0a3d2c");}
+    else if(kind==="end"){g.addColorStop(0,"#141824");g.addColorStop(1,"#232a3d");}
+    else{g.addColorStop(0,"#0f1115");g.addColorStop(1,"#1d2432");}
+    x.fillStyle=g;x.fillRect(0,0,W,H);
+    x.strokeStyle="rgba(212,175,55,0.9)";x.lineWidth=Math.max(4,W*0.008);
+    var m=Math.round(W*0.05);x.strokeRect(m,m,W-2*m,H-2*m);
+    x.strokeStyle="rgba(212,175,55,0.45)";x.lineWidth=2;
+    x.strokeRect(m+14,m+14,W-2*(m+14),H-2*(m+14));
+    x.textAlign="center";x.textBaseline="middle";x.direction="rtl";
+    var gold="#e8c96a", white="#f5f2e8";
+    function nast(txt,frac,size,fill,bold){
+      x.font=(bold?"700 ":"400 ")+size+"px 'Noto Nastaliq Urdu', serif";
+      x.fillStyle=fill;x.fillText(txt,W/2,H*frac,W*0.88);
+    }
+    function lat(txt,frac,size,fill){
+      x.direction="ltr";x.font="600 "+size+"px system-ui, sans-serif";x.fillStyle=fill;
+      x.fillText(txt,W/2,H*frac,W*0.9);x.direction="rtl";
+    }
+    var u=Math.round(W*0.10);
+    if(kind==="bismillah"){
+      nast("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",0.42,Math.round(W*0.085),gold,true);
+      nast("اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے",0.60,Math.round(W*0.042),white,false);
+    }else if(kind==="intro"){
+      nast("السلام علیکم",0.34,Math.round(W*0.075),gold,true);
+      nast("ہمارے چینل میں خوش آمدید",0.50,Math.round(W*0.05),white,false);
+      lat("Welcome to our channel",0.66,Math.round(W*0.036),"#b9c2d4");
+    }else{
+      nast("جزاک اللہ خیرا",0.36,Math.round(W*0.075),gold,true);
+      nast("دیکھنے کا شکریہ",0.52,Math.round(W*0.055),white,false);
+      lat("Thanks for watching — Like • Share • Subscribe",0.68,Math.round(W*0.033),"#b9c2d4");
+    }
+    x.direction="ltr";x.fillStyle="rgba(232,201,106,0.85)";
+    x.font=Math.round(W*0.05)+"px serif";x.fillText("◆ ◆ ◆",W/2,H*0.82);
+    var wasEmpty=!clips().length;
+    cv.toBlob(function(blob){
+      if(!blob){setStatus("Card nahi bann saka — dobara try karein.","err");return;}
+      var names={bismillah:"Bismillah Card",intro:"Intro Card",end:"End Card"};
+      var f;
+      try{f=new File([blob],(names[kind]||"Title Card")+".png",{type:"image/png"});}
+      catch(e){blob.name=(names[kind]||"Title Card")+".png";f=blob;}
+      var url=URL.createObjectURL(f);
+      var img=new Image();
+      img.onload=function(){
+        var nc={file:f,name:names[kind]||"Title Card",size:f.size||blob.size,url:url,isImage:true,img:img,duration:10,trimStart:0,trimEnd:4,gapBefore:0};
+        var cs=clips();
+        var at=(kind==="end")?cs.length:0;
+        cs.splice(at,0,nc);
+        if(wasEmpty){try{E.loadClip(0);}catch(e){}}
+        E.renderList();render();renderContext();E.draw();
+        setStatus("✓ "+(names[kind]||"Card")+" lag gaya — "+(kind==="end"?"video ke AAKHIR mein":"video ke SHURU mein")+" 4 second dikhega. Time badalna ho to timeline mein card select karke 3/5/10 second buttons use karein; jagah drag karke badal sakti hai.","ok");
+        hist();
+      };
+      img.onerror=function(){setStatus("Card ki tasveer load nahi ho saki.","err");};
+      img.src=url;
+    },"image/png");
+  }catch(e){setStatus("Card nahi bann saka ("+((e&&e.message)||e)+").","err");}
+}
+
 /* ---------- overlay drawing on preview + export canvas ----------
    Fixed logo: waqt ki qaid nahi — jab bhi koi clip load hai, logo
    apne tay shuda kone mein dikhta hai. Isi liye preview aur export
@@ -4283,9 +4533,19 @@ window.__drawOverlays=function(ctx,W,H){
     else if(pt<o.start||pt>o.end)return;
     var w=W*(o.sticker?0.22:0.18),h=w*((o.img.naturalHeight||o.img.height||100)/(o.img.naturalWidth||o.img.width||100));
     var mx=Math.round(W*0.03),my=Math.round(H*0.03);
-    var pos=o.pos||"tr";
-    var x=(pos==="tl"||pos==="bl")?mx:(W-w-mx);
-    var y=(pos==="bl"||pos==="br")?(H-h-my):my;
+    function anch(pos){return {x:(pos==="tl"||pos==="bl")?mx:(W-w-mx), y:(pos==="bl"||pos==="br")?(H-h-my):my};}
+    var a1=anch(o.pos||"tr"), x=a1.x, y=a1.y;
+    /* PHASE 3: position keyframes (glide) — pos2 tay ho to overlay
+       apne waqt ke andar shuru wale kone se aakhir wale kone tak
+       seedhi (linear) harkat karta hai. Fixed overlay ke liye waqt
+       = poori video. pos2 na ho to purani static rawaiya. Ye asal
+       motion tracking ka amli badal hai. */
+    if(o.pos2&&o.pos2!==(o.pos||"tr")){
+      var a2=anch(o.pos2), p;
+      if(o.fixed){var T=total();p=T>0?Math.max(0,Math.min(1,pt/T)):0;}
+      else p=Math.max(0,Math.min(1,(pt-o.start)/Math.max(0.01,o.end-o.start)));
+      x=a1.x+(a2.x-a1.x)*p; y=a1.y+(a2.y-a1.y)*p;
+    }
     ctx.save();ctx.globalAlpha=o.opacity;try{ctx.drawImage(o.img,x,y,w,h);}catch(e){}ctx.restore();
   });
 };
