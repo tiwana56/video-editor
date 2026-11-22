@@ -439,80 +439,85 @@ ol.steps li{color:#d8e1ee}
 .refresh-btn.confirm{border-color:var(--danger)!important;color:#fecaca!important;background:#7f1d1d!important;min-width:150px}
 </style>
 <style>
-/* ===== JADOO VOICE — Voice Over tab (gehra sabz, ret/sand, sunehra) ===== */
-.jadoo{--jg:#0b3d2e;--jg-deep:#06231a;--sand:#f3e9d2;--sand2:#e6d5a8;--jgold:#c9a227;--jgold2:#ffbe0b;background:linear-gradient(180deg,#0e4634,#07271d);border:1.5px solid rgba(201,162,39,.65);color:var(--sand)}
-.jadoo .panel-head{background:rgba(0,0,0,.28);border-bottom:1px solid rgba(201,162,39,.45);align-items:center}
+/* ===== JADOO VOICE — Voice Over tab (baqi ProCut palette: slate panels,
+   cyan selected state; gold sirf AI action buttons par) ===== */
+.jadoo{--sand:#f4f7fc;--sand2:#c6d2e2;--jgold:#c9a227;--jgold2:#ffbe0b;background:var(--panel);border:1px solid var(--border);color:var(--text)}
+.jadoo .panel-head{border-bottom:1px solid var(--border);align-items:center}
 .jadoo .panel-head h2{color:var(--sand);font-size:13px}
 .jadoo .panel-body{padding:16px 14px 18px}
 .jadoo .label{color:var(--sand2);font-size:12px}
-.jadoo .hint{color:#ddd2b2;font-size:13px;line-height:1.65}
-.jadoo .subtle{color:#e9dfc2}
+.jadoo .hint{color:var(--muted);font-size:13px;line-height:1.65}
+.jadoo .subtle{color:var(--muted)}
 .jadoo[data-lang="ur"] .jx,.jadoo[data-lang="ur"] h3,.jadoo[data-lang="ur"] .vo-sec-title{font-family:"Noto Nastaliq Urdu",serif;line-height:2}
 .jadoo[data-lang="en"] .jx{font-family:var(--font)}
-.jadoo .vo-sec{border:1px solid rgba(201,162,39,.4);background:rgba(255,255,255,.045);border-radius:14px;padding:14px;margin-top:14px}
+.jadoo .vo-sec{border:1px solid var(--border);background:var(--panel2);border-radius:14px;padding:14px;margin-top:14px}
 .jadoo .vo-sec:first-of-type{margin-top:4px}
 .jadoo .vo-sec-title{font-size:16.5px;font-weight:700;color:#fff;margin:0 0 4px;display:flex;align-items:center;gap:9px}
 .jadoo .vo-num{flex:none;width:30px;height:30px;border-radius:50%;background:var(--jgold);color:#231a00;font-family:var(--font);font-weight:800;font-size:15px;display:inline-flex;align-items:center;justify-content:center;line-height:1}
-.jadoo input[type="text"],.jadoo input[type="password"],.jadoo textarea,.jadoo select{background:#082a1f;border:1px solid rgba(201,162,39,.55);color:#fff;min-height:52px}
-.jadoo input:focus,.jadoo textarea:focus,.jadoo select:focus{outline:2px solid rgba(255,190,11,.55);border-color:var(--jgold2)}
+.jadoo input[type="text"],.jadoo input[type="password"],.jadoo textarea,.jadoo select{background:#1a2130;border:1px solid var(--border);color:var(--text);min-height:52px}
+.jadoo input:focus,.jadoo textarea:focus,.jadoo select:focus{outline:2px solid rgba(34,211,238,.45);outline-offset:1px;border-color:var(--cyan)}
 .jadoo textarea#voScript{font-family:"Noto Nastaliq Urdu",serif;font-size:19px;line-height:2.15;min-height:160px;text-align:start}
 .jadoo textarea#voDirection{font-size:14.5px;line-height:1.7;min-height:74px}
-.jadoo .btn{background:#14532d;border-color:rgba(201,162,39,.6);color:#fff;min-height:52px}
-.jadoo .btn:hover{background:#1a6a3b;border-color:var(--jgold2)}
+.jadoo .btn{background:var(--panel3);border-color:var(--border);color:var(--text);min-height:52px}
+.jadoo .btn:hover{background:#2a2f3a;border-color:var(--border2)}
 .jadoo .btn.gold{background:var(--jgold2);border-color:var(--jgold2);color:#231a00}
 .jadoo .btn.gold:hover{background:#ffd34d}
 .jadoo .btn:disabled{opacity:.45;cursor:not-allowed}
 .jadoo .vo-big{width:100%;min-height:62px;font-size:17px;font-weight:800;border-radius:12px}
 .jadoo .vo-counts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.jadoo .vo-chip{background:rgba(0,0,0,.3);border:1px solid rgba(201,162,39,.45);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:700;color:var(--sand);font-variant-numeric:tabular-nums}
+.jadoo .vo-chip{background:var(--panel3);border:1px solid var(--border);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:700;color:var(--sand);font-variant-numeric:tabular-nums}
 .jadoo .vo-warn{border:1px solid #b45309;background:rgba(120,53,15,.35);color:#fde68a;border-radius:10px;padding:10px 12px;font-size:13.5px;line-height:1.6;margin-top:10px;display:none}
 .jadoo .vo-err{border:1px solid #f87171;background:rgba(127,29,29,.4);color:#fecaca;border-radius:10px;padding:12px;font-size:14px;line-height:1.65;margin-top:12px;display:none;white-space:pre-wrap;word-break:break-word}
-.jadoo .vo-ok{color:#86efac}
+.jadoo .vo-ok{color:#a5f3fc}
+.jadoo .status.ok{color:#a5f3fc}
 .jadoo progress::-webkit-progress-value{background:var(--jgold2)}
 .jadoo progress::-moz-progress-bar{background:var(--jgold2)}
 .jadoo audio{width:100%;margin-top:6px}
-.jadoo a{color:var(--jgold2)}
-.jadoo .vo-check{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:#e9dfc2;line-height:1.6;margin-top:10px;cursor:pointer}
+.jadoo a{color:var(--cyan)}
+.jadoo .vo-check{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:var(--muted);line-height:1.6;margin-top:10px;cursor:pointer}
 .jadoo .vo-check input{width:22px;height:22px;flex:none;accent-color:var(--jgold2);margin-top:2px;min-height:0}
 .jadoo .ltr{direction:ltr;unicode-bidi:isolate}
-.jadoo details{margin-top:12px;border:1px dashed rgba(201,162,39,.45);border-radius:10px;padding:10px 12px}
+.jadoo details{margin-top:12px;border:1px dashed var(--border2);border-radius:10px;padding:10px 12px}
 .jadoo summary{cursor:pointer;font-weight:700;color:var(--sand);min-height:32px}
-.jadoo details p,.jadoo details li{font-size:13px;color:#ddd2b2;line-height:1.65}
+.jadoo details p,.jadoo details li{font-size:13px;color:var(--muted);line-height:1.65}
 .jadoo .vo-grid2{display:grid;grid-template-columns:1fr;gap:10px}
 @media(min-width:640px){.jadoo .vo-grid2{grid-template-columns:1fr 1fr}}
 /* ===== VOICE GENDER FILTER + SAVED LINE + PREVIEW (Voice Over tab) ===== */
 .jadoo .vo-filter{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 10px}
-.jadoo .vo-filter button{flex:1 1 96px;min-height:48px;border:1.5px solid rgba(201,162,39,.55);background:#082a1f;color:var(--sand);border-radius:11px;font-weight:700;font-size:14px;padding:9px 8px;cursor:pointer;line-height:1.4}
-.jadoo .vo-filter button[aria-pressed="true"]{background:var(--jgold2);border-color:var(--jgold2);color:#231a00}
+.jadoo .vo-filter button{flex:1 1 96px;min-height:48px;border:1.5px solid var(--border);background:var(--panel2);color:var(--text);border-radius:11px;font-weight:700;font-size:14px;padding:9px 8px;cursor:pointer;line-height:1.4}
+.jadoo .vo-filter button[aria-pressed="true"]{background:var(--cyan);border-color:var(--cyan);color:#06202a}
 .jadoo .vo-filter-count{font-variant-numeric:tabular-nums;opacity:.85}
-.jadoo .vo-saved{margin:8px 0 0;font-size:13px;color:#e9dfc2}
+.jadoo .vo-saved{margin:8px 0 0;font-size:13px;color:var(--muted)}
 .jadoo .vo-saved b{color:#fff}
 .jadoo #voPreviewBtn{margin-top:10px}
 .jadoo #voPreviewPlayer{width:100%;margin-top:8px}
 .jadoo #voPreviewStatus{white-space:pre-wrap}
 /* ===== CAPTION VIDEO (تجرباتی — OPTIONAL, default OFF) ===== */
-.cap-toggle-wrap{position:relative;display:flex;align-items:center;gap:14px;width:100%;min-height:68px;padding:12px 14px;border:2px solid var(--jgold);border-radius:14px;background:rgba(0,0,0,.35);cursor:pointer}
+.cap-toggle-wrap{position:relative;display:flex;align-items:center;gap:14px;width:100%;min-height:68px;padding:12px 14px;border:2px solid var(--border2);border-radius:14px;background:var(--panel2);cursor:pointer}
 /* Checkbox label ke ANDAR hi rahe (position:relative wala label is ka
    containing block hai) — pehle label par position nahi thi, to tap par
    browser is chhupi hui 1px input ko focus karke "reveal" karne ke liye
    page ko ghalat jagah scroll kar deta tha: screen aadhi kaali ho jati
    thi aur neeche wala hissa scroll karke bhi nahi milta tha. */
 .cap-toggle-wrap input{position:absolute;top:0;inset-inline-start:0;opacity:0;width:1px;height:1px}
-.cap-track{flex:none;width:74px;height:40px;border-radius:999px;background:#3f3f46;border:2px solid rgba(255,255,255,.35);position:relative;transition:background .2s}
+.cap-track{flex:none;width:74px;height:40px;border-radius:999px;background:var(--panel3);border:2px solid var(--border2);position:relative;transition:background .2s}
 .cap-track::after{content:"";position:absolute;top:3px;inset-inline-start:4px;width:30px;height:30px;border-radius:50%;background:#fff;transition:transform .2s}
-.cap-toggle-wrap input:checked + .cap-track{background:var(--green-d)}
+.cap-toggle-wrap input:checked + .cap-track{background:var(--cyan)}
 .cap-toggle-wrap input:checked + .cap-track::after{transform:translateX(-34px)}
-.cap-toggle-wrap input:focus-visible + .cap-track{outline:3px solid var(--jgold2);outline-offset:2px}
+.cap-toggle-wrap input:focus-visible + .cap-track{outline:3px solid var(--cyan);outline-offset:2px}
 .cap-toggle-text{flex:1;min-width:0}
 .cap-toggle-text b{display:block;font-size:17px;color:#fff;line-height:1.4}
-.cap-toggle-text span{font-size:13px;color:#ddd2b2;line-height:1.5;display:block}
-.cap-state{flex:none;font-weight:800;font-size:14px;padding:8px 14px;border-radius:999px;background:#3f3f46;color:#fff;border:1px solid rgba(255,255,255,.35)}
-.cap-toggle-wrap input:checked ~ .cap-state{background:var(--green-d)}
-#capCanvas{display:block;margin:12px auto 0;width:min(300px,86vw);aspect-ratio:9/16;height:auto;background:#04150d;border:1.5px solid rgba(201,162,39,.7);border-radius:14px}
+.cap-toggle-text span{font-size:13px;color:var(--muted);line-height:1.5;display:block}
+.cap-state{flex:none;font-weight:800;font-size:14px;padding:8px 14px;border-radius:999px;background:var(--panel3);color:#fff;border:1px solid var(--border2)}
+.cap-toggle-wrap input:checked ~ .cap-state{background:var(--cyan);color:#06202a;border-color:var(--cyan)}
+#capCanvas{display:block;margin:12px auto 0;width:min(300px,86vw);aspect-ratio:9/16;height:auto;background:#0a0d13;border:1.5px solid var(--border2);border-radius:14px}
 .jadoo .cap-seg{display:flex;flex-wrap:wrap;gap:7px}
-.jadoo .cap-seg button{flex:1 1 100px;min-height:54px;border:1.5px solid rgba(201,162,39,.55);background:#082a1f;color:var(--sand);border-radius:11px;font-weight:700;font-size:14px;padding:10px 8px;line-height:1.45;cursor:pointer}
-.jadoo .cap-seg button[aria-pressed="true"]{background:var(--jgold2);border-color:var(--jgold2);color:#231a00}
-.cap-result video{width:min(300px,86vw);display:block;margin:10px auto;border-radius:14px;border:1.5px solid rgba(201,162,39,.7);background:#000}
+.jadoo .cap-seg button{flex:1 1 100px;min-height:54px;border:1.5px solid var(--border);background:var(--panel2);color:var(--text);border-radius:11px;font-weight:700;font-size:14px;padding:10px 8px;line-height:1.45;cursor:pointer}
+.jadoo .cap-seg button[aria-pressed="true"]{background:var(--cyan);border-color:var(--cyan);color:#06202a}
+/* Matn nikalne ke tareeqe (Gemini / Whisper) AI buttons hain — in ka
+   selected state gold hi rahega, baqi cap-seg selected cyan hai. */
+.jadoo #trMethodGemini[aria-pressed="true"],.jadoo #trMethodWhisper[aria-pressed="true"]{background:var(--jgold2);border-color:var(--jgold2);color:#231a00}
+.cap-result video{width:min(300px,86vw);display:block;margin:10px auto;border-radius:14px;border:1.5px solid var(--border2);background:#000}
 .jadoo .cap-err{border:1px solid #f87171;background:rgba(127,29,29,.4);color:#fecaca;border-radius:10px;padding:12px;font-size:14px;line-height:1.65;margin-top:12px;display:none;white-space:pre-wrap;word-break:break-word}
 </style>
 <style>
@@ -1367,7 +1372,7 @@ textarea{min-height:64px}
         <!-- 1 — SCRIPT -->
         <div class="vo-sec">
           <h3 class="vo-sec-title"><span class="vo-num">1</span><span class="jx" data-ur="متن — جو بولنا ہے" data-en="Script — What Will Be Spoken">متن — جو بولنا ہے</span></h3>
-          <div style="border:1.5px dashed rgba(201,162,39,.6);border-radius:12px;padding:12px;margin-bottom:14px">
+          <div style="border:1.5px dashed var(--border2);border-radius:12px;padding:12px;margin-bottom:14px">
             <span class="label jx" style="margin-top:0" data-ur="آڈیو فائل سے متن نکالیں — تلاوت / نعت کی کلپ اپ لوڈ کریں" data-en="Get the script from an audio file — upload a recitation / naat clip">آڈیو فائل سے متن نکالیں — تلاوت / نعت کی کلپ اپ لوڈ کریں</span>
             <span class="label jx" data-ur="متن نکالنے کا طریقہ چنیں" data-en="Choose how to get the script">متن نکالنے کا طریقہ چنیں</span>
             <div class="cap-seg" role="group" aria-label="Transcription method" style="margin-bottom:10px">
@@ -1452,7 +1457,7 @@ textarea{min-height:64px}
             <option value="Sulafat">Sulafat — warm</option>
           </select>
           <p class="hint vo-saved jx" id="voSavedLine" data-ur="آپ کی پسندیدہ آواز save ہے: Kore" data-en="Your saved voice: Kore">آپ کی پسندیدہ آواز save ہے: Kore</p>
-          <button class="btn block" id="voPreviewBtn" type="button"><span class="jx" id="voPreviewLabel" data-ur="🔊 Sun Kar Dekhein — sirf chhota jumla, token bachega" data-en="🔊 Hear a Preview — just a short phrase, saves tokens">🔊 Sun Kar Dekhein — sirf chhota jumla, token bachega</span></button>
+          <button class="btn gold block" id="voPreviewBtn" type="button"><span class="jx" id="voPreviewLabel" data-ur="🔊 Sun Kar Dekhein — sirf chhota jumla, token bachega" data-en="🔊 Hear a Preview — just a short phrase, saves tokens">🔊 Sun Kar Dekhein — sirf chhota jumla, token bachega</span></button>
           <audio id="voPreviewPlayer" class="hidden" controls preload="metadata"></audio>
           <p class="status" id="voPreviewStatus" role="status"></p>
           <p class="hint jx" data-ur="آواز کے ساتھ لکھے انگریزی لفظ اس ایپ کی اپنی وضاحت ہیں — Google کی تصدیق شدہ جنس یا عمر کی شناخت نہیں۔" data-en="The English words beside each voice are this app's own descriptions — not verified gender or age identities from Google.">آواز کے ساتھ لکھے انگریزی لفظ اس ایپ کی اپنی وضاحت ہیں — Google کی تصدیق شدہ جنس یا عمر کی شناخت نہیں۔</p>
@@ -4642,7 +4647,7 @@ function capStaticLayer(w,h){
   var key=w+"x"+h;
   if(capStatic&&capStaticKey===key)return capStatic;
   var c=document.createElement("canvas");c.width=w;c.height=h;var x=c.getContext("2d");
-  var g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,"#0e4634");g.addColorStop(.55,"#07271d");g.addColorStop(1,"#04150d");
+  var g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,"#252d3c");g.addColorStop(.55,"#161c28");g.addColorStop(1,"#0c0f16");
   x.fillStyle=g;x.fillRect(0,0,w,h);
   x.strokeStyle="rgba(201,162,39,.8)";x.lineWidth=Math.max(3,w*0.006);
   var m=w*0.045;x.strokeRect(m,m,w-2*m,h-2*m);
