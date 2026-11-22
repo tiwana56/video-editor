@@ -898,6 +898,21 @@ ol.steps li{color:#d8e1ee}
           <input type="password" id="apiKey" placeholder="AIza… apni key paste karein" autocomplete="off"/>
           <button class="btn fixed" id="keyShowBtn" type="button">Show</button>
         </div>
+        <div class="divider"></div>
+        <h3 style="font-size:13.5px;margin:14px 0 4px">Whisper Backup Key — Audio Se Matn Ke Liye (Groq, Muft)</h3>
+        <p class="subtle" style="margin-top:0">Voice Over mein audio se matn nikalne ka dosra tareeqa <b style="color:var(--text)">Whisper</b> hai — ye <b style="color:var(--text)">Groq</b> ke muft server par chalta hai (model: <b style="color:var(--text)">whisper-large-v3-turbo</b>). Gemini busy (503) ho to ProCut khud is backup par matn nikaal dega — bahar kisi site par jana nahi parega. Key <b style="color:var(--text)">isi browser mein save ho jati hai</b>, Gemini key ki tarah.</p>
+        <h3 style="font-size:13.5px;margin:14px 0 4px">Muft Groq key — 2 minute</h3>
+        <ol class="steps">
+          <li><a href="https://console.groq.com" target="_blank" rel="noopener">console.groq.com</a> kholein aur muft account banayein / sign in karein — credit card nahi chahiye.</li>
+          <li>Left menu mein <b>“API Keys”</b> kholein aur <b>“Create API Key”</b> dabayein, koi sa naam de dein.</li>
+          <li>Key sirf aik dafa dikhti hai — copy karke neeche paste kar dein.</li>
+        </ol>
+        <span class="label">Groq API Key (Whisper Ke Liye)</span>
+        <div class="row">
+          <input type="password" id="groqKey" placeholder="gsk_… apni Groq key paste karein" autocomplete="off"/>
+          <button class="btn fixed" id="groqKeyShowBtn" type="button">Show</button>
+        </div>
+        <p class="hint">Ye key sirf Whisper backup ke liye hai aur sirf jawab ke waqt Groq ko bheji jati hai. Gemini wali key is se alag hai — dono apni apni jagah dalein.</p>
         <span class="label">Video Kis Bare Mein Hai?</span>
         <input type="text" id="aiTopic" placeholder="Misal: Surah Al-Kahf tilawat, Friday bayan, Ramzan ki dua…"/>
         <p class="hint">Roman Urdu / English mein likhein — jawab Urdu mein milega.</p>
@@ -996,7 +1011,13 @@ ol.steps li{color:#d8e1ee}
           <h3 class="vo-sec-title"><span class="vo-num">1</span><span class="jx" data-ur="متن — جو بولنا ہے" data-en="Script — What Will Be Spoken">متن — جو بولنا ہے</span></h3>
           <div style="border:1.5px dashed rgba(201,162,39,.6);border-radius:12px;padding:12px;margin-bottom:14px">
             <span class="label jx" style="margin-top:0" data-ur="آڈیو فائل سے متن نکالیں — تلاوت / نعت کی کلپ اپ لوڈ کریں" data-en="Get the script from an audio file — upload a recitation / naat clip">آڈیو فائل سے متن نکالیں — تلاوت / نعت کی کلپ اپ لوڈ کریں</span>
-            <button class="btn gold block" id="voAudioPickBtn" type="button" style="min-height:56px">🎧 <span class="jx" data-ur="آڈیو فائل چنیں — Gemini متن لکھ دے گا" data-en="Choose an Audio File — Gemini Will Write the Script">آڈیو فائل چنیں — Gemini متن لکھ دے گا</span></button>
+            <span class="label jx" data-ur="متن نکالنے کا طریقہ چنیں" data-en="Choose how to get the script">متن نکالنے کا طریقہ چنیں</span>
+            <div class="cap-seg" role="group" aria-label="Transcription method" style="margin-bottom:10px">
+              <button type="button" id="trMethodGemini" aria-pressed="true">Gemini</button>
+              <button type="button" id="trMethodWhisper" aria-pressed="false"><span class="jx" data-ur="Whisper (بیک اپ)" data-en="Whisper (Backup)">Whisper (بیک اپ)</span></button>
+            </div>
+            <p class="hint jx" style="margin-top:0" data-ur="Whisper Groq کے مفت سرور پر چلتا ہے (model: whisper-large-v3-turbo) — اس کے لیے Groq key AI Studio والے ٹیب میں ڈالیں۔ Gemini طریقہ چنا ہو اور Gemini busy (503) آ جائے تو، Groq key save ہو تو Whisper بیک اپ خود بخود چل جائے گا۔" data-en="Whisper runs on Groq's free server (model: whisper-large-v3-turbo) — add the Groq key in the AI Studio tab. If the Gemini method is selected and Gemini is busy (503), the Whisper backup runs automatically when a Groq key is saved.">Whisper Groq کے مفت سرور پر چلتا ہے (model: whisper-large-v3-turbo) — اس کے لیے Groq key AI Studio والے ٹیب میں ڈالیں۔ Gemini طریقہ چنا ہو اور Gemini busy (503) آ جائے تو، Groq key save ہو تو Whisper بیک اپ خود بخود چل جائے گا۔</p>
+            <button class="btn gold block" id="voAudioPickBtn" type="button" style="min-height:56px">🎧 <span class="jx" id="voPickLabel" data-ur="آڈیو فائل چنیں — Gemini متن لکھ دے گا" data-en="Choose an Audio File — Gemini Will Write the Script">آڈیو فائل چنیں — Gemini متن لکھ دے گا</span></button>
             <input class="hidden" type="file" id="voAudioInput" accept="audio/*"/>
             <p class="status" id="voTrStatus" role="status"></p>
             <div class="hidden" id="voTrProgWrap" style="margin-top:10px">
@@ -1008,7 +1029,7 @@ ol.steps li{color:#d8e1ee}
               <p class="hint jx" id="voTrInfo" style="margin:8px 0 0"></p>
             </div>
             <div class="vo-err" id="voTrError" role="alert" style="font-size:15px"></div>
-            <p class="hint jx" style="margin-bottom:0" data-ur="اپنی آڈیو فائل (MP3 / WAV / M4A وغیرہ) چنیں — Gemini اسے سن کر اس کا متن (transcription) نیچے والے خانے میں لکھ دے گا۔ پھر اسی متن پر نیچے حصہ 2 میں آواز چن کر حصہ 3 سے وائس اوور بنا لیں۔ فائل بھیجنے سے پہلے آپ کے فون پر ہی چھوٹی (16 kHz mono) کر دی جاتی ہے، اس لیے بڑی WAV فائل بھی چل جاتی ہے؛ لمبی فائل حصوں میں بھیج کر متن جوڑ دیا جاتا ہے۔ AI Studio والی save شدہ key ہی استعمال ہوگی۔" data-en="Choose your audio file (MP3 / WAV / M4A etc.) — Gemini will listen to it and write its transcription into the box below. Then pick a voice in section 2 and generate the voice over in section 3 from that same text. Before sending, the file is shrunk on your phone (16 kHz mono), so even a large WAV works; a long file is sent in parts and the text is joined together. The saved AI Studio key is used.">اپنی آڈیو فائل (MP3 / WAV / M4A وغیرہ) چنیں — Gemini اسے سن کر اس کا متن (transcription) نیچے والے خانے میں لکھ دے گا۔ پھر اسی متن پر نیچے حصہ 2 میں آواز چن کر حصہ 3 سے وائس اوور بنا لیں۔ فائل بھیجنے سے پہلے آپ کے فون پر ہی چھوٹی (16 kHz mono) کر دی جاتی ہے، اس لیے بڑی WAV فائل بھی چل جاتی ہے؛ لمبی فائل حصوں میں بھیج کر متن جوڑ دیا جاتا ہے۔ AI Studio والی save شدہ key ہی استعمال ہوگی۔</p>
+            <p class="hint jx" id="voTrHint" style="margin-bottom:0" data-ur="اپنی آڈیو فائل (MP3 / WAV / M4A وغیرہ) چنیں — Gemini اسے سن کر اس کا متن (transcription) نیچے والے خانے میں لکھ دے گا۔ پھر اسی متن پر نیچے حصہ 2 میں آواز چن کر حصہ 3 سے وائس اوور بنا لیں۔ فائل بھیجنے سے پہلے آپ کے فون پر ہی چھوٹی (16 kHz mono) کر دی جاتی ہے، اس لیے بڑی WAV فائل بھی چل جاتی ہے؛ لمبی فائل حصوں میں بھیج کر متن جوڑ دیا جاتا ہے۔ AI Studio والی save شدہ key ہی استعمال ہوگی۔" data-en="Choose your audio file (MP3 / WAV / M4A etc.) — Gemini will listen to it and write its transcription into the box below. Then pick a voice in section 2 and generate the voice over in section 3 from that same text. Before sending, the file is shrunk on your phone (16 kHz mono), so even a large WAV works; a long file is sent in parts and the text is joined together. The saved AI Studio key is used.">اپنی آڈیو فائل (MP3 / WAV / M4A وغیرہ) چنیں — Gemini اسے سن کر اس کا متن (transcription) نیچے والے خانے میں لکھ دے گا۔ پھر اسی متن پر نیچے حصہ 2 میں آواز چن کر حصہ 3 سے وائس اوور بنا لیں۔ فائل بھیجنے سے پہلے آپ کے فون پر ہی چھوٹی (16 kHz mono) کر دی جاتی ہے، اس لیے بڑی WAV فائل بھی چل جاتی ہے؛ لمبی فائل حصوں میں بھیج کر متن جوڑ دیا جاتا ہے۔ AI Studio والی save شدہ key ہی استعمال ہوگی۔</p>
           </div>
           <span class="label jx" data-ur="اردو متن یہاں لکھیں یا paste کریں" data-en="Write or paste the Urdu script here">اردو متن یہاں لکھیں یا paste کریں</span>
           <textarea id="voScript" dir="auto" lang="ur">السلام علیکم! آج ہم اردو میں اپنا پہلا وائس اوور بنا رہے ہیں۔ پہلے ایک چھوٹا سا متن آزمائیں، پھر آواز سن کر اگلا قدم اٹھائیں۔</textarea>
@@ -2246,6 +2267,12 @@ function lsGet(k){try{return window.localStorage.getItem(k);}catch(e){return nul
 function lsSet(k,v){try{if(v)window.localStorage.setItem(k,v);else window.localStorage.removeItem(k);}catch(e){}}
 var keyEl=$("apiKey"),modelEl=$("modelSel");
 var savedKey=lsGet(KEY); if(keyEl&&savedKey)keyEl.value=savedKey;
+/* Groq key (Whisper backup) — Gemini key ki tarah browser mein save */
+var GROQ="procut_groq_key",groqEl=$("groqKey");
+var savedGroq=lsGet(GROQ); if(groqEl&&savedGroq)groqEl.value=savedGroq;
+if(groqEl)groqEl.addEventListener("input",function(){lsSet(GROQ,groqEl.value.trim());});
+var groqShow=$("groqKeyShowBtn");
+if(groqShow&&groqEl)groqShow.addEventListener("click",function(){var show=groqEl.type==="password";groqEl.type=show?"text":"password";this.textContent=show?"Hide":"Show";});
 /* Band/shutdown ho chuke purane model naam browser mein save hon to
    khud current model par badal do — warna Title/Tags phir 404 dega. */
 var MODEL_MIGRATE={"gemini-2.5-flash":"gemini-3.8-flash","gemini-2.5-flash-lite":"gemini-3.5-flash-lite","gemini-2.0-flash":"gemini-3.5-flash-lite","gemini-2.0-flash-lite":"gemini-3.5-flash-lite","gemini-2.5-flash-image":"gemini-nano-banana-2.1"};
@@ -3113,18 +3140,45 @@ $("voLangBtn").addEventListener("click",function(){lang=(lang==="ur"?"en":"ur");
    hi khud istemal hoti hai. Key na mile to sirf aik chhoti line
    (voKeyNote) dikhti hai ke AI Studio tab mein key dalein. ---------- */
 var mainKey=$("apiKey"), keyNote=$("voKeyNote");
+var GROQ_LS="procut_groq_key", METHOD_LS="procut_tr_method", groqKeyEl=$("groqKey");
 function currentKey(){
   var k=mainKey?(mainKey.value||"").trim():"";
   if(k)return k;
   return (lsGet(KEY_LS)||"").trim();
 }
-function refreshKeyNote(){if(keyNote)keyNote.style.display=currentKey()?"none":"block";}
+function currentGroqKey(){
+  var k=groqKeyEl?(groqKeyEl.value||"").trim():"";
+  if(k)return k;
+  return (lsGet(GROQ_LS)||"").trim();
+}
+/* Matn nikalne ka chuna hua tareeqa — "gemini" ya "whisper" (browser mein save) */
+function trMethod(){return lsGet(METHOD_LS)==="whisper"?"whisper":"gemini";}
+function refreshKeyNote(){
+  if(!keyNote)return;
+  var whisper=trMethod()==="whisper";
+  var missing=whisper?!currentGroqKey():!currentKey();
+  keyNote.style.display=missing?"block":"none";
+  if(missing){
+    var ur,en;
+    if(whisper){
+      ur="Whisper (Groq) key ابھی نہیں ملی — AI Studio والے ٹیب میں اپنی muft Groq key ڈالیں، وہی key یہاں خود بخود چلے گی۔ یہاں الگ سے key ڈالنے کی کوئی ضرورت نہیں۔";
+      en="No Whisper (Groq) key found yet — add your free Groq key in the AI Studio tab; that same key will work here automatically. There is no separate key field here.";
+    }else{
+      ur="Gemini key ابھی نہیں ملی — AI Studio والے ٹیب میں اپنی key ڈالیں، وہی key یہاں خود بخود چلے گی۔ یہاں الگ سے key ڈالنے کی کوئی ضرورت نہیں۔";
+      en="No Gemini key found yet — add your key in the AI Studio tab; that same key will work here automatically. There is no separate key field here.";
+    }
+    keyNote.setAttribute("data-ur",ur);keyNote.setAttribute("data-en",en);
+    keyNote.textContent=(lang==="en"?en:ur);
+  }
+}
 refreshKeyNote();
 if(mainKey)mainKey.addEventListener("input",refreshKeyNote);
+if(groqKeyEl)groqKeyEl.addEventListener("input",refreshKeyNote);
 function sanitize(s,key){
   var out=String(s||"");
   if(key)out=out.split(key).join("•••");
   out=out.replace(/AIza[0-9A-Za-z\-_]{8,}/g,"•••");
+  out=out.replace(/gsk_[0-9A-Za-z\-_]{8,}/g,"•••");
   return out.slice(0,260);
 }
 function errorText(status,detail,key){
@@ -3192,20 +3246,51 @@ $("voClearTextBtn").addEventListener("click",function(){voScript.value="";update
 /* ---------- Audio file se matn (transcription) ----------
    User apni audio file (tilawat / naat ki clip waghera) upload karta
    hai. File pehle phone par hi chhoti ki jati hai: decode karke
-   16 kHz mono WAV bana kar 60 second ke hisson mein Gemini ko
-   bhejte hain (generateContent + inlineData — REST API ki
-   documented camelCase shakal) aur har hisse ka matn jod kar
-   script box mein likh dete hain. Is se 13 MB ki WAV bhi halki
-   ho jati hai (poori file base64 mein bhejne par ~17 MB ban kar
-   API ki inline had ke qareeb pohonch jati thi) aur lambi file
-   bhi chal jati hai. Kharabi ho to asal error (status + saaf
-   Urdu wajah) ISI khane ke andar laal box (voTrError) mein bara
-   dikhta hai — user parh kar bata sakta hai. */
+   16 kHz mono WAV bana kar 60 second ke hisson mein bhejte hain
+   aur har hisse ka matn jod kar script box mein likh dete hain.
+   Do tareeqe hain (user upar buttons se chunta hai, chunav save
+   rehta hai): (1) Gemini — generateContent + inlineData (REST API
+   ki documented camelCase shakal); (2) Whisper (Backup) — Groq ke
+   muft endpoint par whisper-large-v3-turbo, multipart upload.
+   Gemini par aakhir mein 503 aaye aur Groq key save ho to baqi
+   hisse khud Whisper se nikalte hain (trSendAuto). Is se 13 MB ki
+   WAV bhi halki ho jati hai (poori file base64 mein bhejne par
+   ~17 MB ban kar API ki inline had ke qareeb pohonch jati thi)
+   aur lambi file bhi chal jati hai. Kharabi ho to asal error
+   (status + saaf Urdu wajah) ISI khane ke andar laal box
+   (voTrError) mein bara dikhta hai — user parh kar bata sakta hai. */
 var voAudioInput=$("voAudioInput"), voTrStatus=$("voTrStatus"), voTrError=$("voTrError"), voTrBusy=false;
 var voTrProgWrap=$("voTrProgWrap"), voTrProgress=$("voTrProgress"), voTrTimerEl=$("voTrTimer"), voTrInfo=$("voTrInfo");
 var voTrController=null, voTrCancelled=false, voTrTimerInt=null, voTrStart=0;
 $("voAudioPickBtn").addEventListener("click",function(){voAudioInput.click();});
 $("voTrCancelBtn").addEventListener("click",function(){voTrCancelled=true;if(voTrController)try{voTrController.abort();}catch(e){}});
+/* ---------- Tareeqa (Gemini / Whisper) chunna — buttons, button
+   label aur neeche wali hint sab chune hue tareeqe ke mutabiq
+   badal jate hain. Chuna hua tareeqa browser mein save rehta hai. */
+var TR_HINT_GEMINI={ur:"اپنی آڈیو فائل (MP3 / WAV / M4A وغیرہ) چنیں — Gemini اسے سن کر اس کا متن (transcription) نیچے والے خانے میں لکھ دے گا۔ پھر اسی متن پر نیچے حصہ 2 میں آواز چن کر حصہ 3 سے وائس اوور بنا لیں۔ فائل بھیجنے سے پہلے آپ کے فون پر ہی چھوٹی (16 kHz mono) کر دی جاتی ہے، اس لیے بڑی WAV فائل بھی چل جاتی ہے؛ لمبی فائل حصوں میں بھیج کر متن جوڑ دیا جاتا ہے۔ AI Studio والی save شدہ key ہی استعمال ہوگی۔",en:"Choose your audio file (MP3 / WAV / M4A etc.) — Gemini will listen to it and write its transcription into the box below. Then pick a voice in section 2 and generate the voice over in section 3 from that same text. Before sending, the file is shrunk on your phone (16 kHz mono), so even a large WAV works; a long file is sent in parts and the text is joined together. The saved AI Studio key is used."};
+var TR_HINT_WHISPER={ur:"اپنی آڈیو فائل (MP3 / WAV / M4A وغیرہ) چنیں — Whisper (Groq پر چلنے والا model whisper-large-v3-turbo) اسے سن کر اس کا متن نیچے والے خانے میں لکھ دے گا۔ پھر اسی متن پر نیچے حصہ 2 میں آواز چن کر حصہ 3 سے وائس اوور بنا لیں۔ فائل بھیجنے سے پہلے آپ کے فون پر ہی چھوٹی (16 kHz mono) کر دی جاتی ہے اور 1 منٹ کے حصوں میں Groq کو جاتی ہے — ہر حصہ مفت حد (25 MB) سے بہت چھوٹا ہوتا ہے۔ Groq key AI Studio والے ٹیب میں save ہوتی ہے۔",en:"Choose your audio file (MP3 / WAV / M4A etc.) — Whisper (model whisper-large-v3-turbo, running on Groq) will listen to it and write its transcription into the box below. Then pick a voice in section 2 and generate the voice over in section 3 from that same text. Before sending, the file is shrunk on your phone (16 kHz mono) and sent to Groq in 1-minute parts — each part is far below the free limit (25 MB). The Groq key is saved in the AI Studio tab."};
+function trApplyMethodUI(){
+  var m=trMethod();
+  var gb=$("trMethodGemini"),wb=$("trMethodWhisper");
+  if(gb)gb.setAttribute("aria-pressed",m==="gemini"?"true":"false");
+  if(wb)wb.setAttribute("aria-pressed",m==="whisper"?"true":"false");
+  var pl=$("voPickLabel");
+  if(pl){
+    var ur=m==="whisper"?"آڈیو فائل چنیں — Whisper متن لکھ دے گا":"آڈیو فائل چنیں — Gemini متن لکھ دے گا";
+    var en=m==="whisper"?"Choose an Audio File — Whisper Will Write the Script":"Choose an Audio File — Gemini Will Write the Script";
+    pl.setAttribute("data-ur",ur);pl.setAttribute("data-en",en);
+    pl.textContent=(lang==="en"?en:ur);
+  }
+  var hint=$("voTrHint");
+  if(hint){
+    var h=(m==="whisper")?TR_HINT_WHISPER:TR_HINT_GEMINI;
+    hint.setAttribute("data-ur",h.ur);hint.setAttribute("data-en",h.en);
+    hint.textContent=(lang==="en"?h.en:h.ur);
+  }
+  refreshKeyNote();
+}
+$("trMethodGemini").addEventListener("click",function(){lsSet(METHOD_LS,"gemini");trApplyMethodUI();});
+$("trMethodWhisper").addEventListener("click",function(){lsSet(METHOD_LS,"whisper");trApplyMethodUI();});
 function trShowProgress(){
   voTrProgWrap.classList.remove("hidden");voTrProgress.value=0;voTrInfo.textContent="";
   voTrStart=Date.now();voTrTimerEl.textContent="0:00";
@@ -3235,9 +3320,26 @@ function showTrError(status,detail){
     var d=sanitize(detail,currentKey());
     if(d)msg+="\n\n"+T("تکنیکی تفصیل (key چھپا کر): ","Technical detail (key hidden): ")+d;
   }else if(status==="timeout"){
-    msg=T("⏰ وقت زیادہ لگ گیا — Gemini نے 2 منٹ میں جواب نہیں دیا، اس لیے درخواست خود رک گئی (ایک دفعہ خودکار دوبارہ کوشش بھی ہو چکی ہے)۔ نیٹ کنکشن چیک کر کے دوبارہ کوشش کریں — چھوٹی فائل ہو تو کام اور جلدی ہو جائے گا۔","⏰ It took too long — Gemini did not answer within 2 minutes, so the request stopped by itself (one automatic retry was also tried). Check your connection and try again — a shorter file will finish faster.");
+    msg=T("⏰ وقت زیادہ لگ گیا — سرور نے 2 منٹ میں جواب نہیں دیا، اس لیے درخواست خود رک گئی (ایک دفعہ خودکار دوبارہ کوشش بھی ہو چکی ہے)۔ نیٹ کنکشن چیک کر کے دوبارہ کوشش کریں — چھوٹی فائل ہو تو کام اور جلدی ہو جائے گا۔","⏰ It took too long — the server did not answer within 2 minutes, so the request stopped by itself (one automatic retry was also tried). Check your connection and try again — a shorter file will finish faster.");
   }else if(status===503){
     msg=T("⏳ Google کا model ابھی بہت busy ہے (503 UNAVAILABLE) — یہ Google کی طرف سے عارضی بھیڑ (high demand) ہوتی ہے، آپ کی key یا فائل کا مسئلہ نہیں۔ خودکار طور پر انتظار کر کے دوبارہ کوشش اور backup model (gemini-3.5-flash-lite) بھی آزمایا جا چکا ہے۔ چند منٹ بعد دوبارہ کوشش کریں — بھیڑ عام طور پر جلد ختم ہو جاتی ہے۔","⏳ Google's model is very busy right now (503 UNAVAILABLE) — this is temporary high demand on Google's side, not a problem with your key or file. Waiting-and-retrying and the backup model (gemini-3.5-flash-lite) were already tried automatically. Please try again in a few minutes — the rush usually clears soon.");
+    if(!currentGroqKey())msg+="\n\n"+T("💡 اگلی دفعہ کا حل: AI Studio والے ٹیب میں muft Groq key ڈال دیں — پھر Gemini busy (503) ہو تو Whisper backup خود بخود چل کر متن نکال دے گا، انتظار نہیں کرنا پڑے گا۔","💡 For next time: add the free Groq key in the AI Studio tab — then whenever Gemini is busy (503), the Whisper backup will run automatically and produce the script, with no waiting.");
+  }else if(status==="wnokey"){
+    msg=T("🔑 Whisper کے لیے Groq key چاہیے — AI Studio والے ٹیب میں نیچے “Groq API Key (Whisper Ke Liye)” والے خانے میں اپنی muft Groq key ڈالیں (console.groq.com سے مفت بنتی ہے، کارڈ نہیں چاہیے — اسی خانے کے اوپر آسان steps لکھے ہیں)۔ Key save ہوتے ہی Whisper چل جائے گا۔","🔑 Whisper needs a Groq key — in the AI Studio tab, paste your free Groq key into the “Groq API Key (Whisper Ke Liye)” field (it is free at console.groq.com, no card needed — easy steps are written just above that field). As soon as the key is saved, Whisper will work.");
+  }else if(status==="wkey"){
+    msg=T("🔑 Groq key غلط لگ رہی ہے (خرابی 401) — AI Studio والے ٹیب میں Groq key چیک کریں: پوری copy ہوئی ہے؟ console.groq.com → API Keys میں وہی key موجود اور active ہے؟ نئی key بنا کر ڈالنا سب سے آسان حل ہے۔","🔑 The Groq key looks wrong (error 401) — check the Groq key in the AI Studio tab: was it copied in full? Is that same key present and active at console.groq.com → API Keys? Making a fresh key and pasting it is the easiest fix.");
+    var wd=sanitize(detail,currentGroqKey());
+    if(wd)msg+="\n\n"+T("تکنیکی تفصیل (key چھپا کر): ","Technical detail (key hidden): ")+wd;
+  }else if(status==="wbusy"){
+    msg=T("⏳ Groq کا Whisper model ابھی busy ہے (503) — تھوڑی دیر رک کر خودکار دوبارہ کوشش بھی ہو چکی ہے۔ یہ عارضی بھیڑ ہوتی ہے؛ چند منٹ بعد دوبارہ آزمائیں، یا اوپر طریقہ بدل کر Gemini چن لیں۔","⏳ Groq's Whisper model is busy right now (503) — an automatic wait-and-retry was already tried. This is temporary load; try again in a few minutes, or switch the method above to Gemini.");
+    var bd=sanitize(detail,currentGroqKey());
+    if(bd)msg+="\n\n"+T("تکنیکی تفصیل (key چھپا کر): ","Technical detail (key hidden): ")+bd;
+  }else if(status==="wlimit"){
+    msg=T("🚦 Groq کی مفت حد (rate limit) آ گئی ہے (429) — مفت plan میں فی منٹ / فی گھنٹہ آڈیو کی حد ہوتی ہے۔ تھوڑا انتظار کر کے دوبارہ کوشش کریں، یا اوپر طریقہ بدل کر Gemini چن لیں۔","🚦 Groq's free rate limit was hit (429) — the free plan caps audio per minute / per hour. Wait a little and try again, or switch the method above to Gemini.");
+    var ld=sanitize(detail,currentGroqKey());
+    if(ld)msg+="\n\n"+T("تکنیکی تفصیل (key چھپا کر): ","Technical detail (key hidden): ")+ld;
+  }else if(status==="wtoobig"){
+    msg=T("📦 یہ حصہ Groq کی مفت حد (25 MB) سے بڑا ہے — اس لیے نہیں بھیجا جا سکا۔ حیرت کی بات ہے کیونکہ حصے چھوٹے کر کے بھیجے جاتے ہیں؛ فائل چھوٹی کر کے یا چھوٹی کلپ کاٹ کر دوبارہ آزمائیں۔","📦 This part is larger than Groq's free limit (25 MB), so it could not be sent. Parts are normally sent shrunk, so try a smaller file or a shorter clip.");
   }else{
     msg=errorText(status,detail,currentKey());
   }
@@ -3339,6 +3441,95 @@ function trSendChunk(key,mime,b64,onEvent){
   }
   return attempt(0);
 }
+/* ---------- Whisper backup (Groq) ----------
+   Groq ka official OpenAI-compatible endpoint (console.groq.com/docs/
+   speech-to-text se verify shuda): POST multipart form —
+   file + model + response_format=json, jawab {"text": "..."}.
+   Model: whisper-large-v3-turbo. Muft plan: card nahi, file ki had
+   25 MB — hamare 1 minute ke 16 kHz mono hisse ~2 MB ke hote hain.
+   Hugging Face ka muft serverless endpoint is model ke liye
+   bharose ke qabil nahi raha (router par audio >30s ki kharabi aur
+   base64-as-path wali reports), is liye backup Groq par hai — page
+   par har jagah saaf likha hai ke Whisper Groq par chalta hai.
+   Timeout / Cancel Gemini wale hi pattern par: 120 second timeout,
+   Cancel button isi controller ko abort karta hai. 429 (muft had)
+   par ~20 second aur 503 (busy) par ~15 second ruk kar aik dobara
+   koshish; phir bhi na ho to saaf Urdu wajah wala status throw hota
+   hai: "wkey" (key ghalat), "wlimit" (had), "wbusy" (busy),
+   "wtoobig" (file bari). */
+var WHISPER_MODEL="whisper-large-v3-turbo";
+var WHISPER_URL="https://api.groq.com/openai/v1/audio/transcriptions";
+function trSendWhisperChunk(gkey,blob,fname,onEvent){
+  function attempt(n){
+    if(voTrCancelled)return Promise.reject({name:"AbortError"});
+    var ctrl=new AbortController();voTrController=ctrl;
+    var timedOut=false;
+    var timer=setTimeout(function(){timedOut=true;try{ctrl.abort();}catch(e){}},TR_TIMEOUT_MS);
+    var fd=new FormData();
+    fd.append("file",blob,fname||"chunk.wav");
+    fd.append("model",WHISPER_MODEL);
+    fd.append("response_format","json");
+    fd.append("temperature","0");
+    return fetch(WHISPER_URL,{method:"POST",signal:ctrl.signal,headers:{"Authorization":"Bearer "+gkey},body:fd})
+    .then(function(r){clearTimeout(timer);return r.text().then(function(tx){return{ok:r.ok,status:r.status,tx:tx};});})
+    .then(function(res){
+      if(!res.ok){
+        if(res.status===401||res.status===403)throw{status:"wkey",detail:res.tx};
+        if(res.status===413)throw{status:"wtoobig",detail:res.tx};
+        if(res.status===429||res.status>=500){
+          if(n<1){
+            if(onEvent)onEvent("wbusy",res.status);
+            return wait(res.status===429?20000:15000).then(function(){return attempt(n+1);});
+          }
+          throw{status:res.status===429?"wlimit":"wbusy",detail:res.tx};
+        }
+        throw{status:res.status,detail:res.tx};
+      }
+      var json=null;try{json=JSON.parse(res.tx);}catch(e){}
+      var out=json&&typeof json.text==="string"?json.text.trim():"";
+      if(!out)throw{status:"noaudio",detail:res.tx};
+      if(onEvent)onEvent("model",WHISPER_MODEL);
+      return out;
+    })
+    .catch(function(err){
+      clearTimeout(timer);
+      if(voTrCancelled)throw{name:"AbortError"};
+      if(err&&typeof err.status!=="undefined")throw err;
+      if(err&&err.name==="AbortError"&&!timedOut)throw err;
+      /* timeout ya network — aik dobara koshish */
+      if(n<1){
+        if(onEvent)onEvent("retry",timedOut);
+        return wait(1500).then(function(){return attempt(n+1);});
+      }
+      if(timedOut)throw{status:"timeout",detail:""};
+      throw{status:0,detail:(err&&err.message)||"network"};
+    });
+  }
+  return attempt(0);
+}
+/* ---------- Tareeqa dispatcher ----------
+   trRunMethod: is run ka chuna hua tareeqa ("gemini" / "whisper").
+   trRunGkey: run ke shuru mein li gayi Groq key.
+   Gemini tareeqa ho aur kisi hisse par aakhir mein 503 aaye aur
+   Groq key save ho to wahi hissa (aur us ke baad ke hisse) khud
+   Whisper se nikalte hain — onEvent("autofallback") se status mein
+   saaf khabar jati hai. Groq key na ho to 503 wala error waisa hi
+   upar jata hai, jahan laal khane mein key dalne ki hidayat bhi
+   shamil hoti hai. */
+var trRunMethod="gemini", trRunKey="", trRunGkey="", trAutoFb=false;
+function trSendAuto(mime,b64,blob,fname,onEvent){
+  if(trRunMethod==="whisper"||trAutoFb){
+    return trSendWhisperChunk(trRunGkey,blob,fname,onEvent);
+  }
+  return trSendChunk(trRunKey,mime,b64,onEvent).catch(function(err){
+    if(err&&err.status===503&&trRunGkey){
+      trAutoFb=true;
+      if(onEvent)onEvent("autofallback",WHISPER_MODEL);
+      return trSendWhisperChunk(trRunGkey,blob,fname,onEvent);
+    }
+    throw err;
+  });
+}
 function trSliceMono(buf,startSec,durSec){
   var sr=buf.sampleRate,start=Math.floor(startSec*sr);
   var len=Math.min(buf.length-start,Math.ceil(durSec*sr));
@@ -3355,11 +3546,31 @@ voAudioInput.addEventListener("change",function(){
   voAudioInput.value="";
   if(!file||voTrBusy)return;
   hideTrError();refreshKeyNote();
-  var key=currentKey();
-  if(!key){showTrError(401,"");setV(voTrStatus,T("Gemini key نہیں ملی — نیچے لال خانہ پڑھیں۔","No Gemini key found — read the red box below."),"err");return;}
+  /* Is run ka tareeqa aur keys — Gemini key na ho lekin Groq key ho
+     to seedha Whisper chala do, user ko khali error na mile. */
+  trRunMethod=trMethod(); trRunKey=currentKey(); trRunGkey=currentGroqKey(); trAutoFb=false;
+  if(trRunMethod==="gemini"&&!trRunKey&&trRunGkey)trRunMethod="whisper";
+  if(trRunMethod==="whisper"&&!trRunGkey){showTrError("wnokey","");setV(voTrStatus,T("Groq key نہیں ملی — نیچے لال خانہ پڑھیں۔","No Groq key found — read the red box below."),"err");return;}
+  if(trRunMethod==="gemini"&&!trRunKey){showTrError(401,"");setV(voTrStatus,T("Gemini key نہیں ملی — نیچے لال خانہ پڑھیں۔","No Gemini key found — read the red box below."),"err");return;}
+  var key=trRunKey;
   if(!AC){trFail(0,T("اس browser میں AudioContext نہیں — Chrome آزمائیں۔","This browser has no AudioContext — try Chrome."));return;}
   voTrBusy=true;voTrCancelled=false;voTrController=null;
-  var trUsedModel="";
+  var trUsedModel="", trUsedWhisper=false, trUsedGemini=false;
+  function trSenderName(){return (trAutoFb||trRunMethod==="whisper")?"Whisper (Groq)":"Gemini";}
+  function trOnEvent(type,info){
+    if(type==="model"){trUsedModel=info;if(info===WHISPER_MODEL)trUsedWhisper=true;else trUsedGemini=true;return true;}
+    if(type==="autofallback"){
+      setV(voTrStatus,T("Gemini بہت busy رہا (503) — اب یہ حصہ Whisper (Groq) backup سے نکل رہا ہے…","Gemini stayed very busy (503) — this part is now being transcribed by the Whisper (Groq) backup…"));
+      return true;
+    }
+    if(type==="wbusy"){
+      setV(voTrStatus,info===429
+        ?T("Groq کی مفت حد قریب ہے (429) — تھوڑی دیر (~20 سیکنڈ) رک کر خود دوبارہ کوشش ہوگی…","Groq's free limit was hit (429) — it will retry by itself after a short wait (~20 seconds)…")
+        :T("Groq کا Whisper model ابھی busy ہے (503) — تھوڑی دیر (~15 سیکنڈ) رک کر خود دوبارہ کوشش ہوگی…","Groq's Whisper model is busy right now (503) — it will retry by itself after a short wait (~15 seconds)…"));
+      return true;
+    }
+    return false;
+  }
   trShowProgress();
   setV(voTrStatus,T("آڈیو پڑھی جا رہی ہے (decode ہو رہی ہے)…","Reading the audio (decoding)…"));
   file.arrayBuffer().then(function(ab){
@@ -3381,12 +3592,12 @@ voAudioInput.addEventListener("change",function(){
           setV(voTrStatus,T("حصہ "+(i+1)+" از "+total+" — آڈیو ہلکی کی جا رہی ہے (16 kHz mono)…","Part "+(i+1)+" of "+total+" — shrinking the audio (16 kHz mono)…"));
           var slice=trSliceMono(buf,i*CH,CH);
           return normalizeBuf(slice,16000,1)
-          .then(function(nb){return blobToB64(encodeWav(nb));})
-          .then(function(b64){
+          .then(function(nb){var wb=encodeWav(nb);return blobToB64(wb).then(function(b64){return{b64:b64,blob:wb};});})
+          .then(function(pkg){
             if(voTrCancelled)throw{name:"AbortError"};
-            setV(voTrStatus,T("حصہ "+(i+1)+" از "+total+" — Gemini کو بھیج دیا گیا ہے، اب Gemini متن بنا رہا ہے…","Part "+(i+1)+" of "+total+" — sent to Gemini, now Gemini is writing the text…"));
-            return trSendChunk(key,"audio/wav",b64,function(type,info){
-              if(type==="model"){trUsedModel=info;return;}
+            setV(voTrStatus,T("حصہ "+(i+1)+" از "+total+" — "+trSenderName()+" کو بھیج دیا گیا ہے، اب "+trSenderName()+" متن بنا رہا ہے…","Part "+(i+1)+" of "+total+" — sent to "+trSenderName()+", now "+trSenderName()+" is writing the text…"));
+            return trSendAuto("audio/wav",pkg.b64,pkg.blob,"chunk.wav",function(type,info){
+              if(trOnEvent(type,info))return;
               if(type==="busy"){
                 setV(voTrStatus,T("حصہ "+(i+1)+" از "+total+" — Google کا model ابھی بہت busy ہے (503)؛ تھوڑی دیر (~25 سیکنڈ) رک کر خود دوبارہ کوشش ہوگی…","Part "+(i+1)+" of "+total+" — Google's model is very busy right now (503); it will retry by itself after a short wait (~25 seconds)…"));
               }else if(type==="fallback"){
@@ -3410,12 +3621,12 @@ voAudioInput.addEventListener("change",function(){
        lekin sirf tab jab us ka size mehfooz ho. */
     if(file.size>14*1024*1024)throw{status:"toobig"};
     var mime=voMimeFor(file); if(mime==="audio/x-wav")mime="audio/wav";
-    setV(voTrStatus,T("Gemini آڈیو سن کر متن لکھ رہا ہے… تھوڑا انتظار کریں۔","Gemini is listening to the audio and writing the script… please wait."));
+    setV(voTrStatus,T(trSenderName()+" آڈیو سن کر متن لکھ رہا ہے… تھوڑا انتظار کریں۔",trSenderName()+" is listening to the audio and writing the script… please wait."));
     return blobToB64(file).then(function(b64){
       if(voTrCancelled)throw{name:"AbortError"};
       voTrProgress.value=50;
-      return trSendChunk(key,mime,b64,function(type,info){
-        if(type==="model"){trUsedModel=info;return;}
+      return trSendAuto(mime,b64,file,file.name||"audio.wav",function(type,info){
+        if(trOnEvent(type,info))return;
         if(type==="busy")setV(voTrStatus,T("Google کا model ابھی بہت busy ہے (503)؛ تھوڑی دیر (~25 سیکنڈ) رک کر خود دوبارہ کوشش ہوگی…","Google's model is very busy right now (503); it will retry by itself after a short wait (~25 seconds)…"));
         else if(type==="fallback")setV(voTrStatus,T("پہلا model busy رہا، اب backup model ("+info+") آزمایا جا رہا ہے…","The first model stayed busy, now trying the backup model ("+info+")…"));
         else if(type==="retry")setV(voTrStatus,T("جواب آنے میں دیر ہو گئی — خود دوبارہ کوشش ہو رہی ہے…","The reply is late — retrying automatically…"));
@@ -3426,7 +3637,8 @@ voAudioInput.addEventListener("change",function(){
     var out=texts.join("\n").trim();
     if(!out){trFail("noaudio","");return;}
     voScript.value=out;updateCounts();
-    setV(voTrStatus,T("✓ متن تیار ہے — نیچے خانے میں آ گیا ہے۔ اب حصہ 2 میں آواز چن کر حصہ 3 سے وائس اوور بنائیں۔","✓ Script ready — it is in the box below. Now pick a voice in section 2 and generate the voice over in section 3.")+(trUsedModel?T(" — کامیاب model: "," — model used: ")+trUsedModel:""),"ok");
+    var methodLabel=trUsedWhisper&&trUsedGemini?"Gemini + Whisper (Groq) backup":(trUsedWhisper?"Whisper (Groq)":"Gemini");
+    setV(voTrStatus,T("✓ متن تیار ہے — نیچے خانے میں آ گیا ہے۔ اب حصہ 2 میں آواز چن کر حصہ 3 سے وائس اوور بنائیں۔","✓ Script ready — it is in the box below. Now pick a voice in section 2 and generate the voice over in section 3.")+T(" — طریقہ: "," — method: ")+methodLabel+(trUsedModel?T(" — کامیاب model: "," — model used: ")+trUsedModel:""),"ok");
   }).catch(function(e){
     if(e&&e.name==="AbortError"){
       voTrBusy=false;trHideProgress();
@@ -4030,7 +4242,7 @@ $("capDownloadBtn").addEventListener("click",function(){
   }).catch(function(){capShowError(T("آواز پڑھی نہیں جا سکی — وائس اوور دوبارہ بنا کر کوشش کریں۔","The audio could not be decoded — regenerate the voice over and try again."));});
 });
 
-applyLang();updateCounts();
+applyLang();updateCounts();trApplyMethodUI();
 })();
 </script>
 </body>
