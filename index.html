@@ -1996,14 +1996,20 @@ var SEG_MODEL_URL="https://storage.googleapis.com/mediapipe-models/image_segment
 var segState={status:"idle",seg:null,err:""};
 window.__segState=segState;
 function ensureSegmenter(){
-  if(segState.status!=="idle")return;
-  segState.status="loading";
+  if(segState.status==="loading"||segState.status==="ready")return;
+  segState.status="loading";segState.err="";
+  try{if(window.__segUiRefresh)window.__segUiRefresh();}catch(e){}
   function attempt(del){
-    return import(SEG_BUNDLE_URL).then(function(mod){
+    var p=import(SEG_BUNDLE_URL).then(function(mod){
       return mod.FilesetResolver.forVisionTasks(SEG_WASM_URL).then(function(fs){
         return mod.ImageSegmenter.createFromOptions({baseOptions:{modelAssetPath:SEG_MODEL_URL,delegate:del},runningMode:"IMAGE",outputCategoryMask:true,outputConfidenceMasks:false});
       });
     });
+    /* 60s ki hadd: kuch phones par GPU wala tareeqa atak jata hai aur
+       jawab hi nahi deta — timeout par CPU wala tareeqa khud try hoga,
+       aur fail hone par button dobara dabane se nai koshish hogi. */
+    var to=new Promise(function(_,rej){setTimeout(function(){rej(new Error("timeout ("+del+")"));},60000);});
+    return Promise.race([p,to]);
   }
   attempt("GPU").catch(function(){return attempt("CPU");}).then(function(seg){
     segState.seg=seg;segState.status="ready";
@@ -4006,8 +4012,8 @@ function renderContext(){
         box.appendChild(bc);
       }
       var sh=document.createElement("span");sh.className="hint";sh.style.margin="0";
-      if(ss.status==="failed")sh.textContent="⚠ AI Background is phone/browser par load NAHI ho saka ("+(ss.err||"network/model")+") — ye feature yahan band hai. Chroma Key istemal karein, wo baghair internet ke chalta hai.";
-      else if(ss.status==="loading")sh.textContent="⏳ AI model load ho raha hai… internet chahiye, chand second se aik minute lag sakta hai. Load hote hi background khud badal jayega.";
+      if(ss.status==="failed")sh.textContent="⚠ AI Background load NAHI ho saka ("+(ss.err||"network/model")+") — dobara koshish ke liye Background wala button phir dabayein, ya Chroma Key istemal karein (wo baghair internet ke chalta hai).";
+      else if(ss.status==="loading")sh.textContent="⏳ AI model load ho raha hai… internet chahiye, 1–2 minute lag sakte hain. Atak jaye to khud doosra tareeqa try hoga. Load hote hi background khud badal jayega.";
       else if(ss.status==="ready")sh.textContent="✓ AI model tayyar hai. Note: Background AI phone par SLOW chal sakta hai — chhoti clips par behtareen natija milega; export mein waqt zyada lagega.";
       else sh.textContent="AI Background: pehli dafa model (~chand MB) internet se load hoga. Phone par ye SLOW ho sakta hai — chhoti clips ke liye behtar hai.";
       box.appendChild(sh);
