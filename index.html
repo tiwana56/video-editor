@@ -2006,7 +2006,7 @@ function ensureSegmenter(){
   function attempt(del){
     var p=import(SEG_BUNDLE_URL).then(function(mod){
       return mod.FilesetResolver.forVisionTasks(SEG_WASM_URL).then(function(fs){
-        return mod.ImageSegmenter.createFromOptions({baseOptions:{modelAssetPath:SEG_MODEL_URL,delegate:del},runningMode:"IMAGE",outputCategoryMask:true,outputConfidenceMasks:false});
+        return mod.ImageSegmenter.createFromOptions(fs,{baseOptions:{modelAssetPath:SEG_MODEL_URL,delegate:del},runningMode:"IMAGE",outputCategoryMask:true,outputConfidenceMasks:false});
       });
     });
     /* 60s ki hadd: kuch phones par GPU wala tareeqa atak jata hai aur
