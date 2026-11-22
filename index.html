@@ -361,6 +361,18 @@ ol.steps li{color:#d8e1ee}
 .btn.green:hover{background:#2ee06f;border-color:var(--green)}
 </style>
 <style>
+/* ===== AUDIO IMPORT HUB — Audio tab ab sirf import ke liye hai ===== */
+.import-card{border:1.5px solid var(--border2);background:var(--panel2);border-radius:14px;padding:14px;margin-top:14px}
+.import-card .label{color:var(--gold);font-size:12.5px;margin-top:0}
+.import-card video{width:100%;max-height:320px;border-radius:10px;background:#000;display:block;margin-top:10px;border:1px solid var(--border2)}
+.import-card audio{width:100%;margin-top:10px;display:block}
+.mute-note{border:1px solid rgba(34,211,238,.45);background:rgba(34,211,238,.08);border-radius:10px;padding:10px 12px;font-size:13.5px;color:#cffafe;line-height:1.55;margin-top:10px}
+.hub-sent{border:1.5px solid var(--green);background:rgba(34,197,94,.12);border-radius:12px;padding:12px;margin-top:12px}
+.hub-sent p{margin:0 0 10px;font-size:14.5px;font-weight:600;color:#bbf7d0;line-height:1.6}
+.hub-sent .btn{width:100%;background:var(--green);border-color:var(--green);color:#04150a;font-weight:800}
+.hub-sent .btn:hover{background:#2ee06f;border-color:var(--green)}
+</style>
+<style>
 /* ===== SCREEN SIZE / FRAME BAR — preview ke bilkul neeche, sab se saaf jagah ===== */
 .frame-bar{border-top:1px solid var(--border);background:#141a26;padding:10px 12px 12px}
 .frame-label{display:block;font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--gold);margin:2px 0 8px}
@@ -542,7 +554,7 @@ ol.steps li{color:#d8e1ee}
         <input class="hidden" type="file" id="fileInput" accept="video/*" multiple/>
         <p class="file-meta" id="fileMeta">No media imported — abhi koi video select nahi hui.</p>
         <button class="btn gold block" id="mediaAudioUploadBtn" type="button" style="margin-top:4px">📤 Audio File Upload Karein (MP3 / WAV)</button>
-        <p class="hint">Apni audio file (naat, background awaz, apni recording) chunein — wo video mein merge ho jayegi, <b style="color:var(--text)">video ka apna sound band</b> ho jayega aur preview + export dono mein sirf is audio ki awaz chalegi. Yahi button neeche Audio tab mein bhi hai.</p>
+        <p class="hint">Apni audio file (naat, background awaz, apni recording) chunein — wo video mein merge ho jayegi, <b style="color:var(--text)">video ka apna sound band</b> ho jayega aur preview + export dono mein sirf is audio ki awaz chalegi. Audio tab (Import Hub) se bhi audio file seedha yahin bheji ja sakti hai — wahan “Editor Mein Bhejein” dabayein.</p>
         <button class="btn gold block" id="mediaLogoBtn" type="button" style="margin-top:10px">🏷️ Logo Lagayein — Poori Video Par Fixed</button>
         <p class="file-meta" id="mediaLogoMeta">Abhi koi logo nahi laga.</p>
         <p class="hint">Apna channel logo (PNG sab se behtar) yahin Media list se chunein — logo <b style="color:var(--text)">poori video par aik hi jagah FIXED</b> rahega: shuru se aakhir tak, na gayab hoga na agay-peeche hoga, chahe baad mein aur clips jod dein. Jagah (kona) badalni ho to neeche timeline ki <b style="color:var(--text)">Logo wali line</b> mein logo par tap karke select karein — wahan chaaron konon ke button milenge.</p>
@@ -834,49 +846,87 @@ ol.steps li{color:#d8e1ee}
       </div>
     </section>
 
-    <!-- AUDIO EXTRACT -->
+    <!-- AUDIO IMPORT HUB — sirf do kaam: (1) video dalein, audio khud
+         alag ho jayegi; (2) audio file dalein. Dono ko yahin se Editor
+         ya Voice Over mein bheja ja sakta hai. Baqi editing ke saare
+         options Editor tab mein pehle se maujood hain. -->
     <section class="panel" aria-labelledby="audioHead">
-      <div class="panel-head"><h2 id="audioHead">🎵 Audio Alag Karein — Video → Audio File</h2></div>
+      <div class="panel-head"><h2 id="audioHead">🎵 Audio — Import Hub</h2></div>
       <div class="panel-body">
-        <div class="merge-hub">
-          <span class="label" style="margin-top:0">★ Sabse Zaroori — Sab Merge Karein (Aik Hi File)</span>
-          <p class="hub-status" id="mergeHubStatus">Abhi koi clip nahi — pehle Editor → Media se videos load karein.</p>
-          <button class="hub-btn gold" id="hubAudioBtn" type="button">🎵 Sab Audio Merge Karein — AIK File Download (WAV)</button>
-          <button class="hub-btn green" id="hubVideoBtn" type="button">🎬 Sab Video Merge Karein — AIK Video Export</button>
-          <button class="hub-btn cyan" id="hubUploadBtn" type="button">📤 Apni Audio File Upload Karein — Video Mein Lagayein</button>
-          <p class="status" id="hubStatus" role="status"></p>
-          <p class="hint" style="margin-bottom:0">Pehla button: <b style="color:var(--text)">saari clips ki awaz jud kar AIK hi audio file</b> download hogi. Doosra button: <b style="color:var(--text)">saari clips jud kar AIK hi video</b> export hogi. Teesra button: <b style="color:var(--text)">apni audio file (MP3 / WAV) upload</b> karke video mein lagayein — video ka apna sound band ho jayega, sirf upload ki hui audio chalegi. Alag-alag clip select karne ki zaroorat nahi — sab khud aik sath select hai.</p>
+        <p class="subtle" style="margin-top:0">Is tab ka sirf <b style="color:var(--text)">do kaam</b> hai: <b style="color:var(--text)">video dalein</b> — us ki audio khud alag ho jayegi, ya <b style="color:var(--text)">audio file dalein</b>. Phir har cheez ko yahin se <b style="color:var(--text)">Editor</b> ya <b style="color:var(--text)">Voice Over</b> tab mein bhej dein. Trim, merge, export waghera ki editing Editor tab mein hoti hai.</p>
+
+        <!-- 1 — VIDEO: audio auto alag -->
+        <div class="import-card">
+          <span class="label">1 — Video Dalein: Audio Khud Alag Ho Jayegi</span>
+          <label class="file-pick" for="impVideoInput">
+            <span style="font-size:26px;display:block;margin-bottom:6px">🎬</span>
+            <b>Video Upload Karein</b>
+            <span>MP4, WebM — phone se seedha load, koi upload nahi<br/>Video dalte hi us ki <b>audio khud alag</b> ho jayegi aur video ki apni awaz <b>mute</b> ho jayegi</span>
+          </label>
+          <input class="hidden" type="file" id="impVideoInput" accept="video/*"/>
+          <p class="file-meta" id="impVideoMeta">Abhi koi video nahi dali.</p>
+          <div id="impVideoResult" class="hidden">
+            <video id="impVideoPreview" muted playsinline controls preload="metadata"></video>
+            <p class="mute-note">🔇 <b>Is video ki apni awaz MUTE hai</b> — upar wala preview bina awaz chalega. Nikli hui awaz neeche alag audio ki surat mein tayyar hai.</p>
+            <span class="label" style="margin-top:14px">🎧 Nikli Hui Audio (Alag File)</span>
+            <audio id="impExtractPreview" controls preload="metadata"></audio>
+            <p class="file-meta" id="impExtractMeta">Audio alag ki ja rahi hai…</p>
+            <button class="hub-btn green" id="impVideoToEditorBtn" type="button">🎬 Video Editor Mein Bhejein — Mute (Bina Awaz)</button>
+            <button class="hub-btn gold" id="impExtractToVoiceBtn" type="button" disabled>🎙️ Nikli Hui Audio Voice Over Mein Bhejein — Matn Nikalwayein</button>
+            <div class="hub-sent hidden" id="impVideoSent">
+              <p id="impVideoSentText"></p>
+              <button class="btn" id="impVideoGoBtn" type="button">✂️ Editor Tab Mein Jayein →</button>
+            </div>
+          </div>
+          <p class="status" id="impVideoStatus" role="status"></p>
         </div>
-        <p class="subtle" style="margin-top:0">Load ki hui video / clip se sirf awaz nikaal kar alag audio file download karein — naat ya tilawat ki audio alag rakhne, ya awaz kisi doosri video mein istemal karne ke liye.</p>
-        <span class="label">Tartib</span>
-        <div class="seg" role="group" aria-label="Audio ka hissa">
-          <button type="button" data-audiorange="trim" aria-pressed="true">Sirf Trim Wala Hissa</button>
-          <button type="button" data-audiorange="full" aria-pressed="false">Poori Video</button>
+
+        <!-- 2 — AUDIO FILE: dono jaga bhejein -->
+        <div class="import-card">
+          <span class="label">2 — Audio File Dalein (MP3 / WAV / M4A)</span>
+          <label class="file-pick" for="impAudioInput">
+            <span style="font-size:26px;display:block;margin-bottom:6px">🎵</span>
+            <b>Audio File Upload Karein</b>
+            <span>MP3, WAV, M4A — phone se seedha load, koi upload nahi<br/>Phir isay yahin se <b>Editor</b> mein ya <b>Voice Over</b> mein bhej dein</span>
+          </label>
+          <input class="hidden" type="file" id="impAudioInput" accept="audio/*"/>
+          <p class="file-meta" id="impAudioMeta">Abhi koi audio file nahi dali.</p>
+          <div id="impAudioResult" class="hidden">
+            <audio id="impAudioPreview" controls preload="metadata"></audio>
+            <button class="hub-btn green" id="impAudioToEditorBtn" type="button">🎬 Editor Mein Bhejein — Video Mein Lag Jayegi</button>
+            <button class="hub-btn gold" id="impAudioToVoiceBtn" type="button">🎙️ Voice Over Mein Bhejein — Matn Nikalwayein</button>
+            <div class="hub-sent hidden" id="impAudioSent">
+              <p id="impAudioSentText"></p>
+              <button class="btn" id="impAudioGoBtn" type="button">✂️ Editor Tab Mein Jayein →</button>
+            </div>
+          </div>
+          <p class="status" id="impAudioStatus" role="status"></p>
+          <p class="hint" style="margin-bottom:0"><b style="color:var(--text)">Editor Mein Bhejein:</b> audio video mein lag jayegi — video ka apna sound band ho jayega, sirf ye audio chalegi (preview + export), aur track timeline ki Audio line mein dikhega. <b style="color:var(--text)">Voice Over Mein Bhejein:</b> audio wahan transcription wali file ban jayegi — us ka Urdu matn khud nikal ayega.</p>
         </div>
-        <button class="btn gold block" id="extractAudioBtn" type="button" style="margin-top:14px">🎧 Audio File Banayein (WAV) — Sirf Select Clip</button>
-        <button class="btn gold block" id="extractCombinedBtn" type="button" style="margin-top:8px">🎧 Sab Clips Ki AIK Audio Banayein (WAV)</button>
-        <p class="hint">Upar wala button sirf select ki hui aik clip ki audio deta hai. Ye doosra button timeline ki <b style="color:var(--text)">sab clips (masalan teeno videos) ko aik hi audio file</b> mein jod kar deta hai — har clip ka trim wala hissa, usi tartib mein, darmiyan ke gap par khamoshi ke sath.</p>
-        <button class="btn toggle block" id="noiseBtn" type="button" aria-pressed="false" style="margin-top:8px">🔇 Shor Kam Karein (Noise Reduce): OFF</button>
-        <p class="hint">Noise Reduce ON karein to audio banate waqt halka shor — pankhe / AC ki ghun-ghun, hiss — kam ho jata hai aur awaz saaf sunai deti hai. Ye is WAV tareeqe par bhi lagta hai aur timeline ke audio track ke download par bhi.</p>
-        <div class="divider"></div>
-        <span class="label">🔀 Audio File Video Mein Merge Karein — Video Ka Sound Band</span>
-        <p class="subtle" style="margin:0 0 8px">Apni audio file (MP3 / WAV — naat, background awaz, apni recording) chunein: wo video mein merge ho jayegi, <b style="color:var(--text)">video ka apna sound band</b> ho jayega aur <b style="color:var(--text)">preview aur export — dono mein sirf is audio file ki awaz</b> chalegi.</p>
-        <label class="file-pick" for="mergeAudioInput">
-          <span style="font-size:24px;display:block;margin-bottom:4px">🎵</span>
-          <b>Audio File Chunein</b>
-          <span>MP3, WAV, M4A — phone se seedha load, koi upload nahi</span>
-        </label>
-        <input class="hidden" type="file" id="mergeAudioInput" accept="audio/*"/>
-        <p class="file-meta" id="mergeAudioMeta">Abhi koi audio file nahi lagi — video ka apna sound chal raha hai.</p>
-        <button class="btn toggle block" id="replaceToggle" type="button" aria-pressed="false" disabled style="margin-top:8px">🔇 Sirf Merge Audio Chalayein (Video Sound Band): OFF</button>
-        <button class="btn block" id="mergeRemoveBtn" type="button" disabled style="margin-top:8px">🗑 Merge Audio Hatayein</button>
-        <p class="hint">Audio file chunte hi merge khud ON ho jata hai. Toggle OFF karne se video ka apna sound wapas aa jayega. Merge audio timeline (Editor → Trim → Audio track) mein bhi nazar aata hai — wahan se drag karke us ki jagah aur kinare kheench kar lambai badal sakte hain. Agar audio video se chhoti ho to us ke baad khamoshi rahegi; lambi ho to video ke end par kat jayegi.</p>
-        <button class="btn block" id="extractAudioRecBtn" type="button" style="margin-top:8px">⏺ Live Record Karke Audio (WebM) — agar WAV na chale</button>
-        <div class="hidden" id="audioProgressWrap" style="margin-top:10px">
-          <progress id="audioProgress" max="100" value="0"></progress>
+
+        <!-- Editor / Voice Over ke merge hisse inhi khamosh khano ko
+             istemal karte hain (file picker + merge ki halat) — ye
+             nazar nahi aate, sirf peeche kaam karte hain taake Editor
+             se audio lagana aur Voice Over se awaz bhejna pehle ki
+             tarah chalta rahe. -->
+        <div class="hidden" aria-hidden="true">
+          <div class="seg" role="group" aria-label="Audio ka hissa">
+            <button type="button" data-audiorange="trim" aria-pressed="true">Sirf Trim Wala Hissa</button>
+            <button type="button" data-audiorange="full" aria-pressed="false">Poori Video</button>
+          </div>
+          <button class="btn gold block" id="extractAudioBtn" type="button">Audio File Banayein (WAV)</button>
+          <button class="btn gold block" id="extractCombinedBtn" type="button">Sab Clips Ki AIK Audio Banayein (WAV)</button>
+          <button class="btn toggle block" id="noiseBtn" type="button" aria-pressed="false">Noise Reduce: OFF</button>
+          <input type="file" id="mergeAudioInput" accept="audio/*"/>
+          <p class="file-meta" id="mergeAudioMeta">Abhi koi audio file nahi lagi — video ka apna sound chal raha hai.</p>
+          <button class="btn toggle block" id="replaceToggle" type="button" aria-pressed="false" disabled>Sirf Merge Audio Chalayein (Video Sound Band): OFF</button>
+          <button class="btn block" id="mergeRemoveBtn" type="button" disabled>Merge Audio Hatayein</button>
+          <button class="btn block" id="extractAudioRecBtn" type="button">Live Record Karke Audio (WebM)</button>
+          <div id="audioProgressWrap">
+            <progress id="audioProgress" max="100" value="0"></progress>
+          </div>
+          <p class="status" id="audioStatus" role="status"></p>
         </div>
-        <p class="status" id="audioStatus" role="status">Pehle upar se video / clip load karein.</p>
-        <p class="hint">WAV tareeqa tez hai — video chalaye baghair audio ban jata hai, aur WAV har jagah chalta hai (bara size ho sakta hai). WebM tareeqa video ko real-time chala kar record karta hai, file chhoti banti hai. Dono mein sirf select ki hui clip ka audio niklega.</p>
       </div>
     </section>
   </div>
@@ -974,18 +1024,17 @@ ol.steps li{color:#d8e1ee}
           <dt>Timeline (edit bar) aagay nazar nahi aati / scroll nahi hoti?</dt><dd>Bar par ungli rakh kar left/right slide karein — timeline scroll ho jayegi; ya timeline ke upar wale ◀ Peeche / Aagay ▶ buttons dabayein. Video chalte waqt bar khud playhead ke sath aagay barhti rehti hai, is liye agla hissa chop nahi hota. Poori video aik screen par dekhni ho to “Fit” dabayein.</dd>
           <dt>Video kaat kar chhota clip banana — sab se asan tareeqa?</dt><dd>Editor → Trim mein neeche sunehri frame wala “✂️ Video Kaato — Sirf 3 Asan Steps” khana hai. <b>Step 1:</b> video chala kar jahan se clip shuru karna hai wahan rokein aur “🟢 Yahan Se Shuru Karo” dabayein. <b>Step 2:</b> jahan khatam karna hai wahan rokein aur “🔴 Yahan Khatam Karo” dabayein — neeche wali line mein chune hue hisse ka time nazar aayega. <b>Step 3:</b> “✂️ Kaat Do” dabayein — baqi sab kat jayega, sirf wahi hissa reh jayega. Kaatne se pehle “▶ Pehle Ye Hissa Chala Kar Dekh Lo” se check bhi kar sakte hain (wo kaatega nahi, sirf dikhayega). Phone mein rakhi asal video file waisi hi rehti hai — galti ho jaye to dobara import kar lein. Neeche wale sliders sirf thora sa aage/peeche theek karne ke liye hain, aam taur par un ki zaroorat nahi.</dd>
           <dt>Kai clips aik video mein?</dt><dd>Import mein kai clips aik sath chunein — har clip ki asal lambai khud pehchan li jati hai, is liye timeline mein sab clips apni sahi jagah par barabar nazar aate hain. Har clip ka apna trim set karein, timeline mein clip ko drag karke ya Media list ke ↑ ↓ se tartib rakhein — Export sab ko jod kar aik video bana dega. Do clips ke darmiyan khali hissa (gap) chahiye to clip select karke “Gap +1s” dabayein.</dd>
-          <dt>Audio alag kaise?</dt><dd>“Audio Alag Karein” hisse se trim wala hissa ya poori video ki awaz WAV file mein download ho jati hai. Timeline mein “Audio Alag (Track)” karein to audio alag track ban jata hai — usay select karke “⬇ Ye Audio Download Karein (WAV)” se wahi hissa file mein bhi mil jata hai.</dd>
+          <dt>Audio alag kaise?</dt><dd><b>Audio</b> tab (Import Hub) mein video upload karein — us ki audio <b>khud alag</b> ho jayegi aur video ki apni awaz mute ho jayegi. Phir wahi se video ko Editor mein aur nikli hui audio ko Voice Over (matn ke liye) bhej sakte hain. Editor ki timeline mein kisi clip par “Audio Alag (Track)” karein to audio alag track bhi ban jata hai — usay select karke “⬇ Ye Audio Download Karein (WAV)” se wahi hissa file mein bhi mil jata hai.</dd>
           <dt>Audio track par Split / Trim / Delete kaise?</dt><dd>Timeline ki <b>Audio wali line</b> mein track par tap karke select karein — neeche video clips jaisay hi button aa jayenge: <b>“✂️ Split (Playhead Par)”</b> = playhead wali jagah se track do hisso mein; <b>“⏮ Trim Left”</b> = playhead se pehle wala hissa kat jayega; <b>“Trim Right ⏭”</b> = playhead ke baad wala hissa kat jayega; <b>“🗑 Audio Track Delete”</b> = poora track delete. Misal: beech ka ghalat hissa nikalna ho to pehle wahan Split, phir aakhir par Split, phir beech wala hissa select karke Delete kar dein. Track ke kinare kheench kar bhi trim hota hai. Galti ho jaye to upar <b>Undo</b> dabayein — kata/delete hua hissa wapas aa jayega. (Sirf “Sab clips ki aik audio” wala combined track khud clips se banta hai, us par Split/Trim nahi lagta — kisi aik clip ki awaz kaatni ho to pehle us ka alag track banayein.)</dd>
-          <dt>Teeno / sab videos ki AIK hi audio?</dt><dd>Audio hisse mein “Sab Clips Ki AIK Audio Banayein (WAV)” dabayein — timeline ki sab clips aik hi audio file mein tartib se jud jati hain (har clip ka trim wala hissa). Timeline ke project tools mein “Sab Clips Ki Aik Audio (Track)” se wahi cheez aik combined track ki surat mein bhi banti hai, wahan se bhi WAV download ho jata hai.</dd>
-          <dt>Saari audio AIK file mein download karni hai — button kahan hai?</dt><dd>Neeche wale <b>Audio</b> tab mein jayein — sab se upar sunehri (gold) frame mein sab se bara button hai: “🎵 Sab Audio Merge Karein — AIK File Download (WAV)”. Wahi dabayein, saari clips ki awaz aik hi WAV file mein download ho jayegi. Alag-alag clip select karne ki zaroorat nahi — sab khud aik sath select hai.</dd>
+          <dt>Teeno / sab videos ki AIK hi audio?</dt><dd>Editor ki timeline ke project tools mein “Sab Clips Ki Aik Audio (Track)” dabayein — timeline ki sab clips ki awaz aik combined track ki surat mein jud jayegi (har clip ka trim wala hissa, usi tartib mein). Phir us track ko select karke “⬇ Poori Audio Download Karein (WAV)” se wahi cheez aik hi WAV file mein bhi download ho jati hai.</dd>
+          <dt>Audio tab (Import Hub) kya karta hai?</dt><dd>Audio tab ab sirf <b>import hub</b> hai — do kaam: (1) <b>video upload</b> karein to us ki audio khud alag ho jayegi aur video ki awaz mute ho jayegi; phir video ko “Editor Mein Bhejein” aur nikli hui audio ko “Voice Over Mein Bhejein” (matn ke liye) kar sakte hain. (2) <b>audio file upload</b> karein to usay yahin se “Editor Mein Bhejein” (video mein lag jayegi) ya “Voice Over Mein Bhejein” (matn nikal ayega) — do alag bare button hain. Baqi saari editing Editor tab mein hoti hai.</dd>
           <dt>Poori video aik hi select / merge karni hai?</dt><dd>Editor → Trim (timeline) ke upar “✓ Sab Select Karein” dabayein — poori video (sab clips mila kar) aik hi select ho jayegi. Phir wahan “🎬 Sab Merge — AIK Video” dabayein ya upar wala Export Video button — sab clips jud kar aik hi video file ban jayegi.</dd>
-          <dt>Apni audio file video mein merge karna — video ka sound band?</dt><dd>Audio hisse ke “Merge” wale khane se apni audio file (MP3/WAV) chunein — file lagte hi video ka apna sound khud band ho jata hai aur preview + export dono mein sirf usi audio ki awaz chalti hai. Wapas video ka sound chahiye to wahi toggle OFF kar dein, ya “Merge Audio Hatayein” dabayein.</dd>
-          <dt>Audio file upload karne ka button kahan hai?</dt><dd>Do jagah bara button hai: (1) <b>Editor → Media</b> panel mein video import ke neeche “📤 Audio File Upload Karein (MP3 / WAV)”, (2) <b>Audio</b> tab mein sab se upar neela button “📤 Apni Audio File Upload Karein — Video Mein Lagayein”. Koi sa bhi dabayein, phone se audio file chunein — file lagte hi video ka apna sound band ho jayega aur sirf upload ki hui audio chalegi.</dd>
+          <dt>Apni audio file video mein merge karna — video ka sound band?</dt><dd>Do tareeqe: (1) <b>Editor → Media</b> panel ke “📤 Audio File Upload” button se file chunein, ya (2) <b>Audio</b> tab (Import Hub) mein audio file daal kar “Editor Mein Bhejein” dabayein. Dono mein file lagte hi video ka apna sound khud band ho jata hai aur preview + export dono mein sirf usi audio ki awaz chalti hai. Wapas video ka sound chahiye to timeline ki Audio line mein us track ko select karke “Video Ka Sound Wapas ON” dabayein, ya track delete kar dein.</dd>
+          <dt>Audio file upload karne ka button kahan hai?</dt><dd>Do jagah hai: (1) <b>Editor → Media</b> panel mein video import ke neeche “📤 Audio File Upload Karein (MP3 / WAV)”, (2) <b>Audio</b> tab (Import Hub) mein khana <b>2 — Audio File Dalein</b>, wahan file daal kar “Editor Mein Bhejein” dabayein. Dono mein file lagte hi video ka apna sound band ho jayega aur sirf upload ki hui audio chalegi. Wahi Audio tab se audio ko “Voice Over Mein Bhejein” dabakar us ka matn bhi nikal sakta hai.</dd>
           <dt>Logo kaise lagayein — aur wo agay-peeche kyun hota tha?</dt><dd><b>Editor → Media</b> panel mein sunehra button hai: “🏷️ Logo Lagayein — Poori Video Par Fixed” — wahan se apna logo (PNG) chunein. <b>Pehle</b> logo playhead wali jagah se shuru hokar usi waqt ke kul waqt par khatam ho jata tha, is liye baad mein clips jodne se wo beech mein gayab/agay-peeche ho jata tha. <b>Ab logo FIXED lagta hai:</b> poori video par shuru se aakhir tak, aik hi kone mein — chahe kitne bhi clips jod dein, na gayab hoga na hilega. Kona badalna ho to neeche timeline ki <b>Logo wali line</b> mein logo par tap karke select karein — wahan chaaron konon (Upar Right / Upar Left / Neeche Right / Neeche Left) ke button aur halka (opacity) karne ka slider milega. Delete bhi wahi se hota hai.</dd>
           <dt>Video mein tasveerein (images) kaise add karein?</dt><dd><b>Editor → Media</b> panel mein neela button hai: “🖼️ Images Upload Karein” — gallery se aik ya kai tasveerein chunein. Har tasveer media list mein <b>aik clip (3 second)</b> ban kar aa jati hai, bilkul video clip ki tarah: list ke ↑ ↓ se ya timeline mein drag karke tartib badlein, timeline mein tasveer select karke <b>3 / 5 / 10 second</b> ke buttons se us ka time badlein, delete bhi wahi se. Phir <b>Export</b> dabayein — tasveerein usi tartib mein video ke andar chalengi.</dd>
           <dt>Tasveer video ke SHURU ya BEECH mein kaise lagayein — sirf end par kyun lagti thi?</dt><dd>Pehle tasveer hamesha list ke aakhir (end) mein judti thi. Ab Media panel mein tasveer chunne se <b>pehle</b> jagah tay karein: <b>“📍 Tasveer Kahan Lage?”</b> wale teen buttons — <b>Playhead Par (Beech Mein)</b>: pehle safed line (playhead) ko video mein wahan le jayein jahan tasveer dikhani hai, phir tasveer chunein — video usi jagah se khud split ho jayegi aur tasveer darmiyan mein lag jayegi. <b>Shuru Mein</b>: tasveer sab se pehle aayegi. <b>End Mein</b>: sab se aakhir mein. Agar tasveer pehle se lagi hui hai to timeline mein usay select karke <b>“⏮ Sab Se Shuru Mein” / “📍 Playhead Par” / “⏭ Sab Se End Mein”</b> buttons se us ki jagah kabhi bhi badal sakte hain.</dd>
           <dt>Sirf tasveeron se video (slideshow) kaise banayein — bina kisi video ke?</dt><dd>Media panel ke sab se upar sunehra button dabayein: <b>“🖼️ Sirf Tasveeron Se Video Banayein — Slideshow”</b> — gallery se kai tasveerein aik sath chunein, har tasveer 3 second ki clip ban jayegi (time timeline mein select karke 3/5/10 second kar sakte hain). Koi video import karne ki zaroorat nahi. Phir upar wala <b>Export Video</b> dabayein — saari tasveerein jud kar aik video ban jayegi. Awaz lagani ho to “📤 Audio File Upload Karein” se apni audio (naat / awaz) lagayein — wo tasveeron par chalegi, bilkul slideshow ki tarah. Main Import wala picker bhi ab tasveerein le leta hai, wahan se bhi sirf tasveerein chun kar project shuru ho sakta hai.</dd>
-          <dt>Awaz mein shor (noise) hai?</dt><dd>“Audio Alag Karein” hisse mein “Shor Kam Karein (Noise Reduce)” ON kar dein — phir jo audio file banegi us mein pankhe / AC ka halka shor kam aur awaz saaf hogi.</dd>
           <dt>Thumbnail?</dt><dd>Thumbnail Studio mein video ke frame se — ya Gemini AI background se — 1280×720 JPG thumbnail banta hai, Urdu text ke sath.</dd>
           <dt>Install ke baad 404 kyun aata hai?</dt><dd>Purana home-screen icon pehle wali ghalat link par bana hota hai aur naya install usay khud nahi badalta. Usay long-press karke delete karein, phir is page ko Chrome mein khol kar dobara Install karein — manifest ki link ab durust hai, is liye taza icon editor par khulna chahiye.</dd>
         </dl>
@@ -2825,6 +2874,11 @@ function applyMute(){
   var mb=$("muteBtn");var userMuted=mb&&mb.getAttribute("aria-pressed")==="true";
   video.muted=!!(origMuted||replaceTrack||userMuted);
 }
+/* Audio Import Hub ke liye: video Editor mein bhejte waqt us ki apni
+   awaz band (mute) karne ka resmi rasta — wahi origMuted jo timeline
+   ke audio track par "Original Sound Mute" button lagata hai. */
+window.__setOrigMuted=function(on){origMuted=!!on;applyMute();renderContext();hist();};
+window.__isOrigMuted=function(){return origMuted;};
 function setReplace(a){
   if(replaceTrack&&replaceTrack.el&&replaceTrack!==a)replaceTrack.el.pause();
   replaceTrack=a||null;
@@ -3022,46 +3076,137 @@ window.addEventListener("resize",function(){render();});
 </script>
 
 <script>
-/* ===== SAB MERGE HUB — Audio tab ke sab se upar wale bare buttons ===== */
+/* ===== AUDIO IMPORT HUB — Audio tab ke do kaam =====
+   (1) Video upload: audio khud alag (WAV) ho jati hai, video mute
+       rehti hai. Video ko "Editor Mein Bhejein" se Editor ki timeline
+       mein clip bana kar bhejte hain — sath hi Editor ka Original
+       Sound mute kar dete hain (window.__setOrigMuted), taake video
+       ki apni awaz na chale. Nikli hui audio ko "Voice Over Mein
+       Bhejein" se Voice Over ke transcription wale khane
+       (voAudioInput) mein bhej dete hain — wahan us ka matn banna
+       khud shuru ho jata hai.
+   (2) Audio file upload: usi file ko do bare buttons se ya Editor
+       (mergeAudioInput — video mein lag jati hai, video ka sound
+       band) ya Voice Over (voAudioInput — matn nikalta hai) mein
+       bhejte hain.
+   Bhejna asal mein hota hai: file us tab ke asal file khane ko
+   DataTransfer se de kar "change" event chalate hain — bilkul waisa
+   hi tareeqa jo Voice Over ka "Video Mein Lagayein" button pehle se
+   istemal karta hai. Har bhejne ke baad saaf confirmation aur us
+   tab mein jane ka button isi khane mein dikhta hai. */
 (function(){
 "use strict";
 var $=function(id){return document.getElementById(id);};
-var hubStatus=$("mergeHubStatus"),hs=$("hubStatus"),aBtn=$("hubAudioBtn"),vBtn=$("hubVideoBtn");
-if(!aBtn||!vBtn)return;
-function totals(){
-  var ed=window.__editor;var cs=ed?ed.clips():[];var tot=0;
-  cs.forEach(function(c,i){tot+=Math.max(0,(c.trimEnd||c.duration||0)-(c.trimStart||0));if(i>0)tot+=(c.gapBefore||0);});
-  return{n:cs.length,tot:tot};
+function setS(el,msg,cls){if(!el)return;el.textContent=msg||"";el.className="status"+(cls?" "+cls:"");}
+function mb(n){return (n/1048576).toFixed(1)+" MB";}
+function sendFileToInput(inputId,file){
+  var inp=$(inputId); if(!inp||!file)return false;
+  try{
+    var dt=new DataTransfer(); dt.items.add(file);
+    inp.files=dt.files;
+    inp.dispatchEvent(new Event("change",{bubbles:true}));
+    return true;
+  }catch(e){return false;}
 }
-function refresh(){
-  var ed=window.__editor;if(!ed)return;
-  var t=totals();
-  var ab=document.querySelectorAll("#tlLaneAudio .tl-block").length;
-  if(hubStatus){
-    hubStatus.textContent=t.n?("🎬 "+t.n+" video clip"+(t.n>1?"s":"")+" • 🎵 "+ab+" audio track"+(ab!==1?"s":"")+" • ⏱ Kul waqt "+ed.fmt(t.tot)+" — sab aik sath select hai, neeche wale bare buttons se sab merge ho jayega."):"Abhi koi clip nahi — pehle Editor → Media se videos load karein, phir yahan aayein.";
-  }
-  aBtn.disabled=!t.n;vBtn.disabled=!t.n;
+function showSent(boxId,textId,goId,msg,view,sub,goLabel){
+  var box=$(boxId); if(!box)return;
+  $(textId).textContent=msg;
+  var go=$(goId);
+  go.textContent=goLabel;
+  go.onclick=function(){
+    if(window.__switchView)window.__switchView(view);
+    if(view==="editor"&&sub&&window.__switchSub)window.__switchSub(sub);
+  };
+  box.classList.remove("hidden");
+  try{box.scrollIntoView({block:"nearest"});}catch(e){}
 }
-function setH(m,cls){if(hs){hs.textContent=m||"";hs.className="status"+(cls?" "+cls:"");}}
-aBtn.addEventListener("click",function(){
+
+/* ---------- 1 — VIDEO ---------- */
+var hubVideoFile=null, hubExtractFile=null;
+var vIn=$("impVideoInput"), vMeta=$("impVideoMeta"), vRes=$("impVideoResult"),
+    vPrev=$("impVideoPreview"), xPrev=$("impExtractPreview"), xMeta=$("impExtractMeta"),
+    vStatus=$("impVideoStatus"), vToEd=$("impVideoToEditorBtn"), xToVo=$("impExtractToVoiceBtn");
+if(vIn)vIn.addEventListener("change",function(){
+  var f=vIn.files&&vIn.files[0]; vIn.value="";
+  if(!f)return;
+  hubVideoFile=f; hubExtractFile=null;
+  $("impVideoSent").classList.add("hidden");
+  vMeta.textContent="🎬 "+f.name+" • "+mb(f.size);
+  vPrev.src=URL.createObjectURL(f);
+  vRes.classList.remove("hidden");
+  xPrev.removeAttribute("src");
+  xMeta.textContent="🎧 Audio alag ki ja rahi hai… chand second lagein ge.";
+  xToVo.disabled=true;
+  setS(vStatus,"Video aa gayi — ab us ki audio khud alag ki ja rahi hai…");
   var ed=window.__editor;
-  if(!ed||!ed.clips().length){setH("Pehle Editor → Media se videos load karein.","err");return;}
-  aBtn.disabled=true;setH("Sab clips ki AIK audio bann rahi hai… chand second lagein ge.");
-  ed.buildCombinedWav(ed.noiseOn?ed.noiseOn():false).then(function(blob){
-    aBtn.disabled=false;
-    var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="sab-clips-aik-audio.wav";document.body.appendChild(a);a.click();a.remove();
-    setH("Ho gaya! Sab audio merge ho kar AIK file download ho gayi ("+(blob.size/1048576).toFixed(1)+" MB, WAV).","ok");
-  }).catch(function(err){aBtn.disabled=false;setH("Audio nahi bann saka ("+err.message+") — video mein awaz maujood hai ya nahi, check karein.","err");});
+  if(!ed||!ed.buildWav){setS(vStatus,"Is browser mein audio alag nahi ho sakti — Chrome try karein. Video phir bhi neeche wale button se Editor mein mute bhej sakte hain.","err");xMeta.textContent="🎧 Audio alag nahi ho saki — is browser mein AudioContext nahi mila.";return;}
+  ed.buildWav(f,0,0,false).then(function(blob){
+    if(hubVideoFile!==f)return; /* is dauran doosri video aa gayi */
+    var base=(f.name||"video").replace(/\.[^.]+$/,"")||"video";
+    hubExtractFile=new File([blob],base+"-audio.wav",{type:"audio/wav"});
+    xPrev.src=URL.createObjectURL(blob);
+    xMeta.textContent="🎧 Nikli hui audio: "+base+"-audio.wav • "+mb(blob.size)+" • WAV — upar play karke sun lein, phir neeche wale button se Voice Over mein bhej kar is ka matn nikalwayein.";
+    xToVo.disabled=false;
+    setS(vStatus,"✓ Ho gaya! Video aur audio alag-alag ho gaye — video ki apni awaz MUTE hai, aur nikli hui audio neeche tayyar hai.","ok");
+  }).catch(function(err){
+    if(hubVideoFile!==f)return;
+    xMeta.textContent="🎧 Is video se audio auto alag nahi ho saki — ho sakta hai is format ki awaz browser na parh saka ho, ya video mein awaz hi na ho.";
+    setS(vStatus,"Video tayyar hai (mute), lekin audio alag nahi ho saki ("+(err&&err.message?err.message:"masla")+") — video phir bhi neeche wale button se Editor mein bhej sakte hain.","err");
+  });
 });
-vBtn.addEventListener("click",function(){
-  var ed=window.__editor;
-  if(!ed||!ed.clips().length){setH("Pehle Editor → Media se videos load karein.","err");return;}
-  setH("Editor khul raha hai — sab clips merge ho kar aik hi video export hogi.","ok");
-  if(window.__switchView)window.__switchView("editor");
-  if(window.__switchSub)window.__switchSub("props");
-  setTimeout(function(){var eb=$("exportBtn");if(eb&&!eb.disabled)eb.click();},120);
+if(vToEd)vToEd.addEventListener("click",function(){
+  if(!hubVideoFile){setS(vStatus,"Pehle upar se video upload karein.","err");return;}
+  if(sendFileToInput("fileInput",hubVideoFile)){
+    if(window.__setOrigMuted)window.__setOrigMuted(true);
+    showSent("impVideoSent","impVideoSentText","impVideoGoBtn",
+      "✓ Video Editor mein bhej di gayi — wahan timeline mein clip ban gayi hai aur us ki apni awaz MUTE (band) hai. Ab Editor mein ja kar trim / text / export karein.",
+      "editor","media","✂️ Editor Tab Mein Jayein →");
+    setS(vStatus,"","ok");
+  }else setS(vStatus,"Is browser mein video Editor ko nahi bheji ja saki — wahi video Editor → Media se seedha import kar lein, phir timeline ke audio track par “Original Sound Mute” kar dein.","err");
 });
-refresh();setInterval(refresh,700);
+if(xToVo)xToVo.addEventListener("click",function(){
+  if(!hubExtractFile){setS(vStatus,"Pehle video upload karein aur audio alag hone dein.","err");return;}
+  if(sendFileToInput("voAudioInput",hubExtractFile)){
+    showSent("impVideoSent","impVideoSentText","impVideoGoBtn",
+      "✓ Nikli hui audio Voice Over mein bhej di gayi — wahan is ka matn (transcription) banna shuru ho gaya hai. Voice Over tab mein ja kar matn dekhein — wahan se usi matn par nayi awaz bhi ban jayegi.",
+      "voice",null,"🎙️ Voice Over Tab Mein Jayein →");
+    setS(vStatus,"","ok");
+  }else setS(vStatus,"Is browser mein audio Voice Over ko nahi bheji ja saki — nikli hui audio upar play wale khane se sun lein, ya Voice Over tab mein wahi asal video wali file seedha chun lein.","err");
+});
+
+/* ---------- 2 — AUDIO FILE ---------- */
+var hubAudioFile=null;
+var aIn=$("impAudioInput"), aMeta=$("impAudioMeta"), aRes=$("impAudioResult"),
+    aPrev=$("impAudioPreview"), aStatus=$("impAudioStatus"),
+    aToEd=$("impAudioToEditorBtn"), aToVo=$("impAudioToVoiceBtn");
+if(aIn)aIn.addEventListener("change",function(){
+  var f=aIn.files&&aIn.files[0]; aIn.value="";
+  if(!f)return;
+  hubAudioFile=f;
+  $("impAudioSent").classList.add("hidden");
+  aMeta.textContent="🎵 "+f.name+" • "+mb(f.size);
+  aPrev.src=URL.createObjectURL(f);
+  aRes.classList.remove("hidden");
+  setS(aStatus,"✓ Audio file aa gayi — upar sun lein, phir neeche dono buttons mein se jahan bhejna hai wo dabayein.","ok");
+});
+if(aToEd)aToEd.addEventListener("click",function(){
+  if(!hubAudioFile){setS(aStatus,"Pehle upar se audio file upload karein.","err");return;}
+  if(sendFileToInput("mergeAudioInput",hubAudioFile)){
+    showSent("impAudioSent","impAudioSentText","impAudioGoBtn",
+      "✓ Audio file Editor mein bhej di gayi — wahan ye video mein lag gayi hai: video ka apna sound BAND hai, sirf ye audio chalegi (preview + export). Track Editor ki timeline wali Audio line mein dikhega.",
+      "editor","trim","✂️ Editor Tab Mein Jayein →");
+    setS(aStatus,"","ok");
+  }else setS(aStatus,"Is browser mein audio Editor ko nahi bheji ja saki — wahi file Editor → Media wale “Audio File Upload” button se laga lein.","err");
+});
+if(aToVo)aToVo.addEventListener("click",function(){
+  if(!hubAudioFile){setS(aStatus,"Pehle upar se audio file upload karein.","err");return;}
+  if(sendFileToInput("voAudioInput",hubAudioFile)){
+    showSent("impAudioSent","impAudioSentText","impAudioGoBtn",
+      "✓ Audio file Voice Over mein bhej di gayi — wahan is ka matn (transcription) banna shuru ho gaya hai. Voice Over tab mein ja kar matn dekhein.",
+      "voice",null,"🎙️ Voice Over Tab Mein Jayein →");
+    setS(aStatus,"","ok");
+  }else setS(aStatus,"Is browser mein audio Voice Over ko nahi bheji ja saki — wahi file Voice Over tab mein seedha chun lein, matn wahan bhi nikal ayega.","err");
+});
 })();
 </script>
 
