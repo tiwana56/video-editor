@@ -515,6 +515,71 @@ ol.steps li{color:#d8e1ee}
 .cap-result video{width:min(300px,86vw);display:block;margin:10px auto;border-radius:14px;border:1.5px solid rgba(201,162,39,.7);background:#000}
 .jadoo .cap-err{border:1px solid #f87171;background:rgba(127,29,29,.4);color:#fecaca;border-radius:10px;padding:12px;font-size:14px;line-height:1.65;margin-top:12px;display:none;white-space:pre-wrap;word-break:break-word}
 </style>
+<style>
+/* ===== PREVIEW SIZE — Chhota / Bara (SIRF display; export bilkul waisa hi) =====
+   9:16 preview takreeban poori screen le leta tha, is liye frame options,
+   transport aur timeline tak pohanchne ke liye bohat scroll karna parta tha.
+   Height caps sirf CSS display size badalte hain — canvas ke asal pixels
+   (canvas.width / canvas.height) aur export resolution bilkul NAHI badalte,
+   frame ka aspect ratio barkarar rehta hai. Cap canvas element par hai,
+   is liye har ratio (9:16, 16:9, 1:1, 4:5, Original) par lagti hai. */
+.pv-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-bottom:10px;margin-bottom:10px;border-bottom:1px dashed var(--border)}
+.pv-row .pv-label{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.pv-toggle{display:flex;gap:6px;margin-left:auto}
+.pv-toggle button{border:1.5px solid var(--border2);background:var(--panel3);color:var(--muted);border-radius:999px;padding:7px 16px;font-size:13.5px;font-weight:700;min-height:40px;cursor:pointer}
+.pv-toggle button[aria-pressed="true"]{background:rgba(34,211,238,.22);border-color:var(--cyan);color:#a5f3fc}
+/* Bari screens par bhi Chhota mode stage ko cap karta hai */
+@media(min-width:641px){
+  body.pv-small .stage-area{max-height:50vh}
+  body.pv-small canvas#stage{max-height:46vh}
+}
+@media(min-width:1024px){
+  /* Desktop default bhi pehle se thora chhota: canvas full-height nahi */
+  canvas#stage{max-height:56vh}
+  /* Timeline wali row had se barh kar poori grid kha jati thi aur pehli row
+     (Media / Preview / Properties) ~0 height par dab jati thi — ab timeline
+     ki row bandhi hui hai aur us ke andar scroll hota hai, taake preview
+     hamesha nazar aaye aur us ke neeche ki settings bhi. */
+  .workspace{grid-template-rows:minmax(0,1fr) minmax(120px,34vh)}
+  .timeline-panel{overflow-y:auto;min-height:0}
+  /* Preview panel ke andar ki cheezein (frame bar / transport) katne ke
+     bajaye panel ke andar hi scroll ho jayein */
+  .preview-panel{overflow-y:auto}
+}
+/* ===== MOBILE VISIBILITY FIX (≤1023px) =====
+   Pehle: fixed-height shell mein preview panel sikur kar ~0 ho jata tha,
+   stage ka content (khali-canvas wala khana / video) upar-neeche phail kar
+   "Preview" header aur frame bar par charh jata tha, aur Media/Trim/Text
+   wala panel screen se bahar dab jata tha — mobile par kuch nazar hi nahi
+   aata tha. Ab Editor view mobile par AIK scrolling column hai: preview,
+   frame buttons, transport, sub-tabs aur active panel — sab bari bari,
+   poori height ke sath, scroll karke har cheez tak pahuncha ja sakta hai,
+   kuch kata ya chhupa nahi. */
+@media(max-width:1023px){
+  #view-editor{overflow-y:auto;-webkit-overflow-scrolling:touch}
+  #view-editor .workspace{display:flex;flex-direction:column;height:auto;flex:none}
+  #view-editor .preview-panel{overflow:visible;max-height:none}
+  #view-editor .workspace>.panel,#view-editor .workspace>.timeline-panel{overflow:visible}
+  .stage-area{overflow:hidden}
+}
+@media(max-width:760px){
+  /* Neeche wale nav buttons mein "Thumbnail" / "Voice Over" ke lafz kat jate thay */
+  .nav-btn{font-size:11px;padding:8px 2px}
+}
+@media(max-width:640px){
+  body.pv-small .stage-area{max-height:40vh;padding:8px}
+  body.pv-small canvas#stage{max-height:calc(40vh - 16px)}
+  body.pv-small .stage-empty{padding:16px 10px}
+  /* Upar wali toolbar thori tight — sirf mobile par, layout bilkul waisa hi */
+  .topbar{padding:6px 10px;gap:8px;row-gap:6px}
+  .top-actions{gap:6px}
+  .btn-export{min-height:44px;padding:9px 14px}
+  .btn-install{min-height:44px;padding:9px 12px}
+  .select-dark{min-height:44px;padding:7px 10px}
+  .icon-btn-top{height:44px}
+  .hist-btn{min-width:66px;padding:0 10px}
+}
+</style>
 </head>
 <body>
 
@@ -634,6 +699,13 @@ ol.steps li{color:#d8e1ee}
         <canvas id="stage" width="720" height="1280" class="hidden"></canvas>
       </div>
       <div class="frame-bar" aria-label="Screen size — frame chunein">
+        <div class="pv-row">
+          <span class="pv-label">👁 Preview Size — Sirf Dekhne Ke Liye (Export Waisa Hi Rahega)</span>
+          <div class="pv-toggle" role="group" aria-label="Preview size chunein">
+            <button type="button" id="pvSmallBtn" aria-pressed="false">Chhota</button>
+            <button type="button" id="pvLargeBtn" aria-pressed="false">Bara</button>
+          </div>
+        </div>
         <span class="frame-label">📐 Screen Size / Frame — Video Kis Size Ki Ho?</span>
         <div class="frame-opts" role="group" aria-label="Video ka size">
           <button type="button" class="frame-btn" data-ratio="9:16" aria-pressed="true"><span class="fbox f916" aria-hidden="true"></span>9:16<b>Shorts • TikTok • Reels</b></button>
@@ -4598,6 +4670,29 @@ $("capDownloadBtn").addEventListener("click",function(){
 });
 
 applyLang();updateCounts();trApplyMethodUI();
+})();
+</script>
+<script>
+/* ===== Preview Size toggle — Chhota / Bara (sirf display; export par koi asar nahi) =====
+   Default: chhoti screen (mobile) par Chhota, desktop par Bara (purana size).
+   Jo choice aik dafa ho jaye wo localStorage mein save rehti hai — dobara
+   kholne par wahi lagti hai. */
+(function(){
+  var KEY="procut_preview_size";
+  function saved(){try{return window.localStorage.getItem(KEY);}catch(e){return null;}}
+  function save(v){try{window.localStorage.setItem(KEY,v);}catch(e){}}
+  var smallBtn=document.getElementById("pvSmallBtn"),largeBtn=document.getElementById("pvLargeBtn");
+  function apply(mode){
+    var small=mode==="small";
+    document.body.classList.toggle("pv-small",small);
+    if(smallBtn)smallBtn.setAttribute("aria-pressed",String(small));
+    if(largeBtn)largeBtn.setAttribute("aria-pressed",String(!small));
+  }
+  var mode=saved();
+  if(mode!=="small"&&mode!=="large")mode=window.matchMedia("(max-width: 640px)").matches?"small":"large";
+  apply(mode);
+  if(smallBtn)smallBtn.addEventListener("click",function(){save("small");apply("small");});
+  if(largeBtn)largeBtn.addEventListener("click",function(){save("large");apply("large");});
 })();
 </script>
 </body>
