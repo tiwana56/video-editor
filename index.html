@@ -1995,9 +1995,13 @@ var SEG_WASM_URL="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/w
 var SEG_MODEL_URL="https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite";
 var segState={status:"idle",seg:null,err:""};
 window.__segState=segState;
+function segBigStatus(m,cls){
+  try{var s=document.getElementById("tlStatus");if(s){s.textContent=m;s.className="status "+(cls||"ok");}}catch(e){}
+}
 function ensureSegmenter(){
   if(segState.status==="loading"||segState.status==="ready")return;
   segState.status="loading";segState.err="";
+  segBigStatus("⏳ AI model load ho raha hai — internet chahiye, 1–2 minute dein, screen khuli rakhein…");
   try{if(window.__segUiRefresh)window.__segUiRefresh();}catch(e){}
   function attempt(del){
     var p=import(SEG_BUNDLE_URL).then(function(mod){
@@ -2013,10 +2017,12 @@ function ensureSegmenter(){
   }
   attempt("GPU").catch(function(){return attempt("CPU");}).then(function(seg){
     segState.seg=seg;segState.status="ready";
+    segBigStatus("✓ AI model tayyar hai — Play dabayein, background badla hua dikhega.");
     try{drawFrame();}catch(e){}
     try{if(window.__segUiRefresh)window.__segUiRefresh();}catch(e){}
   }).catch(function(err){
     segState.status="failed";segState.err=String((err&&err.message)||err||"");
+    segBigStatus("⚠ AI Background load nahi ho saka: "+segState.err+" — Background button dobara dabayein, ya Chroma Key use karein.","err");
     try{if(window.__segUiRefresh)window.__segUiRefresh();}catch(e){}
   });
 }
@@ -2029,7 +2035,7 @@ function bgProcessFrame(c,srcEl,vw,vh){
   var w=Math.max(2,Math.round(vw*sc)),h=Math.max(2,Math.round(vh*sc));
   if(segInCv.width!==w||segInCv.height!==h){segInCv.width=w;segInCv.height=h;}
   segInCx.drawImage(srcEl,0,0,w,h);
-  var res; try{res=segState.seg.segment(segInCv);}catch(e){segState.status="failed";segState.err=String((e&&e.message)||e||"");try{if(window.__segUiRefresh)window.__segUiRefresh();}catch(_){} return null;}
+  var res; try{res=segState.seg.segment(segInCv);}catch(e){segState.status="failed";segState.err=String((e&&e.message)||e||"");segBigStatus("⚠ AI Background chalte hue ruk gaya: "+segState.err,"err");try{if(window.__segUiRefresh)window.__segUiRefresh();}catch(_){} return null;}
   if(!res||!res.categoryMask)return null;
   var mask=res.categoryMask,mw=mask.width||0,mh=mask.height||0,mdata=null;
   try{mdata=mask.getAsUint8Array();}catch(e){}
