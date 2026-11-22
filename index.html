@@ -999,6 +999,14 @@ ol.steps li{color:#d8e1ee}
             <button class="btn gold block" id="voAudioPickBtn" type="button" style="min-height:56px">🎧 <span class="jx" data-ur="آڈیو فائل چنیں — Gemini متن لکھ دے گا" data-en="Choose an Audio File — Gemini Will Write the Script">آڈیو فائل چنیں — Gemini متن لکھ دے گا</span></button>
             <input class="hidden" type="file" id="voAudioInput" accept="audio/*"/>
             <p class="status" id="voTrStatus" role="status"></p>
+            <div class="hidden" id="voTrProgWrap" style="margin-top:10px">
+              <progress id="voTrProgress" max="100" value="0"></progress>
+              <div class="row" style="margin-top:8px;align-items:center">
+                <span class="hint" style="margin:0">⏱ <span class="jx" data-ur="گزرا ہوا وقت:" data-en="Elapsed time:">گزرا ہوا وقت:</span> <b id="voTrTimer" dir="ltr">0:00</b></span>
+                <button class="btn" id="voTrCancelBtn" type="button" style="margin-inline-start:auto"><span class="jx" data-ur="روک دیں (Cancel)" data-en="Cancel">روک دیں (Cancel)</span></button>
+              </div>
+              <p class="hint jx" id="voTrInfo" style="margin:8px 0 0"></p>
+            </div>
             <div class="vo-err" id="voTrError" role="alert" style="font-size:15px"></div>
             <p class="hint jx" style="margin-bottom:0" data-ur="اپنی آڈیو فائل (MP3 / WAV / M4A وغیرہ) چنیں — Gemini اسے سن کر اس کا متن (transcription) نیچے والے خانے میں لکھ دے گا۔ پھر اسی متن پر نیچے حصہ 2 میں آواز چن کر حصہ 3 سے وائس اوور بنا لیں۔ فائل بھیجنے سے پہلے آپ کے فون پر ہی چھوٹی (16 kHz mono) کر دی جاتی ہے، اس لیے بڑی WAV فائل بھی چل جاتی ہے؛ لمبی فائل حصوں میں بھیج کر متن جوڑ دیا جاتا ہے۔ AI Studio والی save شدہ key ہی استعمال ہوگی۔" data-en="Choose your audio file (MP3 / WAV / M4A etc.) — Gemini will listen to it and write its transcription into the box below. Then pick a voice in section 2 and generate the voice over in section 3 from that same text. Before sending, the file is shrunk on your phone (16 kHz mono), so even a large WAV works; a long file is sent in parts and the text is joined together. The saved AI Studio key is used.">اپنی آڈیو فائل (MP3 / WAV / M4A وغیرہ) چنیں — Gemini اسے سن کر اس کا متن (transcription) نیچے والے خانے میں لکھ دے گا۔ پھر اسی متن پر نیچے حصہ 2 میں آواز چن کر حصہ 3 سے وائس اوور بنا لیں۔ فائل بھیجنے سے پہلے آپ کے فون پر ہی چھوٹی (16 kHz mono) کر دی جاتی ہے، اس لیے بڑی WAV فائل بھی چل جاتی ہے؛ لمبی فائل حصوں میں بھیج کر متن جوڑ دیا جاتا ہے۔ AI Studio والی save شدہ key ہی استعمال ہوگی۔</p>
           </div>
@@ -3184,7 +3192,7 @@ $("voClearTextBtn").addEventListener("click",function(){voScript.value="";update
 /* ---------- Audio file se matn (transcription) ----------
    User apni audio file (tilawat / naat ki clip waghera) upload karta
    hai. File pehle phone par hi chhoti ki jati hai: decode karke
-   16 kHz mono WAV bana kar ~100 second ke hisson mein Gemini ko
+   16 kHz mono WAV bana kar 60 second ke hisson mein Gemini ko
    bhejte hain (generateContent + inlineData — REST API ki
    documented camelCase shakal) aur har hisse ka matn jod kar
    script box mein likh dete hain. Is se 13 MB ki WAV bhi halki
@@ -3194,7 +3202,20 @@ $("voClearTextBtn").addEventListener("click",function(){voScript.value="";update
    Urdu wajah) ISI khane ke andar laal box (voTrError) mein bara
    dikhta hai — user parh kar bata sakta hai. */
 var voAudioInput=$("voAudioInput"), voTrStatus=$("voTrStatus"), voTrError=$("voTrError"), voTrBusy=false;
+var voTrProgWrap=$("voTrProgWrap"), voTrProgress=$("voTrProgress"), voTrTimerEl=$("voTrTimer"), voTrInfo=$("voTrInfo");
+var voTrController=null, voTrCancelled=false, voTrTimerInt=null, voTrStart=0;
 $("voAudioPickBtn").addEventListener("click",function(){voAudioInput.click();});
+$("voTrCancelBtn").addEventListener("click",function(){voTrCancelled=true;if(voTrController)try{voTrController.abort();}catch(e){}});
+function trShowProgress(){
+  voTrProgWrap.classList.remove("hidden");voTrProgress.value=0;voTrInfo.textContent="";
+  voTrStart=Date.now();voTrTimerEl.textContent="0:00";
+  if(voTrTimerInt)clearInterval(voTrTimerInt);
+  voTrTimerInt=setInterval(function(){voTrTimerEl.textContent=fmtD((Date.now()-voTrStart)/1000);},500);
+}
+function trHideProgress(){
+  if(voTrTimerInt){clearInterval(voTrTimerInt);voTrTimerInt=null;}
+  voTrProgWrap.classList.add("hidden");
+}
 function voMimeFor(file){
   if(file.type&&file.type.indexOf("audio/")===0)return file.type.split(";")[0];
   var n=(file.name||"").toLowerCase();
@@ -3213,6 +3234,10 @@ function showTrError(status,detail){
     msg=T("🔑 Key کا مسئلہ ہے (خرابی "+status+") — AI Studio والے ٹیب میں اپنی Gemini key ڈالیں، یا وہاں چیک کریں کہ key درست اور active ہے۔ وہی key یہاں خود بخود چلے گی؛ یہاں الگ سے key ڈالنے کی جگہ نہیں۔","🔑 This is a key problem (error "+status+") — add your Gemini key in the AI Studio tab, or check there that the key is correct and active. That same key works here automatically; there is no separate key field here.");
     var d=sanitize(detail,currentKey());
     if(d)msg+="\n\n"+T("تکنیکی تفصیل (key چھپا کر): ","Technical detail (key hidden): ")+d;
+  }else if(status==="timeout"){
+    msg=T("⏰ وقت زیادہ لگ گیا — Gemini نے 2 منٹ میں جواب نہیں دیا، اس لیے درخواست خود رک گئی (ایک دفعہ خودکار دوبارہ کوشش بھی ہو چکی ہے)۔ نیٹ کنکشن چیک کر کے دوبارہ کوشش کریں — چھوٹی فائل ہو تو کام اور جلدی ہو جائے گا۔","⏰ It took too long — Gemini did not answer within 2 minutes, so the request stopped by itself (one automatic retry was also tried). Check your connection and try again — a shorter file will finish faster.");
+  }else if(status===503){
+    msg=T("⏳ Google کا model ابھی بہت busy ہے (503 UNAVAILABLE) — یہ Google کی طرف سے عارضی بھیڑ (high demand) ہوتی ہے، آپ کی key یا فائل کا مسئلہ نہیں۔ خودکار طور پر انتظار کر کے دوبارہ کوشش اور backup model (gemini-3.5-flash-lite) بھی آزمایا جا چکا ہے۔ چند منٹ بعد دوبارہ کوشش کریں — بھیڑ عام طور پر جلد ختم ہو جاتی ہے۔","⏳ Google's model is very busy right now (503 UNAVAILABLE) — this is temporary high demand on Google's side, not a problem with your key or file. Waiting-and-retrying and the backup model (gemini-3.5-flash-lite) were already tried automatically. Please try again in a few minutes — the rush usually clears soon.");
   }else{
     msg=errorText(status,detail,currentKey());
   }
@@ -3222,7 +3247,7 @@ function showTrError(status,detail){
 }
 function hideTrError(){voTrError.style.display="none";voTrError.textContent="";}
 function trFail(status,detail){
-  voTrBusy=false;
+  voTrBusy=false;trHideProgress();
   showTrError(status,detail);
   setV(voTrStatus,T("متن نہیں نکل سکا — وجہ نیچے لال خانے میں پڑھیں۔","Transcription failed — read the reason in the red box below."),"err");
 }
@@ -3235,28 +3260,84 @@ function blobToB64(blob){
   });
 }
 var TR_PROMPT="Transcribe this audio exactly, word for word, in its original language and original script (use Urdu script if the audio is Urdu). Output ONLY the transcription text — no translation, no commentary, no timestamps, no headings.";
-function trSendChunk(key,mime,b64){
+/* Har hisse ki request par 120 second ka timeout: Gemini jawab na de
+   to request khud ruk jati hai (kabhi latki nahi rehti), aik dafa
+   khud dobara koshish hoti hai, phir bhi na aaye to "timeout" error
+   saaf Urdu mein dikhta hai. Cancel button bhi isi controller ko
+   abort karta hai.
+   503 UNAVAILABLE (model overload) ka alag rasta: ~25 second ruk kar
+   pehle usi model (gemini-3.8-flash) par dobara koshish, phir bhi
+   503 aaye to backup model gemini-3.5-flash-lite. Jo model kaam kar
+   jaye us ka naam onEvent("model", naam) se caller ko jata hai taake
+   status mein dikh sake. onEvent ki aqsaam: "retry" (arg=timedOut),
+   "busy" (503 — intezar shuru), "fallback" (arg=backup model naam),
+   "model" (arg=kaam karne wala model naam). */
+var TR_TIMEOUT_MS=120000;
+var TR_MODELS=["gemini-3.8-flash","gemini-3.5-flash-lite"];
+var TR_BUSY_WAIT_MS=25000;
+function trSendChunk(key,mime,b64,onEvent){
   var body={contents:[{parts:[
     {inlineData:{mimeType:mime,data:b64}},
     {text:TR_PROMPT}
   ]}]};
-  return fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify(body)})
-  .then(function(r){return r.text().then(function(tx){return{ok:r.ok,status:r.status,tx:tx};});})
-  .then(function(res){
-    if(!res.ok)throw{status:res.status,detail:res.tx};
-    var json=null;try{json=JSON.parse(res.tx);}catch(e){}
-    var out="";
-    try{
-      var parts=json&&json.candidates&&json.candidates[0]&&json.candidates[0].content&&json.candidates[0].content.parts;
-      if(Array.isArray(parts))parts.forEach(function(p){if(p&&typeof p.text==="string")out+=p.text;});
-    }catch(e){}
-    out=out.trim();
-    if(!out){
-      var blocked=json&&json.promptFeedback&&json.promptFeedback.blockReason;
-      throw{status:"noaudio",detail:blocked?("Content blocked: "+blocked):res.tx};
-    }
-    return out;
-  });
+  var modelIdx=0,busyRetried=false;
+  function attempt(n){
+    if(voTrCancelled)return Promise.reject({name:"AbortError"});
+    var model=TR_MODELS[modelIdx];
+    var ctrl=new AbortController();voTrController=ctrl;
+    var timedOut=false;
+    var timer=setTimeout(function(){timedOut=true;try{ctrl.abort();}catch(e){}},TR_TIMEOUT_MS);
+    return fetch("https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent",{method:"POST",signal:ctrl.signal,headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify(body)})
+    .then(function(r){clearTimeout(timer);return r.text().then(function(tx){return{ok:r.ok,status:r.status,tx:tx};});})
+    .then(function(res){
+      if(!res.ok)throw{status:res.status,detail:res.tx};
+      var json=null;try{json=JSON.parse(res.tx);}catch(e){}
+      var out="";
+      try{
+        var parts=json&&json.candidates&&json.candidates[0]&&json.candidates[0].content&&json.candidates[0].content.parts;
+        if(Array.isArray(parts))parts.forEach(function(p){if(p&&typeof p.text==="string")out+=p.text;});
+      }catch(e){}
+      out=out.trim();
+      if(!out){
+        var blocked=json&&json.promptFeedback&&json.promptFeedback.blockReason;
+        throw{status:"noaudio",detail:blocked?("Content blocked: "+blocked):res.tx};
+      }
+      return out;
+    })
+    .then(function(out){
+      if(onEvent)onEvent("model",model);
+      return out;
+    })
+    .catch(function(err){
+      clearTimeout(timer);
+      if(voTrCancelled)throw{name:"AbortError"};
+      /* 503 — model busy/overload: pehle intezar karke wahi model,
+         phir backup model. */
+      if(err&&err.status===503){
+        if(!busyRetried){
+          busyRetried=true;
+          if(onEvent)onEvent("busy",model);
+          return wait(TR_BUSY_WAIT_MS).then(function(){return attempt(0);});
+        }
+        if(modelIdx<TR_MODELS.length-1){
+          modelIdx++;busyRetried=false;
+          if(onEvent)onEvent("fallback",TR_MODELS[modelIdx]);
+          return attempt(0);
+        }
+        throw err;
+      }
+      var retryable=timedOut||(err&&err.name!=="AbortError"&&typeof err.status==="undefined");
+      if(retryable&&n<1){
+        if(onEvent)onEvent("retry",timedOut);
+        return wait(1500).then(function(){return attempt(n+1);});
+      }
+      if(timedOut)throw{status:"timeout",detail:""};
+      if(err&&err.name==="AbortError")throw err;
+      if(err&&typeof err.status!=="undefined")throw err;
+      throw{status:0,detail:(err&&err.message)||"network"};
+    });
+  }
+  return attempt(0);
 }
 function trSliceMono(buf,startSec,durSec){
   var sr=buf.sampleRate,start=Math.floor(startSec*sr);
@@ -3277,25 +3358,50 @@ voAudioInput.addEventListener("change",function(){
   var key=currentKey();
   if(!key){showTrError(401,"");setV(voTrStatus,T("Gemini key نہیں ملی — نیچے لال خانہ پڑھیں۔","No Gemini key found — read the red box below."),"err");return;}
   if(!AC){trFail(0,T("اس browser میں AudioContext نہیں — Chrome آزمائیں۔","This browser has no AudioContext — try Chrome."));return;}
-  voTrBusy=true;
-  setV(voTrStatus,T("آڈیو پڑھی جا رہی ہے…","Reading the audio…"));
+  voTrBusy=true;voTrCancelled=false;voTrController=null;
+  var trUsedModel="";
+  trShowProgress();
+  setV(voTrStatus,T("آڈیو پڑھی جا رہی ہے (decode ہو رہی ہے)…","Reading the audio (decoding)…"));
   file.arrayBuffer().then(function(ab){
+    if(voTrCancelled)throw{name:"AbortError"};
     return getCtx().decodeAudioData(ab).then(function(buf){return buf;},function(){return null;});
   }).then(function(buf){
     var texts=[];
     if(buf&&buf.duration>0&&isFinite(buf.duration)){
-      /* Phone par chhoti karo: 16 kHz mono, ~100 second ke hisse —
-         har hissa bari bari bhejo taake memory halki rahe aur
-         lambi file ka matn hisso se jud jaye. */
-      var CH=100,total=Math.max(1,Math.ceil(buf.duration/CH)),chain=Promise.resolve();
+      /* Phone par chhoti karo: 16 kHz mono, 60 second ke hisse —
+         har hissa bari bari bhejo taake memory halki rahe, har
+         request tez ho aur lambi file ka matn hisso se jud jaye. */
+      var CH=60,total=Math.max(1,Math.ceil(buf.duration/CH)),chain=Promise.resolve();
+      if(total>1){
+        voTrInfo.textContent=T("یہ فائل تقریباً "+fmtD(buf.duration)+" لمبی ہے — "+total+" حصوں میں جائے گی (ہر حصہ 1 منٹ کا)۔ ہر حصہ اندازاً آدھا سے ایک منٹ لیتا ہے، تو کل اندازاً "+fmtD(total*30)+" سے "+fmtD(total*60)+" لگ سکتے ہیں۔ نیچے گزرا ہوا وقت بھی چل رہا ہے — صبر سے انتظار کریں، اور چاہیں تو Cancel سے روک سکتے ہیں۔","This file is about "+fmtD(buf.duration)+" long — it will go in "+total+" parts (1 minute each). Each part takes roughly half a minute to a minute, so the whole thing may take about "+fmtD(total*30)+" to "+fmtD(total*60)+". Elapsed time is shown below — please wait patiently, or press Cancel to stop.");
+      }
       for(var idx=0;idx<total;idx++)(function(i){
         chain=chain.then(function(){
-          setV(voTrStatus,T("حصہ "+(i+1)+" از "+total+" — آڈیو چھوٹی کر کے Gemini کو بھیجا جا رہا ہے…","Part "+(i+1)+" of "+total+" — shrinking the audio and sending it to Gemini…"));
+          if(voTrCancelled)throw{name:"AbortError"};
+          setV(voTrStatus,T("حصہ "+(i+1)+" از "+total+" — آڈیو ہلکی کی جا رہی ہے (16 kHz mono)…","Part "+(i+1)+" of "+total+" — shrinking the audio (16 kHz mono)…"));
           var slice=trSliceMono(buf,i*CH,CH);
           return normalizeBuf(slice,16000,1)
           .then(function(nb){return blobToB64(encodeWav(nb));})
-          .then(function(b64){return trSendChunk(key,"audio/wav",b64);})
-          .then(function(t){texts.push(t);});
+          .then(function(b64){
+            if(voTrCancelled)throw{name:"AbortError"};
+            setV(voTrStatus,T("حصہ "+(i+1)+" از "+total+" — Gemini کو بھیج دیا گیا ہے، اب Gemini متن بنا رہا ہے…","Part "+(i+1)+" of "+total+" — sent to Gemini, now Gemini is writing the text…"));
+            return trSendChunk(key,"audio/wav",b64,function(type,info){
+              if(type==="model"){trUsedModel=info;return;}
+              if(type==="busy"){
+                setV(voTrStatus,T("حصہ "+(i+1)+" از "+total+" — Google کا model ابھی بہت busy ہے (503)؛ تھوڑی دیر (~25 سیکنڈ) رک کر خود دوبارہ کوشش ہوگی…","Part "+(i+1)+" of "+total+" — Google's model is very busy right now (503); it will retry by itself after a short wait (~25 seconds)…"));
+              }else if(type==="fallback"){
+                setV(voTrStatus,T("حصہ "+(i+1)+" از "+total+" — پہلا model busy رہا، اب backup model ("+info+") آزمایا جا رہا ہے…","Part "+(i+1)+" of "+total+" — the first model stayed busy, now trying the backup model ("+info+")…"));
+              }else if(type==="retry"){
+                setV(voTrStatus,info
+                  ?T("حصہ "+(i+1)+" از "+total+" — جواب آنے میں دیر ہو گئی، خود دوبارہ کوشش ہو رہی ہے…","Part "+(i+1)+" of "+total+" — the reply is late, retrying automatically…")
+                  :T("حصہ "+(i+1)+" از "+total+" — رابطے میں خرابی آئی، خود دوبارہ کوشش ہو رہی ہے…","Part "+(i+1)+" of "+total+" — a connection problem occurred, retrying automatically…"));
+              }
+            });
+          })
+          .then(function(t){
+            texts.push(t);voTrProgress.value=Math.round(texts.length/total*100);
+            setV(voTrStatus,T("حصہ "+(i+1)+" از "+total+" مکمل ✓"+(trUsedModel?" — model: "+trUsedModel:""),"Part "+(i+1)+" of "+total+" done ✓"+(trUsedModel?" — model: "+trUsedModel:"")));
+          });
         });
       })(idx);
       return chain.then(function(){return texts;});
@@ -3305,16 +3411,30 @@ voAudioInput.addEventListener("change",function(){
     if(file.size>14*1024*1024)throw{status:"toobig"};
     var mime=voMimeFor(file); if(mime==="audio/x-wav")mime="audio/wav";
     setV(voTrStatus,T("Gemini آڈیو سن کر متن لکھ رہا ہے… تھوڑا انتظار کریں۔","Gemini is listening to the audio and writing the script… please wait."));
-    return blobToB64(file).then(function(b64){return trSendChunk(key,mime,b64);}).then(function(t){texts.push(t);return texts;});
+    return blobToB64(file).then(function(b64){
+      if(voTrCancelled)throw{name:"AbortError"};
+      voTrProgress.value=50;
+      return trSendChunk(key,mime,b64,function(type,info){
+        if(type==="model"){trUsedModel=info;return;}
+        if(type==="busy")setV(voTrStatus,T("Google کا model ابھی بہت busy ہے (503)؛ تھوڑی دیر (~25 سیکنڈ) رک کر خود دوبارہ کوشش ہوگی…","Google's model is very busy right now (503); it will retry by itself after a short wait (~25 seconds)…"));
+        else if(type==="fallback")setV(voTrStatus,T("پہلا model busy رہا، اب backup model ("+info+") آزمایا جا رہا ہے…","The first model stayed busy, now trying the backup model ("+info+")…"));
+        else if(type==="retry")setV(voTrStatus,T("جواب آنے میں دیر ہو گئی — خود دوبارہ کوشش ہو رہی ہے…","The reply is late — retrying automatically…"));
+      });
+    }).then(function(t){texts.push(t);voTrProgress.value=100;return texts;});
   }).then(function(texts){
-    voTrBusy=false;
+    voTrBusy=false;trHideProgress();
     var out=texts.join("\n").trim();
     if(!out){trFail("noaudio","");return;}
     voScript.value=out;updateCounts();
-    setV(voTrStatus,T("✓ متن تیار ہے — نیچے خانے میں آ گیا ہے۔ اب حصہ 2 میں آواز چن کر حصہ 3 سے وائس اوور بنائیں۔","✓ Script ready — it is in the box below. Now pick a voice in section 2 and generate the voice over in section 3."),"ok");
+    setV(voTrStatus,T("✓ متن تیار ہے — نیچے خانے میں آ گیا ہے۔ اب حصہ 2 میں آواز چن کر حصہ 3 سے وائس اوور بنائیں۔","✓ Script ready — it is in the box below. Now pick a voice in section 2 and generate the voice over in section 3.")+(trUsedModel?T(" — کامیاب model: "," — model used: ")+trUsedModel:""),"ok");
   }).catch(function(e){
+    if(e&&e.name==="AbortError"){
+      voTrBusy=false;trHideProgress();
+      setV(voTrStatus,T("✋ روک دیا گیا — متن نہیں نکلا۔ دوبارہ فائل چن کر آزمائیں۔","✋ Stopped — no script was produced. Choose the file again to retry."));
+      return;
+    }
     if(e&&e.status==="toobig"){
-      voTrBusy=false;
+      voTrBusy=false;trHideProgress();
       voTrError.textContent=T("یہ فائل ("+(file.size/1048576).toFixed(1)+" MB) browser میں پڑھی (decode) نہیں ہو سکی، اور اتنی بڑی ہے کہ اصل حالت میں بھی نہیں بھیجی جا سکتی۔ فائل کو MP3 میں بدل کر یا چھوٹی کلپ کاٹ کر دوبارہ آزمائیں۔","This file ("+(file.size/1048576).toFixed(1)+" MB) could not be decoded in the browser, and it is too large to send as-is. Convert it to MP3 or cut a shorter clip and try again.");
       voTrError.style.display="block";
       setV(voTrStatus,T("متن نہیں نکل سکا — وجہ نیچے لال خانے میں پڑھیں۔","Transcription failed — read the reason in the red box below."),"err");
