@@ -2031,15 +2031,27 @@ var segInCv=document.createElement("canvas"), segInCx=segInCv.getContext("2d",{w
 function bgProcessFrame(c,srcEl,vw,vh){
   if(segState.status==="idle"){ensureSegmenter();return null;}
   if(segState.status!=="ready"||!segState.seg)return null;
-  var sc=Math.min(1,640/Math.max(1,vw),Math.sqrt(520000/Math.max(1,vw*vh)));
+  /* Export ke doran chhota size + mask reuse (neeche) — phone par
+     background wali export ki raftaar kai guna behtar ho jati hai;
+     background wese bhi dhundla hota hai, farq nazar nahi aata. */
+  var sc=window.__fxExporting?Math.min(1,480/Math.max(1,vw),Math.sqrt(260000/Math.max(1,vw*vh))):Math.min(1,640/Math.max(1,vw),Math.sqrt(520000/Math.max(1,vw*vh)));
   var w=Math.max(2,Math.round(vw*sc)),h=Math.max(2,Math.round(vh*sc));
   if(segInCv.width!==w||segInCv.height!==h){segInCv.width=w;segInCv.height=h;}
   segInCx.drawImage(srcEl,0,0,w,h);
-  var res; try{res=segState.seg.segment(segInCv);}catch(e){segState.status="failed";segState.err=String((e&&e.message)||e||"");segBigStatus("⚠ AI Background chalte hue ruk gaya: "+segState.err,"err");try{if(window.__segUiRefresh)window.__segUiRefresh();}catch(_){} return null;}
-  if(!res||!res.categoryMask)return null;
-  var mask=res.categoryMask,mw=mask.width||0,mh=mask.height||0,mdata=null;
-  try{mdata=mask.getAsUint8Array();}catch(e){}
-  if(!mdata||!mw||!mh){try{mask.close();}catch(e){} return null;}
+  segState.maskCalls=(segState.maskCalls||0)+1;
+  var mask=null,mw=0,mh=0,mdata=null;
+  var maskKey=(c.file&&c.file.name)||c.name||"";
+  var expReuse=!!window.__fxExporting&&segState.lastMask&&segState.lastMask.w===w&&segState.lastMask.h===h&&segState.lastMask.key===maskKey&&(segState.maskCalls%3!==1);
+  if(expReuse){
+    mdata=segState.lastMask.data;mw=segState.lastMask.mw;mh=segState.lastMask.mh;
+  }else{
+    var res; try{res=segState.seg.segment(segInCv);}catch(e){segState.status="failed";segState.err=String((e&&e.message)||e||"");segBigStatus("⚠ AI Background chalte hue ruk gaya: "+segState.err,"err");try{if(window.__segUiRefresh)window.__segUiRefresh();}catch(_){} return null;}
+    if(!res||!res.categoryMask)return null;
+    mask=res.categoryMask;mw=mask.width||0;mh=mask.height||0;
+    try{mdata=mask.getAsUint8Array();}catch(e){}
+    if(mdata&&window.__fxExporting){try{segState.lastMask={data:new Uint8Array(mdata),w:w,h:h,mw:mw,mh:mh,key:maskKey};mdata=segState.lastMask.data;}catch(e){}}
+  }
+  if(!mdata||!mw||!mh){if(mask){try{mask.close();}catch(e){}} return null;}
   var srcImg; try{srcImg=segInCx.getImageData(0,0,w,h);}catch(e){try{mask.close();}catch(_){} return null;}
   var sd=srcImg.data, blurD=null;
   if(c.bgMode==="blur"){
@@ -2060,7 +2072,7 @@ function bgProcessFrame(c,srcEl,vw,vh){
       sd[idx+3]=255;
     }
   }
-  try{mask.close();}catch(e){}
+  if(mask){try{mask.close();}catch(e){}}
   segInCx.putImageData(srcImg,0,0);
   return segInCv;
 }
@@ -2857,7 +2869,11 @@ function fastExportAvailable(){
 }
 function loadMp4Muxer(){
   if(!fastMuxerPromise){
-    fastMuxerPromise=import("https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.1/build/mp4-muxer.mjs").catch(function(e){fastMuxerPromise=null;throw e;});
+    var imp=import("https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.1/build/mp4-muxer.mjs");
+    /* 25s ki hadd: slow net par library atak jaye to purana (recorder)
+       rasta khud chal jaye — khamosh intezar kabhi nahi. */
+    var to=new Promise(function(_,rej){setTimeout(function(){rej(new Error("muxer load timeout"));},25000);});
+    fastMuxerPromise=Promise.race([imp,to]).catch(function(e){fastMuxerPromise=null;throw e;});
   }
   return fastMuxerPromise;
 }
@@ -2953,9 +2969,14 @@ function fastBuildMix(segs,totalOut){
   });
 }
 function exportFast(){
+  if(window.__fastBusy)return Promise.resolve(true);
+  window.__fastBusy=true;
   return new Promise(function(resolve){
     var settled=false;
-    function done(ok){if(settled)return;settled=true;resolve(ok);}
+    function done(ok){if(settled)return;settled=true;window.__fastBusy=false;resolve(ok);}
+    /* Fori feedback: progress patti pehle lamhe se dikhe — library load
+       hone tak khamoshi nahi (slow net par ye marhala lamba lagta hai). */
+    try{var __w=$("exportProgressWrap"),__p=$("exportProgress"),__s=$("exportStatus");if(__w)__w.classList.remove("hidden");if(__p)__p.value=0;if(__s)setStatus(__s,"Tez export ki tayyari — library load ho rahi hai… (slow net par thora waqt lag sakta hai)");}catch(e){}
     var segs=[], totalOut=0;
     try{
       clips.forEach(function(c,i){
@@ -2983,7 +3004,7 @@ function fastExportRun(M,segs,totalOut,totalFrames){
     var W=canvas.width,H=canvas.height;
     var prevActive=activeClip;
     var estatus=$("exportStatus"), prog=$("exportProgress"), wrap=$("exportProgressWrap");
-    state.exporting=true;exportBtn.disabled=true;
+    state.exporting=true;exportBtn.disabled=true;window.__fxExporting=true;
     wrap.classList.remove("hidden");prog.value=0;
     setStatus(estatus,"Tez export tayyar ho raha hai… (WebCodecs — asal MP4, video dobara chalaye baghair)");
     wakeLockOn();exportCancelArm();
@@ -2993,6 +3014,7 @@ function fastExportRun(M,segs,totalOut,totalFrames){
     var muxer=null, vEnc=null, aEnc=null;
     var framesDone=0, outCursor=0;
     function cleanup(){
+      window.__fxExporting=false;
       capTimeOverride=null;altManual=false;
       try{if(vEnc&&vEnc.state!=="closed")vEnc.close();}catch(e){}
       try{if(aEnc&&aEnc.state!=="closed")aEnc.close();}catch(e){}
