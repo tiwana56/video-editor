@@ -3,20 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ProCut Decoder Probe</title>
+<title>ProCut Decoder Probe v2</title>
 <style>
   body{background:#101216;color:#e8eef4;font-family:monospace;margin:0;padding:14px;font-size:15px}
   h2{font-family:sans-serif;margin:4px 0 10px}
   #log{white-space:pre-wrap;word-break:break-word;background:#1a1e24;border:1px solid #333c46;border-radius:8px;padding:10px;min-height:200px}
   .ok{color:#7ee2a8}.bad{color:#ff9a9a}.dim{color:#9fb2c3}
   input{font-size:17px;margin:10px 0}
-  button{font-size:17px;padding:10px 16px;border-radius:8px;border:0;background:#2ea36b;color:#fff}
+  video{width:120px;display:block;margin:6px 0}
 </style>
 </head>
 <body>
-<h2>🔬 ProCut Decoder Probe</h2>
-<div class="dim">Video file chunein — do test khud chalenge (A: aam tareeqa, B: annex-B tareeqa). Aakhir mein screenshot bhej dein.</div>
+<h2>🔬 ProCut Decoder Probe v2</h2>
+<div class="dim">Video file chunein — teen test chalenge: A akela decoder, C video element ke sath, D element + encoder ke sath. Aakhir mein screenshot bhej dein.</div>
 <input type="file" id="fi" accept="video/*">
+<video id="pv" muted playsinline preload="auto"></video>
 <div id="log">Tayyar. File ka intezar hai…</div>
 <script type="module">
 const logEl=document.getElementById("log");
@@ -42,55 +43,30 @@ function findAvcc(u8){
   }
   return null;
 }
-function parseAvcc(avcc){
-  let p=5; const nSps=avcc[p++]&0x1f, sps=[];
-  for(let i=0;i<nSps;i++){const len=(avcc[p]<<8)|avcc[p+1];p+=2;sps.push(avcc.slice(p,p+len));p+=len;}
-  const nPps=avcc[p++], pps=[];
-  for(let i=0;i<nPps;i++){const len=(avcc[p]<<8)|avcc[p+1];p+=2;pps.push(avcc.slice(p,p+len));p+=len;}
-  const ls=(avcc[4]&3)+1;
-  return {sps,pps,ls};
-}
-function toAnnexB(data,ls,extra){
-  const parts=[]; let total=0;
-  if(extra){for(const e of extra){parts.push(new Uint8Array([0,0,0,1]),e);total+=4+e.length;}}
-  let p=0;
-  while(p+ls<=data.length){
-    let len=0; for(let i=0;i<ls;i++)len=(len<<8)|data[p+i];
-    p+=ls;
-    if(len<=0||p+len>data.length)break;
-    parts.push(new Uint8Array([0,0,0,1]),data.slice(p,p+len));
-    total+=4+len; p+=len;
-  }
-  const out=new Uint8Array(total); let o=0;
-  for(const part of parts){out.set(part,o);o+=part.length;}
-  return out;
-}
-async function runTest(name, samples, makeChunk, cfg){
+async function decodeTest(name, samples, ab, cfg, waitMs){
   log("\n=== TEST "+name+" ===");
-  try{
-    const sup=await VideoDecoder.isConfigSupported(cfg);
-    log("config supported: "+(sup&&sup.supported));
-    if(!sup||!sup.supported){log("TEST "+name+": config reject — khatam","bad");return;}
-  }catch(e){log("isConfigSupported error: "+e.message,"bad");return;}
-  let outs=0, firstInfo="", errMsg="";
+  let outs=0, errMsg="";
   const dec=new VideoDecoder({
-    output(fr){outs++; if(outs===1)firstInfo="pehla frame: "+fr.displayWidth+"x"+fr.displayHeight+" ts="+fr.timestamp; fr.close();},
+    output(fr){outs++; fr.close();},
     error(e){errMsg=e.message||String(e);}
   });
-  try{dec.configure(cfg); log("configure: OK");}catch(e){log("configure throw: "+e.message,"bad");return;}
+  try{dec.configure(cfg); log("configure: OK");}catch(e){log("configure throw: "+e.message,"bad");return 0;}
   const N=Math.min(150,samples.length);
   let fed=0;
   for(let i=0;i<N;i++){
-    try{dec.decode(makeChunk(samples[i])); fed++;}
+    const sm=samples[i];
+    try{dec.decode(new EncodedVideoChunk({type:sm.k?"key":"delta",timestamp:Math.round(sm.t*1e6),duration:Math.round(sm.d*1e6),data:new Uint8Array(ab.slice(sm.o,sm.o+sm.s))})); fed++;}
     catch(e){log("decode() throw @"+i+": "+e.message,"bad");break;}
   }
-  log("feed: "+fed+" chunks diye, decodeQueueSize="+dec.decodeQueueSize);
-  await sleep(5000);
-  log("5 second baad output frames: "+outs+(errMsg?" | ERROR: "+errMsg:""));
-  if(firstInfo)log(firstInfo);
-  try{await dec.flush(); log("flush ke baad kul output: "+outs);}catch(e){log("flush error: "+e.message,"bad");}
+  log("feed: "+fed+" chunks, queue="+dec.decodeQueueSize);
+  const t0=performance.now();
+  while(performance.now()-t0<waitMs && outs<fed){await sleep(250);}
+  log(waitMs/1000+"s tak output: "+outs+(errMsg?" | ERROR: "+errMsg:""));
+  try{await dec.flush();}catch(e){}
+  log("flush ke baad kul: "+outs);
   try{dec.close();}catch(e){}
-  log(outs>0?("TEST "+name+": ✅ "+outs+" frames aaye"):("TEST "+name+": ❌ koi frame nahi aaya"), outs>0?"ok":"bad");
+  log(outs>0?("TEST "+name+": ✅ "+outs+" frames"):("TEST "+name+": ❌ koi frame nahi"), outs>0?"ok":"bad");
+  return outs;
 }
 document.getElementById("fi").addEventListener("change", async (ev)=>{
   const file=ev.target.files[0]; if(!file)return;
@@ -103,29 +79,41 @@ document.getElementById("fi").addEventListener("change", async (ev)=>{
     f.onReady=resolve; f.onError=()=>resolve(null);
     const b=ab.slice(0); b.fileStart=0; f.appendBuffer(b); f.flush();
     setTimeout(()=>resolve(null),8000);
-    f.__keep=true; window.__pf=f;
+    window.__pf=f;
   });
   if(!info||!info.videoTracks||!info.videoTracks.length){log("mp4box: video track nahi mila","bad");return;}
   const vt=info.videoTracks[0];
   const raw=window.__pf.getTrackSamplesInfo(vt.id)||[];
   const samples=raw.map(s=>({t:s.cts/s.timescale,d:s.duration/s.timescale,o:s.offset,s:s.size,k:!!s.is_sync}));
   const avcc=findAvcc(new Uint8Array(ab));
-  log("samples: "+samples.length+" | pehla keyframe? "+samples[0].k+" | avcC mila? "+(!!avcc));
-  if(!avcc){log("avcC nahi mila — test nahi ho sakta","bad");return;}
   const hx=b=>("0"+(b||0).toString(16)).slice(-2);
   const codecStr="avc1."+hx(avcc[1])+hx(avcc[2])+hx(avcc[3]);
-  log("codec: "+codecStr);
-  // TEST A — description (AVCC) tareeqa, koi hardware pabandi nahi
-  await runTest("A (description)", samples,
-    sm=>new EncodedVideoChunk({type:sm.k?"key":"delta",timestamp:Math.round(sm.t*1e6),duration:Math.round(sm.d*1e6),data:new Uint8Array(ab.slice(sm.o,sm.o+sm.s))}),
-    {codec:codecStr,description:avcc});
-  // TEST B — annex-B tareeqa, description ke baghair
-  const {sps,pps,ls}=parseAvcc(avcc);
-  log("SPS: "+sps.length+" PPS: "+pps.length+" NAL length size: "+ls,"dim");
-  await runTest("B (annex-B)", samples,
-    sm=>new EncodedVideoChunk({type:sm.k?"key":"delta",timestamp:Math.round(sm.t*1e6),duration:Math.round(sm.d*1e6),data:toAnnexB(new Uint8Array(ab.slice(sm.o,sm.o+sm.s)),ls,sm.k?[...sps,...pps]:null)}),
-    {codec:codecStr});
-  log("\n🏁 Dono test mukammal. Is screen ka screenshot bhej dein.","ok");
+  const cfg={codec:codecStr,description:avcc};
+  log("samples: "+samples.length+" | codec: "+codecStr);
+
+  // TEST A — akela decoder (baseline)
+  await decodeTest("A (akela decoder)", samples, ab, cfg, 6000);
+
+  // TEST C — video element mein wahi file load + pause, phir decoder
+  const pv=document.getElementById("pv");
+  pv.src=URL.createObjectURL(file);
+  await new Promise(r=>{pv.onloadedmetadata=r; setTimeout(r,4000);});
+  try{pv.currentTime=1;}catch(e){}
+  await sleep(1200);
+  log("\nvideo element tayyar: "+pv.videoWidth+"x"+pv.videoHeight+" paused="+pv.paused,"dim");
+  await decodeTest("C (video element ke sath)", samples, ab, cfg, 6000);
+
+  // TEST D — element ke sath VideoEncoder bhi configure karke khula rakho
+  let enc=null;
+  try{
+    enc=new VideoEncoder({output(){},error(e){log("encoder error: "+e.message,"bad");}});
+    enc.configure({codec:"avc1.640028",width:560,height:996,bitrate:780000,bitrateMode:"constant",framerate:30,hardwareAcceleration:"prefer-hardware",latencyMode:"quality"});
+    log("\nencoder configure: OK (560x996 CBR)","dim");
+  }catch(e){log("encoder configure fail: "+e.message,"bad");}
+  await decodeTest("D (element + encoder ke sath)", samples, ab, cfg, 6000);
+  if(enc){try{enc.close();}catch(e){}}
+
+  log("\n🏁 Teenon test mukammal. Is screen ka screenshot bhej dein.","ok");
 });
 </script>
 </body>
