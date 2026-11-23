@@ -7331,7 +7331,7 @@ applyLang();updateCounts();trApplyMethodUI();
       row.style.cssText="display:flex;gap:10px;align-items:center;padding:9px 10px;margin-bottom:8px;border:1px solid var(--border);border-radius:12px;background:"+(ok?"rgba(46,160,90,.13)":"rgba(255,255,255,.03)");
       var badge=document.createElement("span");
       badge.textContent=ok?"✓":String(i+1);
-      badge.style.cssText="min-width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;background:"+(ok?"#2ea05a":"var(--gold)");color:#141414;font-size:15px";
+      badge.style.cssText="min-width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;background:"+(ok?"#2ea05a":"var(--gold)")+";color:#141414;font-size:15px";
       var mid=document.createElement("div");mid.style.flex="1";
       var tt=document.createElement("b");tt.style.cssText="color:var(--text);font-size:14.5px";tt.textContent=st.t;
       var ss=document.createElement("div");ss.style.cssText="color:var(--muted);font-size:12.5px";ss.textContent=ok?st.ok:st.no;
