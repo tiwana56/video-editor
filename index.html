@@ -61,7 +61,7 @@ a:hover{text-decoration:underline}
 .app{max-width:1440px;margin:0 auto;padding:14px 12px 40px}
 @media(min-width:768px){.app{padding:16px 16px 48px}}
 .workspace{display:grid;grid-template-columns:1fr;gap:12px}
-@media(min-width:1024px){.workspace{grid-template-columns:292px minmax(0,1fr) 308px;align-items:start}}
+@media(min-width:1024px){.workspace{grid-template-columns:minmax(0,1fr) 308px;align-items:start}}
 .panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
 .panel-head{padding:12px 14px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .panel-head h2{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0;font-weight:700;display:flex;gap:8px;align-items:center}
@@ -829,7 +829,7 @@ textarea{min-height:64px}
   <div class="brand">
     <div class="logo" aria-hidden="true"><img src="data:image/png;base64,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" alt="" width="40" height="40" style="width:40px;height:40px;border-radius:9px;display:block"/></div>
     <div>
-      <h1>ProCut <span>Studio</span> <span id="appVer" style="color:#7ee2a8;font-weight:700;font-size:10.5px;letter-spacing:.02em">Build 23-Nov-44</span></h1>
+      <h1>ProCut <span>Studio</span> <span id="appVer" style="color:#7ee2a8;font-weight:700;font-size:10.5px;letter-spacing:.02em">Build 23-Nov-45</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -857,36 +857,6 @@ textarea{min-height:64px}
   </div>
 
   <div class="workspace">
-    <!-- LEFT: TOOLS -->
-    <aside class="panel" aria-label="Media and tools">
-      <div class="panel-head"><h2><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg> Media</h2><span style="font-size:11px;color:var(--muted2)">STEP 1</span></div>
-      <div class="panel-body">
-        <label class="file-pick" for="fileInput">
-          <span style="font-size:26px;display:block;margin-bottom:6px">＋</span>
-          <b>Import Video Clips</b>
-          <span>MP4, WebM — tap karke chunein</span>
-        </label>
-        <input class="hidden" type="file" id="fileInput" accept="video/*" multiple/>
-        <p class="file-meta" id="fileMeta">No media imported — abhi koi video select nahi hui.</p>
-        <div style="display:flex;gap:8px;margin-top:4px">
-          <button class="btn gold" id="mediaAudioUploadBtn" type="button" style="flex:1">📤 Audio File Upload Karein (MP3 / WAV)</button>
-          <button class="btn gold" id="mediaLogoBtn" type="button" style="flex:1">🏷️ Logo Lagayein — Poori Video Par Fixed</button>
-        </div>
-        <p class="file-meta" id="mediaLogoMeta">Abhi koi logo nahi laga.</p>
-        <span class="label">📍 Tasveer Kahan Lage? — Pehle Jagah Chunein, Phir Tasveer</span>
-        <div class="seg" id="imgInsertSeg" role="group" aria-label="Tasveer lagane ki jagah">
-          <button type="button" data-insert="playhead" aria-pressed="true">📍 Playhead Par — Beech Mein</button>
-          <button type="button" data-insert="start" aria-pressed="false">⏮ Sab Se Shuru Mein</button>
-          <button type="button" data-insert="end" aria-pressed="false">⏭ Sab Se End Mein</button>
-        </div>
-        <button class="btn block" id="mediaImageBtn" type="button" style="margin-top:10px;border-color:var(--cyan);color:#a5f3fc">🖼️ Images Upload Karein — Upar Chuni Jagah Par Lagayein</button>
-        <input class="hidden" type="file" id="imageInput" accept="image/*" multiple/>
-        <div class="clip-list" id="clipList" aria-label="Clips ki list"></div>
-        <p class="hint" id="joinHint" style="display:none"></p>
-
-
-              </div>
-    </aside>
 
     <!-- CENTER: PREVIEW -->
     <section class="preview-panel" aria-label="Preview">
@@ -895,7 +865,7 @@ textarea{min-height:64px}
         <div class="meta"><span id="zoomLabel">Zoom 100%</span></div>
       </div>
       <div class="stage-area">
-        <div class="stage-empty" id="stageEmpty"><b>Canvas Khali Hai</b>Media se video import karein</div>
+        <div class="stage-empty" id="stageEmpty"><b>Canvas Khali Hai</b>Nayii Video se video import karein</div>
         <canvas id="stage" width="720" height="1280" class="hidden"></canvas>
       </div>
       <div class="frame-bar" aria-label="Screen size — frame chunein">
@@ -1089,7 +1059,7 @@ textarea{min-height:64px}
           <div class="tl-row"><span class="tl-rowlabel">Audio</span><div class="tl-lane tl-lane-audio" id="tlLaneAudio"></div></div>
           <div class="tl-playhead" id="tlPlayhead"><span class="tl-playhead-grip"></span></div>
         </div>
-        <p class="tl-empty" id="tlEmpty">Abhi koi video nahi — upar Media se video import karein, poori video yahan bar ki surat mein aa jayegi.</p>
+        <p class="tl-empty" id="tlEmpty">Abhi koi video nahi — upar Nayii Video se video import karein, poori video yahan bar ki surat mein aa jayegi.</p>
       </div>
       <div class="tl-context" id="tlContext" aria-label="Timeline tools"></div>
       <input class="hidden" type="file" id="tlAudioInput" accept="audio/*"/>
@@ -1116,6 +1086,25 @@ textarea{min-height:64px}
           <button id="setStartBtn" type="button">Playhead se Start</button>
           <button id="setEndBtn" type="button">Playhead par End</button>
         </div>
+      </div>
+      <div style="margin-top:14px">
+<input class="hidden" type="file" id="fileInput" accept="video/*" multiple/>
+        <p class="file-meta" id="fileMeta">No media imported — abhi koi video select nahi hui.</p>
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <button class="btn gold" id="mediaAudioUploadBtn" type="button" style="flex:1">📤 Audio File Upload Karein (MP3 / WAV)</button>
+          <button class="btn gold" id="mediaLogoBtn" type="button" style="flex:1">🏷️ Logo Lagayein — Poori Video Par Fixed</button>
+        </div>
+        <p class="file-meta" id="mediaLogoMeta">Abhi koi logo nahi laga.</p>
+        <span class="label">📍 Tasveer Kahan Lage? — Pehle Jagah Chunein, Phir Tasveer</span>
+        <div class="seg" id="imgInsertSeg" role="group" aria-label="Tasveer lagane ki jagah">
+          <button type="button" data-insert="playhead" aria-pressed="true">📍 Playhead Par — Beech Mein</button>
+          <button type="button" data-insert="start" aria-pressed="false">⏮ Sab Se Shuru Mein</button>
+          <button type="button" data-insert="end" aria-pressed="false">⏭ Sab Se End Mein</button>
+        </div>
+        <button class="btn block" id="mediaImageBtn" type="button" style="margin-top:10px;border-color:var(--cyan);color:#a5f3fc">🖼️ Images Upload Karein — Upar Chuni Jagah Par Lagayein</button>
+        <input class="hidden" type="file" id="imageInput" accept="image/*" multiple/>
+        <div class="clip-list" id="clipList" aria-label="Clips ki list"></div>
+        <p class="hint" id="joinHint" style="display:none"></p>
       </div>
       </div>
   </section>
@@ -1601,22 +1590,22 @@ window.__switchView=switchView;
 
 /* ---------- Mobile sub-tabs inside Editor: Media / Trim / Text ---------- */
 var asides=workspace.querySelectorAll(":scope > aside.panel");
-var mediaPanel=asides[0], propsPanel=asides[1];
-if(mediaPanel)mediaPanel.classList.add("panel-media");
+var mediaPanel=null, propsPanel=asides[0]||null;
 if(propsPanel)propsPanel.classList.add("panel-props");
 var subtabs=document.createElement("div");subtabs.className="mobile-subtabs";
-[["media","🎬 Media"],["trim","✂️ Trim"],["props","T Text / Rang"]].forEach(function(t,i){
+[["trim","✂️ Trim"],["props","T Text / Rang"]].forEach(function(t,i){
   var b=document.createElement("button");b.type="button";b.className="subtab-btn";b.setAttribute("data-sub",t[0]);b.setAttribute("aria-pressed",i===0?"true":"false");b.textContent=t[1];
   b.addEventListener("click",function(){switchSub(t[0]);});
   subtabs.appendChild(b);
 });
 var preview=workspace.querySelector(".preview-panel");
 if(preview&&preview.nextSibling)workspace.insertBefore(subtabs,preview.nextSibling);else workspace.appendChild(subtabs);
-workspace.setAttribute("data-sub","media");
+workspace.setAttribute("data-sub","trim");
 function switchSub(name){
+  if(name==="media")name="trim";
   workspace.setAttribute("data-sub",name);
   document.querySelectorAll(".subtab-btn").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-sub")===name));});
-  var target=name==="media"?mediaPanel:(name==="props"?propsPanel:timeline);
+  var target=name==="props"?propsPanel:timeline;
   if(target&&window.innerWidth<1024)target.scrollTop=0;
 }
 window.__switchSub=switchSub;
@@ -2323,7 +2312,7 @@ if(edCapToggle)edCapToggle.addEventListener("click",function(){
   if(edCapControls)edCapControls.classList.toggle("hidden",!edCapOn);
   if(edCapStatus){
     if(!edCapOn)setStatus(edCapStatus,"Caption band hai — video par koi lafz nahi aayega.","");
-    else if(!clips.length)setStatus(edCapStatus,"Caption ON hai — pehle Media se video import karein, caption usi edited video par chalega.","err");
+    else if(!clips.length)setStatus(edCapStatus,"Caption ON hai — pehle Nayii Video se video import karein, caption usi edited video par chalega.","err");
     else if(!($("voScript")&&$("voScript").value.trim()))setStatus(edCapStatus,"Caption ON hai lekin Voice Over tab ka script khali hai — wahan matn likhein ya audio file se nikalwayein, phir caption chalega.","err");
     else setStatus(edCapStatus,"Caption ON hai — Play dabayein, lafz video par chalte nazar aayenge; Export mein bhi yahi caption shamil hoga.","ok");
   }
@@ -5109,7 +5098,7 @@ function renderContext(){
     box.appendChild(ctxBtn("🎧 Audio Alag (Track)",doExtractAudio));
     box.appendChild(ctxBtn("🎧 Sab Clips Ki Aik Audio (Track)",doCombinedTrack));
     box.appendChild(ctxBtn("T Text Lagayein",function(){if(window.__switchSub)window.__switchSub("props");}));
-    box.appendChild(ctxBtn("▭ Ratio Badlein",function(){if(window.__switchSub)window.__switchSub("media");}));
+    box.appendChild(ctxBtn("▭ Ratio Badlein",function(){var r=document.querySelector(".frame-bar");if(r)r.scrollIntoView({behavior:"smooth",block:"center"});}));
     return;
   }
   if(sel.type==="video"){
