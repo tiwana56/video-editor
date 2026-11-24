@@ -13,7 +13,7 @@ echo ""
 termux-setup-storage
 sleep 1
 pkg update -y
-pkg install -y python ffmpeg
+pkg install -y python ffmpeg termux-api
 pip install -U yt-dlp
 mkdir -p "$HOME/bin" "$HOME/storage/downloads/ProCut-Downloads"
 
@@ -61,6 +61,32 @@ echo "Engine update ho gaya."
 EOF
 chmod +x "$PREFIX/bin/dlu"
 
+# --- Home screen button (Termux:Widget) ---
+mkdir -p "$HOME/.shortcuts"
+cat > "$HOME/.shortcuts/Video Download" <<'EOS'
+#!/data/data/com.termux/files/usr/bin/bash
+LINK=$(termux-clipboard-get 2>/dev/null | tr -d '\r\n')
+case "$LINK" in
+  http://*|https://*) ;;
+  *) echo "Clipboard mein link nahi mila."
+     printf "Link paste karke Enter dabayein: "
+     read LINK ;;
+esac
+if [ -z "$LINK" ]; then echo "Link khaali hai - band kar raha hoon."; sleep 3; exit 1; fi
+echo "Download ho raha hai: $LINK"
+yt-dlp -f "bv*[height<=720]+ba/b[height<=720]/b" --merge-output-format mp4 --no-playlist --trim-filenames 80 -o "$HOME/storage/downloads/ProCut-Downloads/%(title)s.%(ext)s" "$LINK"
+if [ $? -eq 0 ]; then
+  echo ""
+  echo "=== HO GAYA - file Download/ProCut-Downloads mein hai ==="
+else
+  echo ""
+  echo "=== Download NAHI hua - link check karein, ya Termux mein pehle dlu chalayein ==="
+fi
+sleep 5
+EOS
+chmod +x "$HOME/.shortcuts/Video Download"
+
+
 echo ""
 echo "============================================"
 echo "  SETUP MUKAMMAL - sab tayyar hai"
@@ -73,6 +99,9 @@ echo "     download khud shuru ho jayega."
 echo "  2) Ya Termux mein likhein:   dl <link>"
 echo "  3) Sirf awaz (MP3) chahiye to:  dla <link>"
 echo "  4) Kabhi koi site band ho to pehle:  dlu"
+echo ""
+echo "Home screen button: pehle F-Droid se Termux:Widget aur Termux:API lagayein,"
+echo "phir home screen par Widgets mein se Termux:Widget rakh kar Video Download chunein."
 echo ""
 echo "Videos phone ke Download/ProCut-Downloads folder mein aati hain -"
 echo "wahan se ProCut mein load kar lein."
