@@ -566,7 +566,7 @@ ol.steps li{color:#d8e1ee}
 .jadoo .cap-err{border:1px solid #f87171;background:rgba(127,29,29,.4);color:#fecaca;border-radius:10px;padding:12px;font-size:14px;line-height:1.65;margin-top:12px;display:none;white-space:pre-wrap;word-break:break-word}
 </style>
 <style>
-/* ===== PREVIEW SIZE — Chhota / Bara (SIRF display; export bilkul waisa hi) =====
+/* ===== PREVIEW SIZE — Small / Large (SIRF display; export bilkul waisa hi) =====
    9:16 preview takreeban poori screen le leta tha, is liye frame options,
    transport aur timeline tak pohanchne ke liye bohat scroll karna parta tha.
    Height caps sirf CSS display size badalte hain — canvas ke asal pixels
@@ -578,7 +578,7 @@ ol.steps li{color:#d8e1ee}
 .pv-toggle{display:flex;gap:6px;margin-left:auto}
 .pv-toggle button{border:1.5px solid var(--border2);background:var(--panel3);color:var(--muted);border-radius:999px;padding:7px 16px;font-size:13.5px;font-weight:700;min-height:40px;cursor:pointer}
 .pv-toggle button[aria-pressed="true"]{background:rgba(34,211,238,.22);border-color:var(--cyan);color:#a5f3fc}
-/* Bari screens par bhi Chhota mode stage ko cap karta hai */
+/* Bari screens par bhi Small mode stage ko cap karta hai */
 @media(min-width:641px){
   body.pv-small .stage-area{max-height:50vh}
   body.pv-small canvas#stage{max-height:46vh}
@@ -794,8 +794,8 @@ textarea{min-height:64px}
 <style>
 /* ===== FRAME / FIT BUTTONS — AIK LINE COMPACT (sublabels khatam) =====
    Frame-size aur fit buttons ke andar ki tafseeli lines (sublabels) HTML
-   se hata di gayi hain — ab sirf chhota label hai (9:16, 16:9, Frame Bhar,
-   Pura Dikhe). Buttons aik hi line mein, do rows mein wrap NAHI hote,
+   se hata di gayi hain — ab sirf chhota label hai (9:16, 16:9, Fill,
+   Fit). Buttons aik hi line mein, do rows mein wrap NAHI hote,
    aur mobile par screen ka bara hissa NAHI khate. Tafseel title tooltip
    aur Madad tab mein mehfooz hai. */
 .frame-bar{padding:6px 8px 7px!important}
@@ -869,13 +869,13 @@ textarea{min-height:64px}
   <div class="brand">
     <div class="logo" aria-hidden="true"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAH80lEQVR4nO3dT4hWVRjH8WdkFMLF/LGcmTBNJyzDdOnCJAIjCBdB0EaoCGoZDEhgJNkmSAQhEIJ2kQS1iiQIgwiTCFpkaYTh34KZMXKchS0CscV4x3fev+fee+55nnPO97PxT/Hey/j7nfPcO++dd0iMGRl74I72OaA5iwt/D2mfQyvVkyHsENEtRfADE3r0E7oMwQ5G8FFGqCI0fhCCjzqaLkJjL07w4VNTRfD+ogQfTfJdhFU+X4zwo2m+M+alTSNj6wk+gltcuF47v7V3AMIPLT6yV6sAhB/a6maw8hYyMk74YcfijWrjUKUdgPDDmqqZLF0Awg+rqmSzVAEIP6wrm1HnuWlkfILwIxqLN+adsu20AxB+xMY1swMLQPgRK5fsDg/6H0w9vgN41ncHGGX1R+QGZbhnAQg/UtEvy17fDQrEpuuIP7puktUfybn5z1xH3tkBkLWOArD6I1Xdss0OgKytKACrP1LXnnF2AGRtuQCs/shFa9Zb3grBmx6Qn+XUj66bYgeAmlWr79M5rgjhR76WRiCmH2SKu0DI2sDnAZoy/u35jr9bfXvp1993ju0JfDoIYHR8/cae/3FYTgQ8lZbDip0JiOCn7eaN69dEBhQhsOGx+x9UvwC+uH1l8B87u3C6+P2a293rWewWIiIXn9263/VYO77844Tr63Y7h+9enHY+1nOfXFpe1Qa97r2/W/r1xGubnY/z+vErK1bP1X1et92xmU3Ox3n3vT87Vuler9t+DgcOb9hfFMBSEdRGoEJr+FuDj/QUgW8tgnYJzFwET58j/LnQDn0r1QIUq3+d8FcZf6qqOv6UVWf8KaPM+PP2+9cqH+fA4Q0dx2nfDbSY2QEADWoF8LH6l1F39S+jzupfRp3Vv4w6q38/FnaBqHeAMuNPXWXGnzrKjD91lBl/6ug2/lgyLENWvgsAhBf1DuAqxfHnlQ/jHn+siLYAKY4/n7/K+BNatAUAfEi+ANu+Cjf+7P30IuNPZKIswLW94cafH154hPGnghjGH5FIC+CK1b+6HFZ/EZFhO2+GBsKLbgdg/Kku1Phz8NBDUYw/IhEWwBXjT3Whxp8PDv2lPmYNMwAhZ8MxXQIw/lTH+NNdkiMQ4091bx7NZ/wRiagArP7VHX+D1b8XboMia9HsAK5SHH/2f3SZ8achURQgxfHni5e3MP4YEEUBXIVc/Z/6jNW/Ckurv0hiBQDKMl+AkOPPT88z/lQR6/gjEkEBXE1/fYHxp6Jcxx8RHopH5kzvAHNPP8r4UxHjjxu1AhQ/EKv9J0NXei3Gn8pCjT9HD3eOPy/NrNkjIvLxsf/Ufi6s6R0AaJpqAfrtAq7jj4/V33X8qbv6u44/dVd/1/Fn5tjVWsd55y238cfq6i9iaAfwMQohDkX4LVB/IGb63MLpIvzFRyTxQRlpag++9uovIjK0bmKjykckjXzzc8ffsQvkoVvwZ45s0zgVW2+HLlZ+PiwvTRZW/HbqnxEmIjK3e+uKP68VMfeFgn+TZy7c+8MRnXMwcxEMaIjqoXjAN3YAZM3ENQAwJD0+cbth7ADImqnboMiZTg7ZAZA1CoCsUQBkjQIgaxQAWaMAyBo/FQI2KOWQHQBZU38iDBDR+3YsOwCyRgE8mD+1S/sUUBEF8GT+1C6KECEK4BlFiAvvBm1IUYKJZ35UPpNYcBs0SewItlGAQCiCTTwUHxijUQ9KOWQHUMKOYAMFUEYRdFEAIyiCDm6DGpPvNQK3QdGC3SAMCmAYY1HzKEAEKEJzKEBEKIJ/PBAToRQvlHkgBqWxI9THQ/EJSGJH4KF41MWOUB4FSBBFcEcBEkYRBqMAGaAIvfERSRmI+uK4YRQgYQR/MN4NmqA4g6+TQ3aAhMQZfF0UIAEEvzoKEDGCXx8/FSJCSQZfKYfsABFJMvjKKEAECH5zuA1qWF7B592gaJFX+PXwRJgxuQZfK4dcAxiRa/C1UQBlBF8XBVBC8G2gAIERfFt4KD4Qgj+AUg7ZARpG8G2jAA0h+HGgAJ4R/LhQAE8Ifpx4K4QHhD9eFABZowDIGm+HhhG8HRoIjgIgazwUDxu0Hoon/7CAj0gCFFAAZI3boDCC26BAcBQAWaMAyBoFQNYoALJGAZA1fioEbFDKodoOcGvfk8u/nzxzQes0oKT137w1C6ExAiFrqgVgF8iTldVfxNhPhSi+MHO7tyqfCZpgcZEbmtj0+B3tk1h78nvtU4AC7dVf5O47kCyUQIQi5MJC8EVE5q/+NnR3BLJxK/TWvj0iIrL25GnlM0ETin9fK3kTuXsNYOd0lvy7/IVCSqzlTITboMjc0ghksZpAAKtEROaunKcCyEqReUYgZI0CIGsrRp/Jh7eb+H4A0KS5K+eWc88OgKytKEBrM4AUtWecHQBZ6ygAuwBS1S3b7ADIWtcCsAsgNb0y3fuBGB6WRwZ6jkBzl3+lAUhCvyz3vQagBIjdoAxzEYysOa3wU5uf4C0SiM6swwTjtAO4vBBgiWtmnUcgSoBYlMlq6VBPbd7BOASzZi//UirTpS+Cyx4ACKVKNivdBaIEsKZqJivfBqUEsKJOFmuHeGoL1wTQM3up3kJc+xthdU8AqMpH9ryGl90AIfhcdL2v3lNbdlICNGb20lmvmW1sfKEI8Ml38AuNz+8UAXU0FfxCsAtYioAymg5+IfgdHIqAfkIFv6B6C5MyQCR86FuZu4dPKdKmGfZu/getP6jNwq+1CgAAAABJRU5ErkJggg==" alt="" width="40" height="40" style="width:40px;height:40px;border-radius:9px;display:block"/></div>
     <div>
-      <h1>ProCut <span>Studio</span> <span id="appVer" style="color:#7ee2a8;font-weight:700;font-size:10.5px;letter-spacing:.02em">Build 23-Nov-49</span></h1>
+      <h1>ProCut <span>Studio</span> <span id="appVer" style="color:#7ee2a8;font-weight:700;font-size:10.5px;letter-spacing:.02em">Build 23-Nov-50</span></h1>
     </div>
   </div>
   <div class="top-actions">
-    <button class="icon-btn-top hist-btn" id="undoBtn" type="button" title="Undo — pichla step wapas lein (Ctrl+Z)" aria-label="Undo — pichla step wapas lein"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg><span>Undo</span></button>
-    <button class="icon-btn-top hist-btn" id="redoBtn" type="button" title="Redo — undo kiya hua step dobara karein (Ctrl+Y)" aria-label="Redo — undo kiya hua step dobara karein"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg><span>Redo</span></button>
-    <button class="icon-btn-top hist-btn refresh-btn" id="refreshBtn" type="button" title="Page Refresh — page dobara load karein (jo editing export nahi hui, wo khatam ho jayegi)" aria-label="Page refresh karein"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg><span>Refresh</span></button>
+    <button class="icon-btn-top hist-btn" id="undoBtn" type="button" title="Undo (Ctrl+Z)" aria-label="Undo — pichla step wapas lein"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg><span>Undo</span></button>
+    <button class="icon-btn-top hist-btn" id="redoBtn" type="button" title="Redo (Ctrl+Y)" aria-label="Redo — undo kiya hua step dobara karein"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg><span>Redo</span></button>
+    <button class="icon-btn-top hist-btn refresh-btn" id="refreshBtn" type="button" title="Refresh page (unsaved edits will be lost)" aria-label="Page refresh karein"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg><span>Refresh</span></button>
     <select id="qualitySel" class="select-dark" aria-label="Export quality">
       <option value="1080">1080p Full HD</option>
       <option value="720" selected>720p HD</option>
@@ -889,11 +889,11 @@ textarea{min-height:64px}
 <div class="app">
   
 
-  <div class="warn-box" role="note" style="margin-bottom:12px"><b>Channel ki hifazat:</b> Doosron ki tilawat / naat / bayan baghair ijazat upload karna YouTube ki reused-content policy ke khilaf hai — strike aa sakta hai. Sirf ijazat wali clips use karein, apni awaz / intro add karein aur description mein asal source ka credit dein.</div>
+  <div class="warn-box" role="note" style="margin-bottom:12px"><b>Protect your channel:</b> Uploading someone else's recitation / naat / lecture without permission breaks YouTube's reused-content policy — you can get a strike. Use only clips you have permission for, add your own voice / intro, and credit the original source in the description.</div>
 
   <div class="dash" id="homeDash" aria-label="Home dashboard">
-    <button class="dash-btn" id="dashNewVideo" type="button"><span>🎬</span>Nayi Video<small>Clips import karein</small></button>
-    <button class="dash-btn gold" id="dashSlideshow" type="button"><span>🖼️</span>Slideshow<small>Tasveeron se video</small></button>
+    <button class="dash-btn" id="dashNewVideo" type="button"><span>🎬</span>New Video<small>Import clips</small></button>
+    <button class="dash-btn gold" id="dashSlideshow" type="button"><span>🖼️</span>Slideshow<small>Video from photos</small></button>
   </div>
 
   <div class="workspace">
@@ -905,30 +905,30 @@ textarea{min-height:64px}
         <div class="meta"><span id="zoomLabel">Zoom 100%</span></div>
       </div>
       <div class="stage-area">
-        <div class="stage-empty" id="stageEmpty"><b>Canvas Khali Hai</b>Nayii Video se video import karein</div>
+        <div class="stage-empty" id="stageEmpty"><b>Canvas is empty</b>Import a video with New Video</div>
         <canvas id="stage" width="720" height="1280" class="hidden"></canvas>
       </div>
       <div class="frame-bar" aria-label="Screen size — frame chunein">
         <div class="pv-row">
           <span class="pv-label">👁 Preview Size</span>
           <div class="pv-toggle" role="group" aria-label="Preview size chunein">
-            <button type="button" id="pvSmallBtn" aria-pressed="false">Chhota</button>
-            <button type="button" id="pvLargeBtn" aria-pressed="false">Bara</button>
+            <button type="button" id="pvSmallBtn" aria-pressed="false">Small</button>
+            <button type="button" id="pvLargeBtn" aria-pressed="false">Large</button>
           </div>
         </div>
         <span class="frame-label">📐 Frame Size</span>
         <div class="frame-opts" role="group" aria-label="Video ka size">
           <button type="button" class="frame-btn" data-ratio="9:16" aria-pressed="true" title="9:16 — Shorts, TikTok, Reels"><span class="fbox f916" aria-hidden="true"></span>9:16</button>
-          <button type="button" class="frame-btn" data-ratio="16:9" aria-pressed="false" title="16:9 — Long Video, YouTube"><span class="fbox f169" aria-hidden="true"></span>16:9</button>
-          <button type="button" class="frame-btn" data-ratio="1:1" aria-pressed="false" title="1:1 — Square Post"><span class="fbox f11" aria-hidden="true"></span>1:1</button>
-          <button type="button" class="frame-btn" data-ratio="4:5" aria-pressed="false" title="4:5 — Portrait Post"><span class="fbox f45" aria-hidden="true"></span>4:5</button>
-          <button type="button" class="frame-btn" data-ratio="orig" aria-pressed="false" title="Original — Video jaisi hai, waisi"><span class="fbox forig" aria-hidden="true"></span>Original</button>
+          <button type="button" class="frame-btn" data-ratio="16:9" aria-pressed="false" title="16:9 — Long video, YouTube"><span class="fbox f169" aria-hidden="true"></span>16:9</button>
+          <button type="button" class="frame-btn" data-ratio="1:1" aria-pressed="false" title="1:1 — Square post"><span class="fbox f11" aria-hidden="true"></span>1:1</button>
+          <button type="button" class="frame-btn" data-ratio="4:5" aria-pressed="false" title="4:5 — Portrait post"><span class="fbox f45" aria-hidden="true"></span>4:5</button>
+          <button type="button" class="frame-btn" data-ratio="orig" aria-pressed="false" title="Original — same as the video"><span class="fbox forig" aria-hidden="true"></span>Original</button>
         </div>
         <div class="frame-fit-row">
           <span class="frame-label">🖼 Fit</span>
           <div class="frame-opts" role="group" aria-label="Fit mode">
-            <button type="button" class="frame-btn" data-fit="cover" aria-pressed="true" title="Frame Bhar — frame poora bharega, side se kuch kat sakta hai">Frame Bhar</button>
-            <button type="button" class="frame-btn" data-fit="fit" aria-pressed="false" title="Pura Dikhe — kuch nahi katega, peeche dhundla background">Pura Dikhe</button>
+            <button type="button" class="frame-btn" data-fit="cover" aria-pressed="true" title="Fill — fills the frame, edges may crop">Fill</button>
+            <button type="button" class="frame-btn" data-fit="fit" aria-pressed="false" title="Fit — nothing crops, blurred background">Fit</button>
           </div>
         </div>
       </div>
@@ -957,7 +957,7 @@ textarea{min-height:64px}
             <div class="vol-wrap"><span style="font-size:12px;color:var(--muted)">Vol</span><input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="1" aria-label="Volume"/></div>
           </div>
         </div>
-        <div id="transportPlaceholder" style="font-size:12.5px;color:var(--muted);text-align:center;padding:6px">Video load hone ke baad play, speed, volume, rotate aur zoom controls yahan aayenge • Shortcuts: <span class="kbd">Space</span> Play/Pause <span class="kbd">Ctrl+Z</span> Undo <span class="kbd">Ctrl+Y</span> Redo • Galti ho to upar wale <b style="color:var(--text)">Undo</b> button se pichla step wapas lein</div>
+        <div id="transportPlaceholder" style="font-size:12.5px;color:var(--muted);text-align:center;padding:6px">Play, speed, volume, rotate and zoom controls appear here once a video loads • Shortcuts: <span class="kbd">Space</span> Play/Pause <span class="kbd">Ctrl+Z</span> Undo <span class="kbd">Ctrl+Y</span> Redo • Made a mistake? Use the <b style="color:var(--text)">Undo</b> button above to undo</div>
       </div>
     </section>
 
@@ -965,7 +965,7 @@ textarea{min-height:64px}
     <aside class="panel" aria-label="Properties">
       <div class="panel-head"><h2><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2" fill="var(--panel)"/><circle cx="15" cy="12" r="2" fill="var(--panel)"/><circle cx="8" cy="18" r="2" fill="var(--panel)"/></svg> Properties</h2><span style="font-size:11px;color:var(--muted2)">TEXT • COLOR</span></div>
       <div class="panel-body">
-        <span class="label">Templates — 1 Tap Urdu Text</span>
+        <span class="label">Templates — 1-Tap Text</span>
         <div class="seg purple">
           <button type="button" data-tpl="tilawat">Tilawat</button>
           <button type="button" data-tpl="naat">Naat</button>
@@ -973,10 +973,10 @@ textarea{min-height:64px}
           <button type="button" data-tpl="dua">Dua</button>
         </div>
 
-        <span class="label">Urdu Title — Video Par Nazar Aayega</span>
-        <input type="text" id="titleText" class="urdu-input" dir="rtl" lang="ur" placeholder="مثلاً: سورۃ الکہف کی تلاوت"/>
-        <span class="label">Subtitle — Chhoti Line</span>
-        <input type="text" id="subText" class="urdu-input" dir="rtl" lang="ur" placeholder="مثلاً: قاری کا نام یا چینل کا نام"/>
+        <span class="label">Title — Shows on the Video</span>
+        <input type="text" id="titleText" class="urdu-input" dir="rtl" lang="ur" placeholder="e.g. Surah Al-Kahf Recitation"/>
+        <span class="label">Subtitle — Small Line</span>
+        <input type="text" id="subText" class="urdu-input" dir="rtl" lang="ur" placeholder="e.g. Qari name or channel name"/>
 
         <span class="label">Text Position</span>
         <div class="seg" role="group" aria-label="Text position">
@@ -997,37 +997,37 @@ textarea{min-height:64px}
         <div class="slider-row"><span>Font Size</span><input type="range" id="fontSize" min="28" max="110" step="2" value="58"/><output id="fontSizeOut">58</output></div>
 
         <div class="row" style="margin-top:12px">
-          <button class="btn toggle" id="bandToggle" type="button" aria-pressed="true" style="flex:1">Band / Patti</button>
+          <button class="btn toggle" id="bandToggle" type="button" aria-pressed="true" style="flex:1">Band</button>
           <button class="btn toggle" id="bismillahToggle" type="button" aria-pressed="false" style="flex:1">Bismillah Top</button>
         </div>
         <div class="divider"></div>
-        <span class="label">🎬 Caption — Edited Video Par Chalte Lafz</span>
-        <button class="btn toggle block" id="edCapToggle" type="button" aria-pressed="false">Caption: OFF — Video Par Lafz Nahi Aayenge</button>
+        <span class="label">🎬 Editor Captions</span>
+        <button class="btn toggle block" id="edCapToggle" type="button" aria-pressed="false">Caption: OFF</button>
         <div id="edCapControls" class="hidden">
-          <span class="label">Lafzon Ki Harkat — Lafz Kaise Chalein?</span>
+          <span class="label">Word Motion</span>
           <div class="seg" id="edCapMoveSeg" role="group" aria-label="Editor caption movement">
-            <button type="button" data-emove="static" aria-pressed="true">🧍 Sada</button>
-            <button type="button" data-emove="up" aria-pressed="false">⬆️ Neeche Se Upar</button>
-            <button type="button" data-emove="side" aria-pressed="false">↔️ Ek Side Se Doosri Side</button>
+            <button type="button" data-emove="static" aria-pressed="true">🧍 Still</button>
+            <button type="button" data-emove="up" aria-pressed="false">⬆️ Bottom to Top</button>
+            <button type="button" data-emove="side" aria-pressed="false">↔️ Side to Side</button>
           </div>
-          <span class="label">⏱ Caption Timing — Waqt Theek Karein</span>
-          <div class="slider-row"><span>Der ← → Jaldi</span><input type="range" id="edCapShift" min="-5" max="5" step="0.25" value="0"/><output id="edCapShiftOut">0s</output></div>
+          <span class="label">⏱ Caption Timing</span>
+          <div class="slider-row"><span>Late ← → Early</span><input type="range" id="edCapShift" min="-5" max="5" step="0.25" value="0"/><output id="edCapShiftOut">0s</output></div>
           <p class="hint" id="edCapTimingSrc">Timing: —</p>
-          <button class="btn small" id="edCapShiftReset" type="button">↺ Timing 0 Par Wapas</button>
+          <button class="btn small" id="edCapShiftReset" type="button">↺ Reset Timing</button>
         </div>
-        <button class="btn small" id="edCapSrtBtn" type="button" style="margin-top:8px">⬇ SRT File Download Karein (Captions Ki File)</button>
+        <button class="btn small" id="edCapSrtBtn" type="button" style="margin-top:8px">⬇ Download SRT</button>
         <p class="status" id="edCapStatus" role="status"></p>
 
         <div class="divider"></div>
-        <span class="label">🎨 Brand Presets — Apna Style Save Karein</span>
+        <span class="label">🎨 Brand Presets</span>
         <div style="display:flex;gap:8px;margin-bottom:8px">
-          <input type="text" id="presetName" placeholder="Preset ka naam — masalan: Mera Channel Style" style="flex:1"/>
+          <input type="text" id="presetName" placeholder="Preset name — e.g. My Channel Style" style="flex:1"/>
           <button class="btn" id="presetSaveBtn" type="button">💾 Save</button>
         </div>
         <div id="presetList"></div>
         <p class="status" id="presetStatus" role="status"></p>
         <div class="divider"></div>
-        <span class="label">Adjust — Professional Color</span>
+        <span class="label">Adjust — Color</span>
         <div class="slider-row"><span>Brightness</span><input type="range" id="brightnessSlider" min="50" max="150" value="100"/><output id="brightnessOut">100%</output></div>
         <div class="slider-row"><span>Contrast</span><input type="range" id="contrastSlider" min="50" max="150" value="100"/><output id="contrastOut">100%</output></div>
         <div class="slider-row"><span>Saturation</span><input type="range" id="saturationSlider" min="0" max="200" value="100"/><output id="saturationOut">100%</output></div>
@@ -1047,26 +1047,26 @@ textarea{min-height:64px}
         <div class="hidden" id="exportProgressWrap">
           <progress id="exportProgress" max="100" value="0"></progress>
           <p class="status" id="exportStatus"></p>
-          <button class="btn small hidden" id="exportCancelBtn" type="button">✕ Export Cancel Karein</button>
+          <button class="btn small hidden" id="exportCancelBtn" type="button">✕ Cancel Export</button>
         </div>
         <p class="status" id="draftStatus" role="status"></p>
-        <button class="btn small hidden" id="draftDeleteBtn" type="button">🗑 Save Shuda Draft Delete Karein</button>
+        <button class="btn small hidden" id="draftDeleteBtn" type="button">🗑 Delete Draft</button>
 
         <div class="divider"></div>
-        <span class="label">🛡️ Project Safety — Slots Aur Backup</span>
+        <span class="label">🛡️ Project Safety</span>
         <p class="hint" id="storageMeter">📦 Browser storage: …</p>
         <div style="display:flex;gap:8px;margin-bottom:8px">
-          <input type="text" id="slotName" placeholder="Project ka naam — masalan: Eid Video" style="flex:1"/>
+          <input type="text" id="slotName" placeholder="Project name — e.g. Eid Video" style="flex:1"/>
           <button class="btn" id="slotSaveBtn" type="button">💾 Save</button>
         </div>
         <div id="slotList"></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
-          <button class="btn small" id="projBackupBtn" type="button">⬇ Backup File Download Karein</button>
-          <button class="btn small" id="projRestoreBtn" type="button">⬆ Backup File Load Karein</button>
+          <button class="btn small" id="projBackupBtn" type="button">⬇ Backup</button>
+          <button class="btn small" id="projRestoreBtn" type="button">⬆ Restore</button>
           <input type="file" id="projFileInput" accept=".json,application/json" class="hidden"/>
         </div>
         <p class="status" id="projStatus" role="status"></p>
-        <p class="status" id="editorStatus" role="status">Editor tayyar hai — pehle video import karein.</p>
+        <p class="status" id="editorStatus" role="status">Editor ready — import a video first.</p>
         </div>
     </aside>
   </div>
@@ -1075,17 +1075,17 @@ textarea{min-height:64px}
   <section class="timeline-panel" aria-labelledby="tlHead">
     <div class="timeline-head">
       <h2 id="tlHead"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M6 5v14M18 5v14"/></svg> Timeline — Trim &amp; Clip</h2>
-      <span style="font-size:12px;color:var(--muted)">Shorts ke liye behtareen hissa chunein • 60 sec se kam rakhein</span>
+      <span style="font-size:12px;color:var(--muted)">Pick the best part for Shorts • keep it under 60 sec</span>
     </div>
     <div class="timeline-body">
       <!-- ===== REAL MULTI-TRACK TIMELINE (CapCut-style) ===== -->
       <div class="tl-topbar">
-        <span class="tl-total" id="tlTotal">Kul waqt: 0:00</span>
+        <span class="tl-total" id="tlTotal">Total: 0:00</span>
         <span class="tl-pos" id="tlPos">Playhead: 0:00</span>
-        <button class="btn small gold" id="tlSelectAll" type="button" style="min-height:52px;font-size:15px">✓ Sab Select Karein</button>
+        <button class="btn small gold" id="tlSelectAll" type="button" style="min-height:52px;font-size:15px">✓ Select All</button>
         <div class="tl-zoom">
-          <button class="btn small" id="tlScrollL" type="button" aria-label="Timeline peeche scroll karein">◀ Peeche</button>
-          <button class="btn small" id="tlScrollR" type="button" aria-label="Timeline aagay scroll karein">Aagay ▶</button>
+          <button class="btn small" id="tlScrollL" type="button" aria-label="Timeline peeche scroll karein">◀ Back</button>
+          <button class="btn small" id="tlScrollR" type="button" aria-label="Timeline aagay scroll karein">Forward ▶</button>
           <button class="btn small" id="tlZoomOut" type="button" aria-label="Timeline zoom out">− Zoom</button>
           <button class="btn small" id="tlZoomIn" type="button" aria-label="Timeline zoom in">+ Zoom</button>
           <button class="btn small" id="tlFit" type="button">Fit</button>
@@ -1099,7 +1099,7 @@ textarea{min-height:64px}
           <div class="tl-row"><span class="tl-rowlabel">Audio</span><div class="tl-lane tl-lane-audio" id="tlLaneAudio"></div></div>
           <div class="tl-playhead" id="tlPlayhead"><span class="tl-playhead-grip"></span></div>
         </div>
-        <p class="tl-empty" id="tlEmpty">Abhi koi video nahi — upar Nayii Video se video import karein, poori video yahan bar ki surat mein aa jayegi.</p>
+        <p class="tl-empty" id="tlEmpty">No video yet — import one with New Video above; the full video will appear here as a bar.</p>
       </div>
       <div class="tl-context" id="tlContext" aria-label="Timeline tools"></div>
       <input class="hidden" type="file" id="tlAudioInput" accept="audio/*"/>
@@ -1107,41 +1107,41 @@ textarea{min-height:64px}
       <input class="hidden" type="file" id="tlStickerInput" accept="image/*"/>
       <div class="track-visual" aria-hidden="true" style="display:none"><div class="track-bar"></div></div>
       <div class="fine-box">
-        <span class="label" style="margin-top:0">🎚 Sliders — Thora Sa Aage / Peeche Theek Karna Ho To</span>
+        <span class="label" style="margin-top:0">🎚 Sliders — Fine Adjust</span>
         <div class="row" style="align-items:start">
           <div>
-            <label for="trimStart" class="slider-big-label">🟢 SHURU — clip yahan se chalegi</label>
+            <label for="trimStart" class="slider-big-label">🟢 START — clip starts here</label>
             <input type="range" id="trimStart" min="0" max="0" step="0.1" value="0"/>
           </div>
           <div>
-            <label for="trimEnd" class="slider-big-label">🔴 KHATAM — clip yahan rukegi</label>
+            <label for="trimEnd" class="slider-big-label">🔴 END — clip ends here</label>
             <input type="range" id="trimEnd" min="0" max="0" step="0.1" value="0"/>
           </div>
         </div>
         <div class="trim-readout" style="margin-top:8px">
-          <span>✂️ Chuna hua hissa: <b><span id="clipLen">0.0</span> sec</b></span>
+          <span>✂️ Selected part: <b><span id="clipLen">0.0</span> sec</b></span>
           <span><span id="trimStartLabel">0:00</span> → <span id="trimEndLabel">0:00</span></span>
         </div>
         <div class="hidden" aria-hidden="true">
-          <button id="setStartBtn" type="button">Playhead se Start</button>
-          <button id="setEndBtn" type="button">Playhead par End</button>
+          <button id="setStartBtn" type="button">Start at Playhead</button>
+          <button id="setEndBtn" type="button">End at Playhead</button>
         </div>
       </div>
       <div style="margin-top:14px">
 <input class="hidden" type="file" id="fileInput" accept="video/*" multiple/>
-        <p class="file-meta" id="fileMeta">No media imported — abhi koi video select nahi hui.</p>
+        <p class="file-meta" id="fileMeta">No media imported — no video selected yet.</p>
         <div style="display:flex;gap:8px;margin-top:4px">
-          <button class="btn gold" id="mediaAudioUploadBtn" type="button" style="flex:1">📤 Audio File Upload Karein (MP3 / WAV)</button>
-          <button class="btn gold" id="mediaLogoBtn" type="button" style="flex:1">🏷️ Logo Lagayein — Poori Video Par Fixed</button>
+          <button class="btn gold" id="mediaAudioUploadBtn" type="button" style="flex:1">📤 Upload Audio</button>
+          <button class="btn gold" id="mediaLogoBtn" type="button" style="flex:1">🏷️ Add Logo</button>
         </div>
-        <p class="file-meta" id="mediaLogoMeta">Abhi koi logo nahi laga.</p>
-        <span class="label">📍 Tasveer Kahan Lage? — Pehle Jagah Chunein, Phir Tasveer</span>
+        <p class="file-meta" id="mediaLogoMeta">No logo added yet.</p>
+        <span class="label">📍 Image Position — Pick First</span>
         <div class="seg" id="imgInsertSeg" role="group" aria-label="Tasveer lagane ki jagah">
-          <button type="button" data-insert="playhead" aria-pressed="true">📍 Playhead Par — Beech Mein</button>
-          <button type="button" data-insert="start" aria-pressed="false">⏮ Sab Se Shuru Mein</button>
-          <button type="button" data-insert="end" aria-pressed="false">⏭ Sab Se End Mein</button>
+          <button type="button" data-insert="playhead" aria-pressed="true">📍 At Playhead</button>
+          <button type="button" data-insert="start" aria-pressed="false">⏮ At Start</button>
+          <button type="button" data-insert="end" aria-pressed="false">⏭ At End</button>
         </div>
-        <button class="btn block" id="mediaImageBtn" type="button" style="margin-top:10px;border-color:var(--cyan);color:#a5f3fc">🖼️ Images Upload Karein — Upar Chuni Jagah Par Lagayein</button>
+        <button class="btn block" id="mediaImageBtn" type="button" style="margin-top:10px;border-color:var(--cyan);color:#a5f3fc">🖼️ Add Images</button>
         <input class="hidden" type="file" id="imageInput" accept="image/*" multiple/>
         <div class="clip-list" id="clipList" aria-label="Clips ki list"></div>
         <p class="hint" id="joinHint" style="display:none"></p>
@@ -1155,50 +1155,50 @@ textarea{min-height:64px}
       <div class="panel-head"><h2 id="thumbHead">🖼 Thumbnail Studio — Gemini AI</h2><span class="badge cyan" style="font-size:10px">1280 × 720</span></div>
       <div class="panel-body">
         <canvas id="thumbCanvas" width="1280" height="720" aria-label="Thumbnail preview"></canvas>
-        <span class="label">Thumbnail Par Bara Text (Urdu)</span>
-        <input type="text" id="thumbTitleText" class="urdu-input" dir="rtl" lang="ur" placeholder="مثلاً: سورۃ الکہف کی فضیلت"/>
+        <span class="label">Big Text on Thumbnail</span>
+        <input type="text" id="thumbTitleText" class="urdu-input" dir="rtl" lang="ur" placeholder="e.g. Surah Al-Kahf Recitation"/>
         <div class="row" style="margin-top:10px">
-          <button class="btn" id="thumbFrameBtn" type="button">📸 Video Frame Se Banayein</button>
+          <button class="btn" id="thumbFrameBtn" type="button">📸 From Frame</button>
           <button class="btn gold" id="thumbAiBtn" type="button">✦ Gemini AI Background</button>
         </div>
         <div class="row" style="margin-top:8px">
-          <button class="btn" id="thumbRedrawBtn" type="button">Text Dobara Lagayein</button>
-          <button class="btn" id="thumbDownloadBtn" type="button" style="border-color:var(--green);color:#86efac">⬇ Thumbnail Download (JPG)</button>
+          <button class="btn" id="thumbRedrawBtn" type="button">Re-apply Text</button>
+          <button class="btn" id="thumbDownloadBtn" type="button" style="border-color:var(--green);color:#86efac">⬇ Download JPG</button>
         </div>
-        <p class="status" id="thumbStatus" role="status">Video load karke “Video Frame” dabayein — ya AI Studio tab mein Gemini key daal kar professional AI background banwayein.</p>
+        <p class="status" id="thumbStatus" role="status">Load a video and tap “From Frame” — or add a Gemini key in the AI Studio tab for a professional AI background.</p>
         </div>
     </section>
 
-    <!-- AUDIO IMPORT HUB — sirf do kaam: (1) video dalein, audio khud
-         alag ho jayegi; (2) audio file dalein. Dono ko yahin se Editor
+    <!-- AUDIO IMPORT HUB — sirf two jobs: (1) add a video, audio khud
+         alag ho jayegi; (2) add an audio file. Dono ko yahin se Editor
          ya Voice Over mein bheja ja sakta hai. Baqi editing ke saare
          options Editor tab mein pehle se maujood hain. -->
     <section class="panel" aria-labelledby="audioHead">
-      <div class="panel-head"><h2 id="audioHead">🎵 Audio — Import Hub</h2></div>
+      <div class="panel-head"><h2 id="audioHead">🎵 Audio — Import</h2></div>
       <div class="panel-body">
-        <p class="subtle" style="margin-top:0">Is tab ka sirf <b style="color:var(--text)">do kaam</b> hai: <b style="color:var(--text)">video dalein</b> — us ki audio khud alag ho jayegi, ya <b style="color:var(--text)">audio file dalein</b>. Phir har cheez ko yahin se <b style="color:var(--text)">Editor</b> ya <b style="color:var(--text)">Voice Over</b> tab mein bhej dein. Trim, merge, export waghera ki editing Editor tab mein hoti hai.</p>
+        <p class="subtle" style="margin-top:0">This tab has only <b style="color:var(--text)">two jobs</b>: <b style="color:var(--text)">add a video</b> — its audio is extracted automatically, or <b style="color:var(--text)">add an audio file</b>. Then send everything from here to the <b style="color:var(--text)">Editor</b> ya <b style="color:var(--text)">Voice Over</b> tab. All editing — trim, merge, export — happens in the Editor tab.</p>
 
         <!-- 1 — VIDEO: audio auto alag -->
         <div class="import-card">
-          <span class="label">1 — Video Dalein: Audio Khud Alag Ho Jayegi</span>
+          <span class="label">1 — Add Video: Audio Extracts Automatically</span>
           <label class="file-pick" for="impVideoInput">
             <span style="font-size:26px;display:block;margin-bottom:6px">🎬</span>
-            <b>Video Upload Karein</b>
-            <span>MP4, WebM — audio khud alag ho jayegi</span>
+            <b>Upload Video</b>
+            <span>MP4, WebM — audio extracts automatically</span>
           </label>
           <input class="hidden" type="file" id="impVideoInput" accept="video/*"/>
-          <p class="file-meta" id="impVideoMeta">Abhi koi video nahi dali.</p>
+          <p class="file-meta" id="impVideoMeta">No video added yet.</p>
           <div id="impVideoResult" class="hidden">
             <video id="impVideoPreview" muted playsinline controls preload="metadata"></video>
-            <p class="mute-note">🔇 <b>Is video ki apni awaz MUTE hai</b> — upar wala preview bina awaz chalega. Nikli hui awaz neeche alag audio ki surat mein tayyar hai.</p>
-            <span class="label" style="margin-top:14px">🎧 Nikli Hui Audio (Alag File)</span>
+            <p class="mute-note">🔇 <b>This video's own sound is MUTED</b> — the preview above plays silently. The extracted audio is ready below as a separate file.</p>
+            <span class="label" style="margin-top:14px">🎧 Extracted Audio (Separate File)</span>
             <audio id="impExtractPreview" controls preload="metadata"></audio>
-            <p class="file-meta" id="impExtractMeta">Audio alag ki ja rahi hai…</p>
-            <button class="hub-btn green" id="impVideoToEditorBtn" type="button">🎬 Video Editor Mein Bhejein — Mute (Bina Awaz)</button>
-            <button class="hub-btn gold" id="impExtractToVoiceBtn" type="button" disabled>🎙️ Nikli Hui Audio Voice Over Mein Bhejein — Matn Nikalwayein</button>
+            <p class="file-meta" id="impExtractMeta">Extracting audio…</p>
+            <button class="hub-btn green" id="impVideoToEditorBtn" type="button">🎬 Send to Editor — Muted</button>
+            <button class="hub-btn gold" id="impExtractToVoiceBtn" type="button" disabled>🎙️ Send Audio to Voice Over</button>
             <div class="hub-sent hidden" id="impVideoSent">
               <p id="impVideoSentText"></p>
-              <button class="btn" id="impVideoGoBtn" type="button">✂️ Editor Tab Mein Jayein →</button>
+              <button class="btn" id="impVideoGoBtn" type="button">✂️ Go to Editor →</button>
             </div>
           </div>
           <p class="status" id="impVideoStatus" role="status"></p>
@@ -1206,21 +1206,21 @@ textarea{min-height:64px}
 
         <!-- 2 — AUDIO FILE: dono jaga bhejein -->
         <div class="import-card">
-          <span class="label">2 — Audio File Dalein (MP3 / WAV / M4A)</span>
+          <span class="label">2 — Add Audio File (MP3 / WAV / M4A)</span>
           <label class="file-pick" for="impAudioInput">
             <span style="font-size:26px;display:block;margin-bottom:6px">🎵</span>
-            <b>Audio File Upload Karein</b>
-            <span>MP3, WAV, M4A — tap karke chunein</span>
+            <b>Upload Audio File</b>
+            <span>MP3, WAV, M4A — tap to choose</span>
           </label>
           <input class="hidden" type="file" id="impAudioInput" accept="audio/*"/>
-          <p class="file-meta" id="impAudioMeta">Abhi koi audio file nahi dali.</p>
+          <p class="file-meta" id="impAudioMeta">No audio file added yet.</p>
           <div id="impAudioResult" class="hidden">
             <audio id="impAudioPreview" controls preload="metadata"></audio>
-            <button class="hub-btn green" id="impAudioToEditorBtn" type="button">🎬 Editor Mein Bhejein — Video Mein Lag Jayegi</button>
-            <button class="hub-btn gold" id="impAudioToVoiceBtn" type="button">🎙️ Voice Over Mein Bhejein — Matn Nikalwayein</button>
+            <button class="hub-btn green" id="impAudioToEditorBtn" type="button">🎬 Send to Editor</button>
+            <button class="hub-btn gold" id="impAudioToVoiceBtn" type="button">🎙️ Send to Voice Over</button>
             <div class="hub-sent hidden" id="impAudioSent">
               <p id="impAudioSentText"></p>
-              <button class="btn" id="impAudioGoBtn" type="button">✂️ Editor Tab Mein Jayein →</button>
+              <button class="btn" id="impAudioGoBtn" type="button">✂️ Go to Editor →</button>
             </div>
           </div>
           <p class="status" id="impAudioStatus" role="status"></p>
@@ -1233,17 +1233,17 @@ textarea{min-height:64px}
              tarah chalta rahe. -->
         <div class="hidden" aria-hidden="true">
           <div class="seg" role="group" aria-label="Audio ka hissa">
-            <button type="button" data-audiorange="trim" aria-pressed="true">Sirf Trim Wala Hissa</button>
-            <button type="button" data-audiorange="full" aria-pressed="false">Poori Video</button>
+            <button type="button" data-audiorange="trim" aria-pressed="true">Trimmed Part Only</button>
+            <button type="button" data-audiorange="full" aria-pressed="false">Full Video</button>
           </div>
-          <button class="btn gold block" id="extractAudioBtn" type="button">Audio File Banayein (WAV)</button>
-          <button class="btn gold block" id="extractCombinedBtn" type="button">Sab Clips Ki AIK Audio Banayein (WAV)</button>
+          <button class="btn gold block" id="extractAudioBtn" type="button">Make Audio File (WAV)</button>
+          <button class="btn gold block" id="extractCombinedBtn" type="button">All Clips → One Audio (WAV)</button>
           <button class="btn toggle block" id="noiseBtn" type="button" aria-pressed="false">Noise Reduce: OFF</button>
           <input type="file" id="mergeAudioInput" accept="audio/*"/>
-          <p class="file-meta" id="mergeAudioMeta">Abhi koi audio file nahi lagi — video ka apna sound chal raha hai.</p>
-          <button class="btn toggle block" id="replaceToggle" type="button" aria-pressed="false" disabled>Sirf Merge Audio Chalayein (Video Sound Band): OFF</button>
-          <button class="btn block" id="mergeRemoveBtn" type="button" disabled>Merge Audio Hatayein</button>
-          <button class="btn block" id="extractAudioRecBtn" type="button">Live Record Karke Audio (WebM)</button>
+          <p class="file-meta" id="mergeAudioMeta">No audio file added — the video's own sound is playing.</p>
+          <button class="btn toggle block" id="replaceToggle" type="button" aria-pressed="false" disabled>Merge Audio Only: OFF</button>
+          <button class="btn block" id="mergeRemoveBtn" type="button" disabled>Remove Audio</button>
+          <button class="btn block" id="extractAudioRecBtn" type="button">Record Audio Live (WebM)</button>
           <div id="audioProgressWrap">
             <progress id="audioProgress" max="100" value="0"></progress>
           </div>
@@ -1257,25 +1257,25 @@ textarea{min-height:64px}
          tab ki transcription ya neeche paste kiya gaya matn) — sirf
          topic ke andaze se nahi. Gemini key AI Studio tab wali hi hai. -->
     <section class="panel" aria-labelledby="metaHead">
-      <div class="panel-head"><h2 id="metaHead">✦ Title, Description, Tags — Video Ke Matn Se</h2><span class="badge green" style="font-size:10px">Gemini AI</span></div>
+      <div class="panel-head"><h2 id="metaHead">✦ Title, Description, Tags — From Your Script</h2><span class="badge green" style="font-size:10px">Gemini AI</span></div>
       <div class="panel-body">
-        <p class="subtle" style="margin-top:0">Title, description aur tags <b style="color:var(--text)">video / audio ke asal matn</b> se bante hain — sirf topic ke andaze se nahi. Voice Over tab mein transcription maujood ho to Gemini <b style="color:var(--text)">khud wahi matn</b> parh lega; ya neeche wale khane mein matn paste kar dein. Gemini ko aik <b style="color:var(--text)">poori skill (tafseeli hidayat)</b> di jati hai — 3 title options, mukammal description aur search wale tags. Key <b style="color:var(--text)">AI Studio tab</b> wali hi chalegi.</p>
-        <span class="label">Video Ka Matn (Transcription / Script) — Behtareen Nateeja Isi Se Milta Hai</span>
-        <textarea id="aiMatn" dir="auto" lang="ur" placeholder="Video ya audio ka matn yahan paste karein — ya neeche wala button dabakar Voice Over tab ka matn yahin le aayein…"></textarea>
+        <p class="subtle" style="margin-top:0">Title, description and tags are made from <b style="color:var(--text)">the actual script of your video / audio</b> — not guessed from the topic. If a transcription exists in the Voice Over tab, Gemini <b style="color:var(--text)">reads that same script</b> automatically; or paste the script in the box below. Gemini gets a <b style="color:var(--text)">full skill (detailed instructions)</b> — 3 title options, a complete description and searchable tags. The key from the <b style="color:var(--text)">AI Studio</b> tab is used here too.</p>
+        <span class="label">Video Script (Transcription) — Best Results Come From This</span>
+        <textarea id="aiMatn" dir="auto" lang="ur" placeholder="Paste your video or audio script here — or tap the button below to bring the Voice Over tab's script…"></textarea>
         <div class="row" style="margin-top:8px">
-          <button class="btn fixed" id="aiMatnBtn" type="button">🎙️ Voice Over Se Matn Lein</button>
+          <button class="btn fixed" id="aiMatnBtn" type="button">🎙️ Get Script from Voice Over</button>
           <span class="hint" id="aiMatnMsg" style="margin:0"></span>
         </div>
-        <span class="label" style="margin-top:12px">Topic (Ikhtiyari — Sirf Matn Na Ho To)</span>
-        <input type="text" id="aiTopic" placeholder="Misal: Surah Al-Kahf tilawat, Friday bayan, Ramzan ki dua…"/>
-        <button class="btn gold block" id="aiBtn" type="button" style="margin-top:14px">✨ Matn Se Title + Description + Tags Banayein</button>
+        <span class="label" style="margin-top:12px">Topic (Optional — Only If No Script)</span>
+        <input type="text" id="aiTopic" placeholder="e.g. Surah Al-Kahf recitation, Friday lecture, Ramadan dua…"/>
+        <button class="btn gold block" id="aiBtn" type="button" style="margin-top:14px">✨ Generate Title + Description + Tags</button>
         <p class="status" id="aiStatus" role="status"></p>
         <div class="result-box" id="aiResult">
           <div id="aiResultText"></div>
           <div class="row" style="margin-top:10px">
-            <button class="btn small fixed" id="copyAiBtn" type="button">Poora Jawab Copy Karein</button>
-            <button class="btn small fixed" id="useTitleBtn" type="button">Title Video Text Mein Lagayein</button>
-            <button class="btn small fixed" id="useThumbTextBtn" type="button">🖼 Thumbnail Text Thumbnail Par Lagayein</button>
+            <button class="btn small fixed" id="copyAiBtn" type="button">Copy All</button>
+            <button class="btn small fixed" id="useTitleBtn" type="button">Use as Video Title</button>
+            <button class="btn small fixed" id="useThumbTextBtn" type="button">🖼 Apply as Thumbnail Text</button>
           </div>
         </div>
       </div>
@@ -1285,44 +1285,44 @@ textarea{min-height:64px}
   <div class="bottom-grid">
     <!-- GEMINI -->
     <section class="panel" aria-labelledby="s3">
-      <div class="panel-head"><h2 id="s3">✦ AI Studio — Keys Aur Model</h2><span class="badge green" style="font-size:10px">Free Key</span></div>
+      <div class="panel-head"><h2 id="s3">✦ AI Studio — Keys & Model</h2><span class="badge green" style="font-size:10px">Free Key</span></div>
       <div class="panel-body">
-        <p class="subtle" style="margin-top:0">Is tab mein sirf <b style="color:var(--text)">keys aur model ki setting</b> hai. Key <b style="color:var(--text)">aik dafa dalne par isi browser mein save ho jati hai</b> — dobara nahi dalni paregi, aur Thumbnail / Voice Over sab jagah wahi key chalti hai. <b style="color:var(--text)">Title, Description, Tags ab Thumbnail wale tab mein hain</b> — wahan wo video ke asal matn se bante hain. Jawab ke liye key Google ke Gemini server ko bheji jati hai.</p>
-        <h3 style="font-size:13.5px;margin:14px 0 4px">Muft key — 2 minute</h3>
+        <p class="subtle" style="margin-top:0">This tab has only <b style="color:var(--text)">key and model settings</b>. The key <b style="color:var(--text)">is saved in this browser once entered</b> — you won't need to enter it again, and the same key works in Thumbnail and Voice Over. <b style="color:var(--text)">Title, Description, Tags are now in the AI Title tab</b> — they are made from your video's actual script there. Your key is sent to Google's Gemini server for the response.</p>
+        <h3 style="font-size:13.5px;margin:14px 0 4px">Free key — 2 minutes</h3>
         <ol class="steps">
-          <li><a href="https://aistudio.google.com" target="_blank" rel="noopener">Google AI Studio</a> kholein, Google account se sign in karein.</li>
-          <li><b>“Get API key” → “Create API key”</b> dabayein.</li>
-          <li>Key copy karke neeche paste kar dein. Credit card nahi chahiye.</li>
+          <li><a href="https://aistudio.google.com" target="_blank" rel="noopener">Google AI Studio</a> — sign in with your Google account.</li>
+          <li><b>“Get API key” → “Create API key”</b> — tap it.</li>
+          <li>Copy the key and paste it below. No credit card needed.</li>
         </ol>
         <span class="label">Gemini API Key</span>
         <div class="row">
-          <input type="password" id="apiKey" placeholder="AIza… apni key paste karein" autocomplete="off"/>
+          <input type="password" id="apiKey" placeholder="AIza… paste your key" autocomplete="off"/>
           <button class="btn fixed" id="keyShowBtn" type="button">Show</button>
         </div>
         <div class="divider"></div>
-        <h3 style="font-size:13.5px;margin:14px 0 4px">Whisper Backup Key — Audio Se Matn Ke Liye (Groq, Muft)</h3>
-        <p class="subtle" style="margin-top:0">Voice Over mein audio se matn nikalne ka dosra tareeqa <b style="color:var(--text)">Whisper</b> hai — ye <b style="color:var(--text)">Groq</b> ke muft server par chalta hai (model: <b style="color:var(--text)">whisper-large-v3-turbo</b>). Gemini busy (503) ho to ProCut khud is backup par matn nikaal dega — bahar kisi site par jana nahi parega. Key <b style="color:var(--text)">isi browser mein save ho jati hai</b>, Gemini key ki tarah.</p>
-        <h3 style="font-size:13.5px;margin:14px 0 4px">Muft Groq key — 2 minute</h3>
+        <h3 style="font-size:13.5px;margin:14px 0 4px">Whisper Backup Key — Audio to Text (Groq, Free)</h3>
+        <p class="subtle" style="margin-top:0">The second way to transcribe audio in Voice Over is <b style="color:var(--text)">Whisper</b> — it runs on <b style="color:var(--text)">Groq</b>'s free server (model: <b style="color:var(--text)">whisper-large-v3-turbo</b>). If Gemini is busy (503), ProCut uses this backup automatically — no need to visit any other site. The key <b style="color:var(--text)">is saved in this browser</b>, just like the Gemini key.</p>
+        <h3 style="font-size:13.5px;margin:14px 0 4px">Free Groq key — 2 minutes</h3>
         <ol class="steps">
-          <li><a href="https://console.groq.com" target="_blank" rel="noopener">console.groq.com</a> kholein aur muft account banayein / sign in karein — credit card nahi chahiye.</li>
-          <li>Left menu mein <b>“API Keys”</b> kholein aur <b>“Create API Key”</b> dabayein, koi sa naam de dein.</li>
-          <li>Key sirf aik dafa dikhti hai — copy karke neeche paste kar dein.</li>
+          <li><a href="https://console.groq.com" target="_blank" rel="noopener">console.groq.com</a> — create a free account / sign in — no credit card needed.</li>
+          <li>In the left menu, open <b>“API Keys”</b> and tap <b>“Create API Key”</b> — give it any name.</li>
+          <li>The key is shown only once — copy it and paste it below.</li>
         </ol>
-        <span class="label">Groq API Key (Whisper Ke Liye)</span>
+        <span class="label">Groq API Key (for Whisper)</span>
         <div class="row">
-          <input type="password" id="groqKey" placeholder="gsk_… apni Groq key paste karein" autocomplete="off"/>
+          <input type="password" id="groqKey" placeholder="gsk_… paste your Groq key" autocomplete="off"/>
           <button class="btn fixed" id="groqKeyShowBtn" type="button">Show</button>
         </div>
-        <span class="label">Model — Naam Khud Bhi Likh Sakte Hain</span>
+        <span class="label">Model — Or Type Your Own</span>
         <input type="text" id="modelSel" list="modelList" value="gemini-3.5-flash-lite" autocomplete="off" placeholder="gemini-3.5-flash-lite"/>
         <datalist id="modelList">
-          <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite — free limit sab se zyada, current model</option>
-          <option value="gemini-3.8-flash">Gemini 3.8 Flash — behtar jawab, Google ki tajweez shuda</option>
-          <option value="gemini-3.6-flash">Gemini 3.6 Flash — pichla stable model</option>
-          <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash-Lite — halka aur sasta</option>
+          <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite — highest free limit, current model</option>
+          <option value="gemini-3.8-flash">Gemini 3.8 Flash — better answers, Google recommended</option>
+          <option value="gemini-3.6-flash">Gemini 3.6 Flash — previous stable model</option>
+          <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash-Lite — light and cheap</option>
         </datalist>
         <div class="row" style="margin-top:8px">
-          <button class="btn fixed" id="modelSaveBtn" type="button">💾 Model Save Karein</button>
+          <button class="btn fixed" id="modelSaveBtn" type="button">💾 Save Model</button>
           <span class="hint" id="modelSaveMsg" style="margin:0"></span>
         </div>
         </div>
@@ -1332,69 +1332,69 @@ textarea{min-height:64px}
   </div>
   <div class="bottom-grid" id="voiceGrid">
     <!-- JADOO VOICE — Urdu Voice Over (apni Gemini key se) -->
-    <section class="panel jadoo" id="voicePanel" dir="rtl" data-lang="ur" aria-labelledby="voHead">
+    <section class="panel jadoo" id="voicePanel" dir="ltr" data-lang="en" aria-labelledby="voHead">
       <div class="panel-head">
-        <h2 id="voHead">🎙️ <span class="jx" data-ur="جادو وائس — اردو وائس اوور" data-en="Jadoo Voice — Urdu Voice Over">جادو وائس — اردو وائس اوور</span></h2>
+        <h2 id="voHead">🎙️ <span class="jx" data-ur="Voice Over — Urdu AI Voices" data-en="Jadoo Voice — Urdu Voice Over">Voice Over — Urdu AI Voices</span></h2>
       </div>
       <div class="panel-body">
         <div class="row" style="margin-bottom:4px">
           <button class="btn fixed" id="voLangBtn" type="button" aria-label="Language — Urdu / English">English</button>
         </div>
 
-        <p class="hint jx" id="voKeyNote" role="note" style="display:none;border:1px solid #b45309;background:rgba(120,53,15,.35);color:#fde68a;border-radius:10px;padding:10px 12px" data-ur="Gemini key ابھی نہیں ملی — AI Studio والے ٹیب میں اپنی key ڈالیں، وہی key یہاں خود بخود چلے گی۔ یہاں الگ سے key ڈالنے کی کوئی ضرورت نہیں۔" data-en="No Gemini key found yet — add your key in the AI Studio tab; that same key will work here automatically. There is no separate key field here.">Gemini key ابھی نہیں ملی — AI Studio والے ٹیب میں اپنی key ڈالیں، وہی key یہاں خود بخود چلے گی۔ یہاں الگ سے key ڈالنے کی کوئی ضرورت نہیں۔</p>
+        <p class="hint jx" id="voKeyNote" role="note" style="display:none;border:1px solid #b45309;background:rgba(120,53,15,.35);color:#fde68a;border-radius:10px;padding:10px 12px" data-ur="No Gemini key yet — add your key in the AI Studio tab; it works here automatically. No separate key needed here." data-en="No Gemini key found yet — add your key in the AI Studio tab; that same key will work here automatically. There is no separate key field here.">No Gemini key yet — add your key in the AI Studio tab; it works here automatically. No separate key needed here.</p>
 
         <!-- 1 — SCRIPT -->
         <div class="vo-sec">
-          <h3 class="vo-sec-title"><span class="vo-num">1</span><span class="jx" data-ur="متن — جو بولنا ہے" data-en="Script — What Will Be Spoken">متن — جو بولنا ہے</span></h3>
+          <h3 class="vo-sec-title"><span class="vo-num">1</span><span class="jx" data-ur="Script — What to Speak" data-en="Script — What Will Be Spoken">Script — What to Speak</span></h3>
           <div style="border:1.5px dashed var(--border2);border-radius:12px;padding:12px;margin-bottom:14px">
-            <span class="label jx" style="margin-top:0" data-ur="آڈیو فائل سے متن نکالیں — تلاوت / نعت کی کلپ اپ لوڈ کریں" data-en="Get the script from an audio file — upload a recitation / naat clip">آڈیو فائل سے متن نکالیں — تلاوت / نعت کی کلپ اپ لوڈ کریں</span>
-            <span class="label jx" data-ur="متن نکالنے کا طریقہ چنیں" data-en="Choose how to get the script">متن نکالنے کا طریقہ چنیں</span>
+            <span class="label jx" style="margin-top:0" data-ur="Transcribe an Audio File — Upload a Recitation / Naat Clip" data-en="Get the script from an audio file — upload a recitation / naat clip">Transcribe an Audio File — Upload a Recitation / Naat Clip</span>
+            <span class="label jx" data-ur="Choose Transcription Method" data-en="Choose how to get the script">Choose Transcription Method</span>
             <div class="cap-seg" role="group" aria-label="Transcription method" style="margin-bottom:10px">
               <button type="button" id="trMethodGemini" aria-pressed="true">Gemini</button>
-              <button type="button" id="trMethodWhisper" aria-pressed="false"><span class="jx" data-ur="Whisper (بیک اپ)" data-en="Whisper (Backup)">Whisper (بیک اپ)</span></button>
+              <button type="button" id="trMethodWhisper" aria-pressed="false"><span class="jx" data-ur="Whisper (Backup)" data-en="Whisper (Backup)">Whisper (Backup)</span></button>
             </div>
-            <button class="btn gold block" id="voAudioPickBtn" type="button" style="min-height:56px">🎧 <span class="jx" id="voPickLabel" data-ur="آڈیو فائل چنیں — Gemini متن لکھ دے گا" data-en="Choose an Audio File — Gemini Will Write the Script">آڈیو فائل چنیں — Gemini متن لکھ دے گا</span></button>
+            <button class="btn gold block" id="voAudioPickBtn" type="button" style="min-height:56px">🎧 <span class="jx" id="voPickLabel" data-ur="Choose Audio File — Gemini Will Transcribe It" data-en="Choose an Audio File — Gemini Will Write the Script">Choose Audio File — Gemini Will Transcribe It</span></button>
             <input class="hidden" type="file" id="voAudioInput" accept="audio/*"/>
             <p class="status" id="voTrStatus" role="status"></p>
             <div class="hidden" id="voTrProgWrap" style="margin-top:10px">
               <progress id="voTrProgress" max="100" value="0"></progress>
               <div class="row" style="margin-top:8px;align-items:center">
-                <span class="hint" style="margin:0">⏱ <span class="jx" data-ur="گزرا ہوا وقت:" data-en="Elapsed time:">گزرا ہوا وقت:</span> <b id="voTrTimer" dir="ltr">0:00</b></span>
-                <button class="btn" id="voTrCancelBtn" type="button" style="margin-inline-start:auto"><span class="jx" data-ur="روک دیں (Cancel)" data-en="Cancel">روک دیں (Cancel)</span></button>
+                <span class="hint" style="margin:0">⏱ <span class="jx" data-ur="Elapsed:" data-en="Elapsed time:">Elapsed:</span> <b id="voTrTimer" dir="ltr">0:00</b></span>
+                <button class="btn" id="voTrCancelBtn" type="button" style="margin-inline-start:auto"><span class="jx" data-ur="Cancel" data-en="Cancel">Cancel</span></button>
               </div>
               <p class="hint jx" id="voTrInfo" style="margin:8px 0 0"></p>
             </div>
             <div class="vo-err" id="voTrError" role="alert" style="font-size:15px"></div>
             
           </div>
-          <span class="label jx" data-ur="اردو متن یہاں لکھیں یا paste کریں" data-en="Write or paste the Urdu script here">اردو متن یہاں لکھیں یا paste کریں</span>
+          <span class="label jx" data-ur="Write or paste your Urdu script here" data-en="Write or paste the Urdu script here">Write or paste your Urdu script here</span>
           <textarea id="voScript" dir="auto" lang="ur">السلام علیکم! آج ہم اردو میں اپنا پہلا وائس اوور بنا رہے ہیں۔ پہلے ایک چھوٹا سا متن آزمائیں، پھر آواز سن کر اگلا قدم اٹھائیں۔</textarea>
           <div class="vo-counts">
-            <span class="vo-chip"><span class="jx" data-ur="حروف:" data-en="Characters:">حروف:</span> <span id="voCharCount">0</span></span>
-            <span class="vo-chip"><span class="jx" data-ur="حصے:" data-en="Chunks:">حصے:</span> <span id="voChunkCount">1</span></span>
-            <span class="vo-chip"><span class="jx" data-ur="اندازاً دورانیہ:" data-en="Rough duration:">اندازاً دورانیہ:</span> <span id="voEstDur">0:00</span></span>
+            <span class="vo-chip"><span class="jx" data-ur="Characters:" data-en="Characters:">Characters:</span> <span id="voCharCount">0</span></span>
+            <span class="vo-chip"><span class="jx" data-ur="Parts:" data-en="Chunks:">Parts:</span> <span id="voChunkCount">1</span></span>
+            <span class="vo-chip"><span class="jx" data-ur="Est. duration:" data-en="Rough duration:">Est. duration:</span> <span id="voEstDur">0:00</span></span>
           </div>
           <div class="vo-warn" id="voLongWarn" role="note"></div>
           <div class="row" style="margin-top:10px">
-            <button class="btn" id="voAuditionBtn" type="button"><span class="jx" data-ur="آڈیشن متن لگائیں" data-en="Use Audition Script">آڈیشن متن لگائیں</span></button>
-            <button class="btn" id="voClearTextBtn" type="button"><span class="jx" data-ur="متن صاف کریں" data-en="Clear Script">متن صاف کریں</span></button>
+            <button class="btn" id="voAuditionBtn" type="button"><span class="jx" data-ur="Use Audition Text" data-en="Use Audition Script">Use Audition Text</span></button>
+            <button class="btn" id="voClearTextBtn" type="button"><span class="jx" data-ur="Clear Text" data-en="Clear Script">Clear Text</span></button>
           </div>
         </div>
 
         <!-- 3 — VOICE / STYLE -->
         <div class="vo-sec">
-          <h3 class="vo-sec-title"><span class="vo-num">2</span><span class="jx" data-ur="آواز اور انداز" data-en="Voice and Style">آواز اور انداز</span></h3>
+          <h3 class="vo-sec-title"><span class="vo-num">2</span><span class="jx" data-ur="Voice & Style" data-en="Voice and Style">Voice & Style</span></h3>
           <span class="label">Model <span class="ltr">(LTR)</span></span>
           <select id="voModel" dir="ltr">
             <option value="gemini-3.8-flash-tts" selected>gemini-3.8-flash-tts</option>
             <option value="gemini-3.8-flash-lite-tts">gemini-3.8-flash-lite-tts (Lite — explicit choice)</option>
           </select>
-          <span class="label jx" data-ur="آواز چنیں (نام Google کے اصل voice ID ہیں)" data-en="Choose a voice (names are Google's exact voice IDs)">آواز چنیں (نام Google کے اصل voice ID ہیں)</span>
+          <span class="label jx" data-ur="Choose Voice (names are Google's real voice IDs)" data-en="Choose a voice (names are Google's exact voice IDs)">Choose Voice (names are Google's real voice IDs)</span>
           <div class="vo-filter" id="voFilter" role="group" aria-label="Voice filter — All / Male / Female">
-            <button type="button" data-filter="all" aria-pressed="true"><span class="jx" data-ur="سب" data-en="All">سب</span> <span class="vo-filter-count" data-count-for="all">(30)</span></button>
-            <button type="button" data-filter="male" aria-pressed="false"><span class="jx" data-ur="مردانہ (Male)" data-en="Male">مردانہ (Male)</span> <span class="vo-filter-count" data-count-for="male">(16)</span></button>
-            <button type="button" data-filter="female" aria-pressed="false"><span class="jx" data-ur="زنانہ (Female)" data-en="Female">زنانہ (Female)</span> <span class="vo-filter-count" data-count-for="female">(14)</span></button>
-            <button type="button" data-filter="other" id="voFilterOther" aria-pressed="false" style="display:none"><span class="jx" data-ur="دوسری (Other)" data-en="Other">دوسری (Other)</span> <span class="vo-filter-count" data-count-for="other">(0)</span></button>
+            <button type="button" data-filter="all" aria-pressed="true"><span class="jx" data-ur="All" data-en="All">All</span> <span class="vo-filter-count" data-count-for="all">(30)</span></button>
+            <button type="button" data-filter="male" aria-pressed="false"><span class="jx" data-ur="Male" data-en="Male">Male</span> <span class="vo-filter-count" data-count-for="male">(16)</span></button>
+            <button type="button" data-filter="female" aria-pressed="false"><span class="jx" data-ur="Female" data-en="Female">Female</span> <span class="vo-filter-count" data-count-for="female">(14)</span></button>
+            <button type="button" data-filter="other" id="voFilterOther" aria-pressed="false" style="display:none"><span class="jx" data-ur="Other" data-en="Other">Other</span> <span class="vo-filter-count" data-count-for="other">(0)</span></button>
           </div>
           <select id="voVoice" dir="ltr">
             <option value="Kore" selected>Kore — firm</option>
@@ -1428,48 +1428,48 @@ textarea{min-height:64px}
             <option value="Sadaltager">Sadaltager — knowledgeable</option>
             <option value="Sulafat">Sulafat — warm</option>
           </select>
-          <p class="hint vo-saved jx" id="voSavedLine" data-ur="آپ کی پسندیدہ آواز save ہے: Kore" data-en="Your saved voice: Kore">آپ کی پسندیدہ آواز save ہے: Kore</p>
-          <button class="btn gold block" id="voPreviewBtn" type="button"><span class="jx" id="voPreviewLabel" data-ur="🔊 Sun Kar Dekhein — sirf chhota jumla, token bachega" data-en="🔊 Hear a Preview — just a short phrase, saves tokens">🔊 Sun Kar Dekhein — sirf chhota jumla, token bachega</span></button>
+          <p class="hint vo-saved jx" id="voSavedLine" data-ur="Your saved voice: Kore" data-en="Your saved voice: Kore">Your saved voice: Kore</p>
+          <button class="btn gold block" id="voPreviewBtn" type="button"><span class="jx" id="voPreviewLabel" data-ur="🔊 Preview Voice" data-en="🔊 Hear a Preview — just a short phrase, saves tokens">🔊 Preview Voice</span></button>
           <audio id="voPreviewPlayer" class="hidden" controls preload="metadata"></audio>
           <p class="status" id="voPreviewStatus" role="status"></p>
           <div class="vo-grid2">
             <div>
-              <span class="label jx" data-ur="جذبات / انداز (Expression)" data-en="Expression">جذبات / انداز (Expression)</span>
+              <span class="label jx" data-ur="Expression" data-en="Expression">Expression</span>
               <select id="voExpr">
-                <option value="natural, warm and clear" selected>Natural — قدرتی</option>
-                <option value="cheerful and friendly">Happy — خوشگوار</option>
-                <option value="serious and respectful">Serious — سنجیدہ</option>
-                <option value="calm and gentle">Calm — پرسکون</option>
-                <option value="energetic and lively">Energetic — جوشیلا</option>
-                <option value="soft and sad">Sad — اداس</option>
-                <option value="like a clear news reader">News — خبرنامہ انداز</option>
+                <option value="natural, warm and clear" selected>Natural</option>
+                <option value="cheerful and friendly">Happy</option>
+                <option value="serious and respectful">Serious</option>
+                <option value="calm and gentle">Calm</option>
+                <option value="energetic and lively">Energetic</option>
+                <option value="soft and sad">Sad</option>
+                <option value="like a clear news reader">News Style</option>
               </select>
             </div>
             <div>
-              <span class="label jx" data-ur="رفتار (Pace)" data-en="Pace">رفتار (Pace)</span>
+              <span class="label jx" data-ur="Pace" data-en="Pace">Pace</span>
               <select id="voPace">
-                <option value="slow and easy">Slow — آہستہ</option>
-                <option value="normal, natural pace" selected>Normal — درمیانی</option>
-                <option value="slightly fast">Slightly fast — ذرا تیز</option>
-                <option value="fast but clear">Fast — تیز مگر صاف</option>
+                <option value="slow and easy">Slow</option>
+                <option value="normal, natural pace" selected>Normal</option>
+                <option value="slightly fast">Slightly Fast</option>
+                <option value="fast but clear">Fast</option>
               </select>
             </div>
           </div>
-          <span class="label jx" data-ur="لہجہ (Accent) — درخواست ہے، ضمانت نہیں" data-en="Accent — requested, not guaranteed">لہجہ (Accent) — درخواست ہے، ضمانت نہیں</span>
+          <span class="label jx" data-ur="Accent — A Request, Not a Guarantee" data-en="Accent — requested, not guaranteed">Accent — A Request, Not a Guarantee</span>
           <select id="voAccent">
-            <option value="Pakistani Urdu" selected>Pakistani Urdu — پاکستانی اردو</option>
-            <option value="standard Urdu">Standard Urdu — معیاری اردو</option>
+            <option value="Pakistani Urdu" selected>Pakistani Urdu</option>
+            <option value="standard Urdu">Standard Urdu</option>
             <option value="Urdu with a gentle Hindi mix">Urdu / Hindi mix</option>
           </select>
-          <span class="label jx" data-ur="اپنی ہدایت — آزادانہ لکھیں (یہ متن بولا نہیں جائے گا، صرف آواز کی ہدایت ہے)" data-en="Your direction — free text (guidance only, never spoken)">اپنی ہدایت — آزادانہ لکھیں (یہ متن بولا نہیں جائے گا، صرف آواز کی ہدایت ہے)</span>
-          <textarea id="voDirection" dir="auto">واضح پاکستانی اردو میں بولیں، لہجہ قدرتی اور دوستانہ ہو، جملوں کے درمیان مناسب وقفہ دیں۔</textarea>
+          <span class="label jx" data-ur="Custom Direction — Free Text (not spoken, only guides the voice)" data-en="Your direction — free text (guidance only, never spoken)">Custom Direction — Free Text (not spoken, only guides the voice)</span>
+          <textarea id="voDirection" dir="auto">واضح پاکستانی اردو میں بولیں، لہجہ قدرتی اور دوستانہ ہو، جملوں کے درمیان مناAll وقفہ دیں۔</textarea>
           </div>
 
         <!-- 4 — GENERATION -->
         <div class="vo-sec">
-          <h3 class="vo-sec-title"><span class="vo-num">3</span><span class="jx" data-ur="آواز بنائیں" data-en="Generate">آواز بنائیں</span></h3>
-          <button class="btn gold vo-big" id="voGenBtn" type="button">🎙️ <span class="jx" data-ur="آواز بنائیں" data-en="Generate Voice">آواز بنائیں</span></button>
-          <button class="btn vo-big" id="voCancelBtn" type="button" disabled style="margin-top:8px"><span class="jx" data-ur="روک دیں (Cancel)" data-en="Cancel">روک دیں (Cancel)</span></button>
+          <h3 class="vo-sec-title"><span class="vo-num">3</span><span class="jx" data-ur="Generate Voice" data-en="Generate">Generate Voice</span></h3>
+          <button class="btn gold vo-big" id="voGenBtn" type="button">🎙️ <span class="jx" data-ur="Generate Voice" data-en="Generate Voice">Generate Voice</span></button>
+          <button class="btn vo-big" id="voCancelBtn" type="button" disabled style="margin-top:8px"><span class="jx" data-ur="Cancel" data-en="Cancel">Cancel</span></button>
           <div class="hidden" id="voProgWrap" style="margin-top:12px">
             <progress id="voProgress" max="100" value="0"></progress>
             <p class="status" id="voGenStatus" role="status"></p>
@@ -1479,22 +1479,22 @@ textarea{min-height:64px}
 
         <!-- 5 — RESULT -->
         <div class="vo-sec">
-          <h3 class="vo-sec-title"><span class="vo-num">4</span><span class="jx" data-ur="نتیجہ — سنیں، ڈاؤن لوڈ کریں، ویڈیو میں لگائیں" data-en="Result — Listen, Download, Use in Video">نتیجہ — سنیں، ڈاؤن لوڈ کریں، ویڈیو میں لگائیں</span></h3>
+          <h3 class="vo-sec-title"><span class="vo-num">4</span><span class="jx" data-ur="Result — Listen, Download, Add to Video" data-en="Result — Listen, Download, Use in Video">Result — Listen, Download, Add to Video</span></h3>
           <div id="voResultEmpty">
             </div>
           <div id="voResultBox" class="hidden">
             <audio id="voPlayer" controls preload="metadata"></audio>
             <div class="vo-counts">
-              <span class="vo-chip"><span class="jx" data-ur="اصل دورانیہ:" data-en="Actual duration:">اصل دورانیہ:</span> <span id="voRealDur">0:00</span></span>
-              <span class="vo-chip"><span class="jx" data-ur="فائل سائز:" data-en="File size:">فائل سائز:</span> <span id="voFileSize">0 MB</span></span>
+              <span class="vo-chip"><span class="jx" data-ur="Real duration:" data-en="Actual duration:">Real duration:</span> <span id="voRealDur">0:00</span></span>
+              <span class="vo-chip"><span class="jx" data-ur="File size:" data-en="File size:">File size:</span> <span id="voFileSize">0 MB</span></span>
               <span class="vo-chip">WAV</span>
             </div>
-            <button class="btn gold vo-big" id="voUseReplaceBtn" type="button" style="margin-top:12px">🎬 <span class="jx" data-ur="ویڈیو میں لگائیں — ویڈیو کی آواز بند، صرف یہ وائس اوور" data-en="Use in Video — Mute Video Sound, Voice Over Only">ویڈیو میں لگائیں — ویڈیو کی آواز بند، صرف یہ وائس اوور</span></button>
-            <button class="btn vo-big" id="voUseTrackBtn" type="button" style="margin-top:8px">🎧 <span class="jx" data-ur="ٹائم لائن میں الگ آڈیو ٹریک کے طور پر شامل کریں" data-en="Add to Timeline as a Separate Audio Track">ٹائم لائن میں الگ آڈیو ٹریک کے طور پر شامل کریں</span></button>
+            <button class="btn gold vo-big" id="voUseReplaceBtn" type="button" style="margin-top:12px">🎬 <span class="jx" data-ur="Add to Video — Mute Video, Voice Over Only" data-en="Use in Video — Mute Video Sound, Voice Over Only">Add to Video — Mute Video, Voice Over Only</span></button>
+            <button class="btn vo-big" id="voUseTrackBtn" type="button" style="margin-top:8px">🎧 <span class="jx" data-ur="Add as Separate Audio Track" data-en="Add to Timeline as a Separate Audio Track">Add as Separate Audio Track</span></button>
             <div class="row" style="margin-top:8px">
-              <button class="btn" id="voDlWavBtn" type="button">⬇ <span class="jx" data-ur="WAV ڈاؤن لوڈ" data-en="Download WAV">WAV ڈاؤن لوڈ</span></button>
-              <button class="btn" id="voMp3Btn" type="button">⬇ <span class="jx" data-ur="MP3 بنائیں" data-en="Make MP3">MP3 بنائیں</span></button>
-              <button class="btn" id="voShareBtn" type="button"><span class="jx" data-ur="Share کریں" data-en="Share">Share کریں</span></button>
+              <button class="btn" id="voDlWavBtn" type="button">⬇ <span class="jx" data-ur="Download WAV" data-en="Download WAV">Download WAV</span></button>
+              <button class="btn" id="voMp3Btn" type="button">⬇ <span class="jx" data-ur="Make MP3" data-en="Make MP3">Make MP3</span></button>
+              <button class="btn" id="voShareBtn" type="button"><span class="jx" data-ur="Share" data-en="Share">Share</span></button>
             </div>
             <p class="status" id="voResultStatus" role="status"></p>
             </div>
@@ -1503,30 +1503,30 @@ textarea{min-height:64px}
 
         <!-- 6 — CAPTION VIDEO (تجرباتی, OPTIONAL — default OFF) -->
         <div class="vo-sec" id="capSec">
-          <h3 class="vo-sec-title"><span class="vo-num">5</span><span class="jx" data-ur="کپشن ویڈیو — تجرباتی (آپ کی مرضی)" data-en="Caption Video — Experimental (Your Choice)">کپشن ویڈیو — تجرباتی (آپ کی مرضی)</span></h3>
+          <h3 class="vo-sec-title"><span class="vo-num">5</span><span class="jx" data-ur="Caption Video — Experimental (Your Choice)" data-en="Caption Video — Experimental (Your Choice)">Caption Video — Experimental (Your Choice)</span></h3>
           <label class="cap-toggle-wrap" for="capEnable">
             <input type="checkbox" id="capEnable"/>
             <span class="cap-track" aria-hidden="true"></span>
-            <span class="cap-toggle-text"><b class="jx" data-ur="کپشن ویڈیو بنانا ہے؟" data-en="Make a caption video?">کپشن ویڈیو بنانا ہے؟</b><span class="jx" data-ur="اپنی مرضی سے ON / OFF کریں — پہلے سے یہ بند (OFF) ہے۔" data-en="Turn it ON / OFF as you wish — it starts OFF by default.">اپنی مرضی سے ON / OFF کریں — پہلے سے یہ بند (OFF) ہے۔</span></span>
+            <span class="cap-toggle-text"><b class="jx" data-ur="Make a caption video?" data-en="Make a caption video?">Make a caption video?</b><span class="jx" data-ur="Turn it ON / OFF as you like — it is OFF by default." data-en="Turn it ON / OFF as you wish — it starts OFF by default.">Turn it ON / OFF as you like — it is OFF by default.</span></span>
             <span class="cap-state" id="capState">OFF</span>
           </label>
-          <p class="hint jx" id="capOffNote" data-ur="ابھی کپشن ویڈیو بند ہے — صرف وائس اوور چلے گا۔ کپشن ویڈیو چاہیے تو اوپر والا سوئچ ON کر دیں۔" data-en="Caption video is OFF right now — only the voice over will run. If you want a caption video, turn the switch above ON.">ابھی کپشن ویڈیو بند ہے — صرف وائس اوور چلے گا۔ کپشن ویڈیو چاہیے تو اوپر والا سوئچ ON کر دیں۔</p>
+          <p class="hint jx" id="capOffNote" data-ur="Caption video is OFF — only the voice over will play. Turn the switch ON above if you want a caption video." data-en="Caption video is OFF right now — only the voice over will run. If you want a caption video, turn the switch above ON.">Caption video is OFF — only the voice over will play. Turn the switch ON above if you want a caption video.</p>
 
           <div id="capControls" class="hidden">
-            <span class="label jx" data-ur="متن کی حرکت — لفظ کیسے چلیں؟ (پہلے سے: سادہ / ٹھہرا ہوا)" data-en="Text movement — how should the words move? (default: simple / still)">متن کی حرکت — لفظ کیسے چلیں؟ (پہلے سے: سادہ / ٹھہرا ہوا)</span>
+            <span class="label jx" data-ur="Word Motion — How Words Move (default: Still)" data-en="Text movement — how should the words move? (default: simple / still)">Word Motion — How Words Move (default: Still)</span>
             <div class="cap-seg" id="capMoveSeg" role="group" aria-label="Caption text movement">
-              <button type="button" data-move="static" aria-pressed="true">🧍 <span class="jx" data-ur="سادہ — لفظ اپنی جگہ ٹھہرے" data-en="Simple — words stay in place">سادہ — لفظ اپنی جگہ ٹھہرے</span></button>
-              <button type="button" data-move="up" aria-pressed="false">⬆️ <span class="jx" data-ur="نیچے سے اوپر" data-en="Bottom to top">نیچے سے اوپر</span></button>
-              <button type="button" data-move="side" aria-pressed="false">↔️ <span class="jx" data-ur="ایک سائیڈ سے دوسری سائیڈ" data-en="One side to the other side">ایک سائیڈ سے دوسری سائیڈ</span></button>
+              <button type="button" data-move="static" aria-pressed="true">🧍 <span class="jx" data-ur="Still — Word stays in place" data-en="Simple — words stay in place">Still — Word stays in place</span></button>
+              <button type="button" data-move="up" aria-pressed="false">⬆️ <span class="jx" data-ur="Bottom to Top" data-en="Bottom to top">Bottom to Top</span></button>
+              <button type="button" data-move="side" aria-pressed="false">↔️ <span class="jx" data-ur="Side to Side" data-en="One side to the other side">Side to Side</span></button>
             </div>
             <div id="capSideDirWrap" class="hidden">
-              <span class="label jx" data-ur="سائیڈ والی حرکت کی سمت" data-en="Direction for the side movement">سائیڈ والی حرکت کی سمت</span>
+              <span class="label jx" data-ur="Side Motion Direction" data-en="Direction for the side movement">Side Motion Direction</span>
               <div class="cap-seg" id="capSideSeg" role="group" aria-label="Side movement direction">
-                <button type="button" data-side="rtl" aria-pressed="true"><span class="jx" data-ur="دائیں سے بائیں (اردو کے لیے)" data-en="Right to left (for Urdu)">دائیں سے بائیں (اردو کے لیے)</span></button>
-                <button type="button" data-side="ltr" aria-pressed="false"><span class="jx" data-ur="بائیں سے دائیں" data-en="Left to right">بائیں سے دائیں</span></button>
+                <button type="button" data-side="rtl" aria-pressed="true"><span class="jx" data-ur="Right to Left (for Urdu)" data-en="Right to left (for Urdu)">Right to Left (for Urdu)</span></button>
+                <button type="button" data-side="ltr" aria-pressed="false"><span class="jx" data-ur="Left to Right" data-en="Left to right">Left to Right</span></button>
               </div>
             </div>
-            <span class="label jx" data-ur="ویڈیو سائز (Portrait)" data-en="Video size (portrait)">ویڈیو سائز (Portrait)</span>
+            <span class="label jx" data-ur="Video Size (Portrait)" data-en="Video size (portrait)">Video Size (Portrait)</span>
             <div class="cap-seg" id="capResSeg" role="group" aria-label="Caption video size">
               <button type="button" data-res="720" aria-pressed="true">720 × 1280 • 24 fps</button>
               <button type="button" data-res="1080" aria-pressed="false">1080 × 1920 • 30 fps</button>
@@ -1534,13 +1534,13 @@ textarea{min-height:64px}
 
             <canvas id="capCanvas" width="720" height="1280" aria-label="Caption video preview canvas"></canvas>
             <div class="vo-counts">
-              <span class="vo-chip"><span class="jx" data-ur="وقت:" data-en="Time:">وقت:</span> <span id="capTimer">0:00 / 0:00</span></span>
+              <span class="vo-chip"><span class="jx" data-ur="Time:" data-en="Time:">Time:</span> <span id="capTimer">0:00 / 0:00</span></span>
               <span class="vo-chip" id="capFormatChip">—</span>
-              <span class="vo-chip"><span class="jx" data-ur="لفظوں کا وقت: اندازے سے" data-en="Word timing: estimated">لفظوں کا وقت: اندازے سے</span></span>
+              <span class="vo-chip"><span class="jx" data-ur="لفظوں کا Time: اندازے سے" data-en="Word timing: estimated">Word timing: estimated</span></span>
             </div>
-            <button class="btn gold vo-big" id="capPreviewBtn" type="button" style="margin-top:12px">▶️ <span class="jx" data-ur="پری ویو ویڈیو دیکھیں" data-en="Preview Video">پری ویو ویڈیو دیکھیں</span></button>
-            <button class="btn vo-big" id="capStopBtn" type="button" disabled style="margin-top:8px"><span class="jx" data-ur="پری ویو روکیں" data-en="Stop Preview">پری ویو روکیں</span></button>
-            <button class="btn gold vo-big" id="capDownloadBtn" type="button" style="margin-top:8px">⬇ <span class="jx" data-ur="ویڈیو ڈاؤن لوڈ بنائیں" data-en="Download Video">ویڈیو ڈاؤن لوڈ بنائیں</span></button>
+            <button class="btn gold vo-big" id="capPreviewBtn" type="button" style="margin-top:12px">▶️ <span class="jx" data-ur="Preview Video" data-en="Preview Video">Preview Video</span></button>
+            <button class="btn vo-big" id="capStopBtn" type="button" disabled style="margin-top:8px"><span class="jx" data-ur="Stop Preview" data-en="Stop Preview">Stop Preview</span></button>
+            <button class="btn gold vo-big" id="capDownloadBtn" type="button" style="margin-top:8px">⬇ <span class="jx" data-ur="Build Download Video" data-en="Download Video">Build Download Video</span></button>
             <div class="hidden" id="capProgWrap" style="margin-top:10px">
               <progress id="capProgress" max="100" value="0"></progress>
               <p class="status" id="capGenStatus" role="status"></p>
@@ -1550,10 +1550,10 @@ textarea{min-height:64px}
             <div class="cap-result hidden" id="capResultBox">
               <video id="capResultVideo" controls playsinline preload="metadata"></video>
               <div class="vo-counts">
-                <span class="vo-chip"><span class="jx" data-ur="اصل فائل سائز:" data-en="Actual file size:">اصل فائل سائز:</span> <span id="capFileSize">—</span></span>
-                <span class="vo-chip"><span class="jx" data-ur="فارمیٹ:" data-en="Format:">فارمیٹ:</span> <span id="capFileFormat">—</span></span>
+                <span class="vo-chip"><span class="jx" data-ur="اصل File size:" data-en="Actual file size:">Actual file size:</span> <span id="capFileSize">—</span></span>
+                <span class="vo-chip"><span class="jx" data-ur="Format:" data-en="Format:">Format:</span> <span id="capFileFormat">—</span></span>
               </div>
-              <a class="btn gold vo-big" id="capDlLink" href="#" download="caption-video.webm" style="margin-top:10px">⬇ <span class="jx" data-ur="کپشن ویڈیو ڈاؤن لوڈ کریں" data-en="Download the Caption Video">کپشن ویڈیو ڈاؤن لوڈ کریں</span></a>
+              <a class="btn gold vo-big" id="capDlLink" href="#" download="caption-video.webm" style="margin-top:10px">⬇ <span class="jx" data-ur="Download Caption Video" data-en="Download the Caption Video">Download Caption Video</span></a>
               <p class="hint" id="capVerifyNote"></p>
             </div>
           </div>
@@ -1561,7 +1561,7 @@ textarea{min-height:64px}
       </div>
     </section>
   </div>
-  <p style="text-align:center;color:var(--muted2);font-size:12px;margin-top:18px">ProCut Studio — No watermark • No paywall • Apki video, apke phone par</p>
+  <p style="text-align:center;color:var(--muted2);font-size:12px;margin-top:18px">ProCut Studio — No watermark • No paywall • Your video, on your phone</p>
 </div>
 
 <video id="srcVideo" class="hidden" playsinline preload="metadata"></video>
@@ -1884,8 +1884,8 @@ function updateUndo(){
   var u=$("undoBtn"),r=$("redoBtn");if(!u||!r)return;
   u.disabled=historyIdx<=0;
   r.disabled=historyIdx>=history.length-1;
-  u.title=u.disabled?"Undo — abhi wapas jane ke liye kuch nahi (pehle koi edit karein)":"Undo — pichla step wapas lein (Ctrl+Z)";
-  r.title=r.disabled?"Redo — abhi aagay jane ke liye kuch nahi":"Redo — undo kiya hua step dobara karein (Ctrl+Y)";
+  u.title=u.disabled?"Undo — abhi wapas jane ke liye kuch nahi (pehle koi edit karein)":"Undo (Ctrl+Z)";
+  r.title=r.disabled?"Redo — abhi aagay jane ke liye kuch nahi":"Redo (Ctrl+Y)";
 }
 function doUndo(){
   if(historyIdx>0){historyIdx--;applySnap(history[historyIdx]);updateUndo();setStatus(editorStatus,"↩ Undo ho gaya — pichla step wapas aa gaya. Wapas wahi step chahiye to Redo dabayein.","ok");}
@@ -2341,11 +2341,11 @@ var edCapToggle=$("edCapToggle"), edCapControls=$("edCapControls"), edCapStatus=
 if(edCapToggle)edCapToggle.addEventListener("click",function(){
   edCapOn=!edCapOn;
   edCapToggle.setAttribute("aria-pressed",String(edCapOn));
-  edCapToggle.textContent=edCapOn?"Caption: ON — Lafz Video Par Chalenge":"Caption: OFF — Video Par Lafz Nahi Aayenge";
+  edCapToggle.textContent=edCapOn?"Caption: ON":"Caption: OFF";
   if(edCapControls)edCapControls.classList.toggle("hidden",!edCapOn);
   if(edCapStatus){
     if(!edCapOn)setStatus(edCapStatus,"Caption band hai — video par koi lafz nahi aayega.","");
-    else if(!clips.length)setStatus(edCapStatus,"Caption ON hai — pehle Nayii Video se video import karein, caption usi edited video par chalega.","err");
+    else if(!clips.length)setStatus(edCapStatus,"Caption ON hai — pehle Import a video with New Video, caption usi edited video par chalega.","err");
     else if(!($("voScript")&&$("voScript").value.trim()))setStatus(edCapStatus,"Caption ON hai lekin Voice Over tab ka script khali hai — wahan matn likhein ya audio file se nikalwayein, phir caption chalega.","err");
     else setStatus(edCapStatus,"Caption ON hai — Play dabayein, lafz video par chalte nazar aayenge; Export mein bhi yahi caption shamil hoga.","ok");
   }
@@ -4399,7 +4399,7 @@ $("thumbAiBtn").addEventListener("click",function(){
       if(parts)parts.forEach(function(p){var d=(p.inlineData&&p.inlineData.data)||(p.inline_data&&p.inline_data.data);if(d){data=d;var m=(p.inlineData&&p.inlineData.mimeType)||(p.inline_data&&p.inline_data.mime_type);if(m)mime=m;}});
       if(!res.ok||!data){tryModel(mi+1);return;}
       var img=new Image();
-      img.onload=function(){btn.disabled=false;thumbImg=img;if(!($("thumbTitleText").value.trim()))$("thumbTitleText").value=$("titleText").value.trim();drawThumbBase(img);setStatus(st,"AI thumbnail tayyar hai! Text pasand na aaye to text badal kar “Text Dobara Lagayein” dabayein, phir Download karein.","ok");};
+      img.onload=function(){btn.disabled=false;thumbImg=img;if(!($("thumbTitleText").value.trim()))$("thumbTitleText").value=$("titleText").value.trim();drawThumbBase(img);setStatus(st,"AI thumbnail tayyar hai! Text pasand na aaye to text badal kar “Re-apply Text” dabayein, phir Download karein.","ok");};
       img.onerror=function(){tryModel(mi+1);};
       img.src="data:"+mime+";base64,"+data;
     }).catch(function(){tryModel(mi+1);});
@@ -4906,7 +4906,7 @@ function render(){
     b.addEventListener("pointerdown",function(ev){if(ev.target.classList.contains("tl-handle"))return;sel={type:"overlay",id:o.id};render();renderContext();if(ev.pointerType==="touch"){startTouchScroll(ev);return;}if(o.fixed)return;startMoveDrag(ev,b,o,"overlay");});
     laneO.appendChild(b);
   });
-  $("tlTotal").textContent="Kul waqt: "+fmt(tot);
+  $("tlTotal").textContent="Total: "+fmt(tot);
   syncPlayhead();
 }
 function mkHandle(side,item,kind){
@@ -5107,7 +5107,7 @@ function renderContext(){
   if(!cs.length){label("Timeline Tools — pehle video import karein");return;}
   if(sel)allSel=false;
   if(allSel&&!sel){
-    label("★ SAB SELECT HAI — Poori Video ("+cs.length+" clips • kul waqt "+fmt(total())+")");
+    label("★ SAB SELECT HAI — Full Video ("+cs.length+" clips • kul waqt "+fmt(total())+")");
     box.appendChild(ctxBtn("🎬 Sab Merge — AIK Video Export Karein",function(){var eb=$("exportBtn");if(eb)eb.click();},true));
     box.appendChild(ctxBtn("🎵 Sab Ki AIK Audio Download (WAV)",function(){downloadCombined();},true));
     box.appendChild(ctxBtn("🎧 Sab Ki Aik Audio (Track Banayein)",doCombinedTrack));
@@ -5116,7 +5116,7 @@ function renderContext(){
   }
   if(!sel){
     label("Timeline Tools — kuch select nahi (project tools)");
-    box.appendChild(ctxBtn("✓ Sab Select Karein (Poori Video)",function(){allSel=true;renderContext();setStatus("★ Sab select ho gaya — poori video ("+cs.length+" clips, kul waqt "+fmt(total())+") aik hi hai. Ab “🎬 Sab Merge — AIK Video Export Karein” dabayein.","ok");},true));
+    box.appendChild(ctxBtn("✓ Select All (Full Video)",function(){allSel=true;renderContext();setStatus("★ Sab select ho gaya — poori video ("+cs.length+" clips, kul waqt "+fmt(total())+") aik hi hai. Ab “🎬 Sab Merge — AIK Video Export Karein” dabayein.","ok");},true));
     box.appendChild(ctxBtn("🎵 Sab Ki AIK Audio Download (WAV)",function(){downloadCombined();}));
     box.appendChild(ctxBtn("＋ Clip Add Karein",function(){var fi=$("fileInput");if(fi)fi.click();}));
     box.appendChild(ctxBtn("🎵 Audio Add Karein",function(){$("tlAudioInput").click();}));
@@ -5235,9 +5235,9 @@ function renderContext(){
           setStatus("Tasveer ka time "+sec+" second ho gaya — ab ye tasveer video mein "+sec+" second dikhegi.","ok");hist();
         },Math.abs(cDur(c)-sec)<0.05));
       });
-      box.appendChild(ctxBtn("⏮ Sab Se Shuru Mein Le Jayein",function(){moveClipTo(sel.index,0);}));
+      box.appendChild(ctxBtn("⏮ At Start Le Jayein",function(){moveClipTo(sel.index,0);}));
       box.appendChild(ctxBtn("📍 Playhead Par Le Jayein (Beech Mein)",function(){moveClipToPlayhead(sel.index);},true));
-      box.appendChild(ctxBtn("⏭ Sab Se End Mein Le Jayein",function(){moveClipTo(sel.index,cs.length-1);}));
+      box.appendChild(ctxBtn("⏭ At End Le Jayein",function(){moveClipTo(sel.index,cs.length-1);}));
       var ih=document.createElement("span");ih.className="hint";ih.style.margin="0";ih.textContent="“Playhead Par” dabane se tasveer safed line (playhead) wali jagah par chali jayegi — agar playhead kisi video ke beech mein ho to wo video wahan se khud split ho jayegi aur tasveer darmiyan mein aa jayegi.";box.appendChild(ih);
     }
     box.appendChild(ctxBtn("✂️ Split (Playhead Par)",doSplit,true));
@@ -5295,8 +5295,8 @@ function renderContext(){
     [["tr","➡↗ Upar Right Par Khatam"],["tl","➡↖ Upar Left Par Khatam"],["br","➡↘ Neeche Right Par Khatam"],["bl","➡↙ Neeche Left Par Khatam"]].forEach(function(pr){
       box.appendChild(ctxBtn(pr[1],function(){o.pos2=pr[0];renderContext();E.draw();setStatus("Glide tay ho gaya — overlay "+(posNames[o.pos]||"Upar Right")+" se ahista "+(posNames[pr[0]]||"")+" ki taraf jayega "+(o.fixed?"(poori video ke doran).":"(apne waqt ke andar).")+" Play karke dekhein.","ok");hist();},(o.pos2||"")===pr[0]));
     });
-    if(!o.fixed)box.appendChild(ctxBtn("↔ Poori Video Par Failayein",function(){o.start=0;o.end=total();render();renderContext();E.draw();hist();}));
-    if(!o.fixed)box.appendChild(ctxBtn("📌 Fixed Karo — Poori Video, Aik Jagah",function(){o.fixed=true;o.start=0;o.end=total();render();renderContext();E.draw();updateLogoMeta();setStatus("Logo FIXED ho gaya — ab ye poori video par aik hi kone mein rahega, na gayab hoga na hilega.","ok");hist();},true));
+    if(!o.fixed)box.appendChild(ctxBtn("↔ Full Video Par Failayein",function(){o.start=0;o.end=total();render();renderContext();E.draw();hist();}));
+    if(!o.fixed)box.appendChild(ctxBtn("📌 Fixed Karo — Full Video, Aik Jagah",function(){o.fixed=true;o.start=0;o.end=total();render();renderContext();E.draw();updateLogoMeta();setStatus("Logo FIXED ho gaya — ab ye poori video par aik hi kone mein rahega, na gayab hoga na hilega.","ok");hist();},true));
     box.appendChild(ctxBtn("🗑 Logo Delete",function(){overlays=overlays.filter(function(x){return x.id!==o.id;});sel=null;render();renderContext();E.draw();updateLogoMeta();hist();}));
     var lab=document.createElement("span");lab.className="hint";lab.style.margin="0";lab.textContent="Halka (Opacity):";box.appendChild(lab);
     var rng=document.createElement("input");rng.type="range";rng.min="20";rng.max="100";rng.value=Math.round(o.opacity*100);rng.setAttribute("aria-label","Logo opacity");
@@ -5431,12 +5431,12 @@ function updateMergeUI(){
     var on=replaceTrack===mergeTrack;
     meta.textContent="🎵 Merge audio: "+mergeTrack.name+" • "+fmt(mergeTrack.dur||0)+(on?" • ACTIVE — video ka apna sound BAND hai, sirf ye audio chal raha hai (preview + export)":" • lagi hui hai, lekin abhi OFF hai — video ka apna sound chal raha hai");
     tog.disabled=false;tog.setAttribute("aria-pressed",String(on));
-    tog.textContent=on?"🔇 Sirf Merge Audio Chalayein (Video Sound Band): ON ✓":"🔊 Sirf Merge Audio Chalayein (Video Sound Band): OFF";
+    tog.textContent=on?"🔇 Merge Audio Only: ON ✓":"🔊 Merge Audio Only: OFF";
     rm.disabled=false;
   }else{
-    meta.textContent="Abhi koi audio file nahi lagi — video ka apna sound chal raha hai.";
+    meta.textContent="No audio file added — the video's own sound is playing.";
     tog.disabled=true;tog.setAttribute("aria-pressed","false");
-    tog.textContent="🔇 Sirf Merge Audio Chalayein (Video Sound Band): OFF";
+    tog.textContent="🔇 Merge Audio Only: OFF";
     rm.disabled=true;
   }
 }
@@ -5583,7 +5583,7 @@ if(mergeRemoveBtn)mergeRemoveBtn.addEventListener("click",function(){
    rehta hai. Jagah (kona) timeline mein logo select karke badalti hai. */
 function updateLogoMeta(){
   var m=$("mediaLogoMeta");if(!m)return;
-  if(!overlays.length){m.textContent="Abhi koi logo nahi laga.";return;}
+  if(!overlays.length){m.textContent="No logo added yet.";return;}
   var o=overlays[overlays.length-1];
   var posNames={tr:"upar right kona",tl:"upar left kona",br:"neeche right kona",bl:"neeche left kona"};
   m.textContent="🏷️ Logo laga hai: "+o.name+" — 📌 poori video par fixed ("+(posNames[o.pos]||"upar right kona")+"). Jagah badalni ho to neeche timeline ki Logo wali line mein logo select karein.";
@@ -5759,7 +5759,7 @@ window.addEventListener("resize",function(){render();});
 </script>
 
 <script>
-/* ===== AUDIO IMPORT HUB — Audio tab ke do kaam =====
+/* ===== AUDIO IMPORT HUB — Audio tab ke two jobs =====
    (1) Video upload: audio khud alag (WAV) ho jati hai, video mute
        rehti hai. Video ko "Editor Mein Bhejein" se Editor ki timeline
        mein clip bana kar bhejte hain — sath hi Editor ka Original
@@ -5818,7 +5818,7 @@ if(vIn)vIn.addEventListener("change",function(){
   vPrev.src=URL.createObjectURL(f);
   vRes.classList.remove("hidden");
   xPrev.removeAttribute("src");
-  xMeta.textContent="🎧 Audio alag ki ja rahi hai… chand second lagein ge.";
+  xMeta.textContent="🎧 Extracting audio… chand second lagein ge.";
   xToVo.disabled=true;
   setS(vStatus,"Video aa gayi — ab us ki audio khud alag ki ja rahi hai…");
   var ed=window.__editor;
@@ -5843,7 +5843,7 @@ if(vToEd)vToEd.addEventListener("click",function(){
     if(window.__setOrigMuted)window.__setOrigMuted(true);
     showSent("impVideoSent","impVideoSentText","impVideoGoBtn",
       "✓ Video Editor mein bhej di gayi — wahan timeline mein clip ban gayi hai aur us ki apni awaz MUTE (band) hai. Ab Editor mein ja kar trim / text / export karein.",
-      "editor","media","✂️ Editor Tab Mein Jayein →");
+      "editor","media","✂️ Go to Editor →");
     setS(vStatus,"","ok");
   }else setS(vStatus,"Is browser mein video Editor ko nahi bheji ja saki — wahi video Editor → Media se seedha import kar lein, phir timeline ke audio track par “Original Sound Mute” kar dein.","err");
 });
@@ -5877,7 +5877,7 @@ if(aToEd)aToEd.addEventListener("click",function(){
   if(sendFileToInput("mergeAudioInput",hubAudioFile)){
     showSent("impAudioSent","impAudioSentText","impAudioGoBtn",
       "✓ Audio file Editor mein bhej di gayi — wahan ye video mein lag gayi hai: video ka apna sound BAND hai, sirf ye audio chalegi (preview + export). Track Editor ki timeline wali Audio line mein dikhega.",
-      "editor","trim","✂️ Editor Tab Mein Jayein →");
+      "editor","trim","✂️ Go to Editor →");
     setS(aStatus,"","ok");
   }else setS(aStatus,"Is browser mein audio Editor ko nahi bheji ja saki — wahi file Editor → Media wale “Audio File Upload” button se laga lein.","err");
 });
@@ -5948,7 +5948,7 @@ function setV(el,msg,cls){if(!el)return;el.textContent=msg||"";el.className="sta
 function fmtD(t){if(!isFinite(t)||t<0)t=0;var m=Math.floor(t/60),s=Math.floor(t%60);return m+":"+(s<10?"0":"")+s;}
 
 /* ---------- Language (Urdu default, English toggle — key se alag save) ---------- */
-var lang=lsGet(LANG_LS)==="en"?"en":"ur";
+var lang=lsGet(LANG_LS)==="ur"?"ur":"en";
 function T(ur,en){return lang==="en"?en:ur;}
 function applyLang(){
   panel.setAttribute("data-lang",lang);
@@ -5992,7 +5992,7 @@ function refreshKeyNote(){
       ur="Whisper (Groq) key ابھی نہیں ملی — AI Studio والے ٹیب میں اپنی muft Groq key ڈالیں، وہی key یہاں خود بخود چلے گی۔ یہاں الگ سے key ڈالنے کی کوئی ضرورت نہیں۔";
       en="No Whisper (Groq) key found yet — add your free Groq key in the AI Studio tab; that same key will work here automatically. There is no separate key field here.";
     }else{
-      ur="Gemini key ابھی نہیں ملی — AI Studio والے ٹیب میں اپنی key ڈالیں، وہی key یہاں خود بخود چلے گی۔ یہاں الگ سے key ڈالنے کی کوئی ضرورت نہیں۔";
+      ur="No Gemini key yet — add your key in the AI Studio tab; it works here automatically. No separate key needed here.";
       en="No Gemini key found yet — add your key in the AI Studio tab; that same key will work here automatically. There is no separate key field here.";
     }
     keyNote.setAttribute("data-ur",ur);keyNote.setAttribute("data-en",en);
@@ -6146,7 +6146,7 @@ function updateFilterUI(){
 function updateSavedLine(){
   var line=$("voSavedLine"); if(!line)return;
   var id=$("voVoice").value;
-  var ur="آپ کی پسندیدہ آواز save ہے: "+id;
+  var ur="Your saved voice: "+id;
   var en="Your saved voice: "+id;
   line.setAttribute("data-ur",ur); line.setAttribute("data-en",en);
   line.textContent=(lang==="en"?en:ur);
@@ -6164,7 +6164,7 @@ function updatePreviewBtn(){
   }else if(previewCache[previewKey()]){
     ur="✓ Saved Preview — dobara token nahi lagega"; en="✓ Saved Preview — no tokens needed again";
   }else{
-    ur="🔊 Sun Kar Dekhein — sirf chhota jumla, token bachega"; en="🔊 Hear a Preview — just a short phrase, saves tokens";
+    ur="🔊 Preview Voice"; en="🔊 Hear a Preview — just a short phrase, saves tokens";
   }
   label.setAttribute("data-ur",ur); label.setAttribute("data-en",en);
   label.textContent=(lang==="en"?en:ur);
@@ -6294,7 +6294,7 @@ function trApplyMethodUI(){
   if(wb)wb.setAttribute("aria-pressed",m==="whisper"?"true":"false");
   var pl=$("voPickLabel");
   if(pl){
-    var ur=m==="whisper"?"آڈیو فائل چنیں — Whisper متن لکھ دے گا":"آڈیو فائل چنیں — Gemini متن لکھ دے گا";
+    var ur=m==="whisper"?"آڈیو فائل چنیں — Whisper متن لکھ دے گا":"Choose Audio File — Gemini Will Transcribe It";
     var en=m==="whisper"?"Choose an Audio File — Whisper Will Write the Script":"Choose an Audio File — Gemini Will Write the Script";
     pl.setAttribute("data-ur",ur);pl.setAttribute("data-en",en);
     pl.textContent=(lang==="en"?en:ur);
@@ -6343,9 +6343,9 @@ function showTrError(status,detail){
     msg=T("⏳ Google کا model ابھی بہت busy ہے (503 UNAVAILABLE) — یہ Google کی طرف سے عارضی بھیڑ (high demand) ہوتی ہے، آپ کی key یا فائل کا مسئلہ نہیں۔ خودکار طور پر انتظار کر کے دوبارہ کوشش اور backup model (gemini-3.5-flash-lite) بھی آزمایا جا چکا ہے۔ چند منٹ بعد دوبارہ کوشش کریں — بھیڑ عام طور پر جلد ختم ہو جاتی ہے۔","⏳ Google's model is very busy right now (503 UNAVAILABLE) — this is temporary high demand on Google's side, not a problem with your key or file. Waiting-and-retrying and the backup model (gemini-3.5-flash-lite) were already tried automatically. Please try again in a few minutes — the rush usually clears soon.");
     if(!currentGroqKey())msg+="\n\n"+T("💡 اگلی دفعہ کا حل: AI Studio والے ٹیب میں muft Groq key ڈال دیں — پھر Gemini busy (503) ہو تو Whisper backup خود بخود چل کر متن نکال دے گا، انتظار نہیں کرنا پڑے گا۔","💡 For next time: add the free Groq key in the AI Studio tab — then whenever Gemini is busy (503), the Whisper backup will run automatically and produce the script, with no waiting.");
   }else if(status==="wnokey"){
-    msg=T("🔑 Whisper کے لیے Groq key چاہیے — AI Studio والے ٹیب میں نیچے “Groq API Key (Whisper Ke Liye)” والے خانے میں اپنی muft Groq key ڈالیں (console.groq.com سے مفت بنتی ہے، کارڈ نہیں چاہیے — اسی خانے کے اوپر آسان steps لکھے ہیں)۔ Key save ہوتے ہی Whisper چل جائے گا۔","🔑 Whisper needs a Groq key — in the AI Studio tab, paste your free Groq key into the “Groq API Key (Whisper Ke Liye)” field (it is free at console.groq.com, no card needed — easy steps are written just above that field). As soon as the key is saved, Whisper will work.");
+    msg=T("🔑 Whisper کے لیے Groq key چاہیے — AI Studio والے ٹیب میں نیچے “Groq API Key (for Whisper)” والے خانے میں اپنی muft Groq key ڈالیں (console.groq.com سے مفت بنتی ہے، کارڈ نہیں چاہیے — اسی خانے کے اوپر آسان steps لکھے ہیں)۔ Key save ہوتے ہی Whisper چل جائے گا۔","🔑 Whisper needs a Groq key — in the AI Studio tab, paste your free Groq key into the “Groq API Key (for Whisper)” field (it is free at console.groq.com, no card needed — easy steps are written just above that field). As soon as the key is saved, Whisper will work.");
   }else if(status==="wkey"){
-    msg=T("🔑 Groq key غلط لگ رہی ہے (خرابی 401) — AI Studio والے ٹیب میں Groq key چیک کریں: پوری copy ہوئی ہے؟ console.groq.com → API Keys میں وہی key موجود اور active ہے؟ نئی key بنا کر ڈالنا سب سے آسان حل ہے۔","🔑 The Groq key looks wrong (error 401) — check the Groq key in the AI Studio tab: was it copied in full? Is that same key present and active at console.groq.com → API Keys? Making a fresh key and pasting it is the easiest fix.");
+    msg=T("🔑 Groq key غلط لگ رہی ہے (خرابی 401) — AI Studio والے ٹیب میں Groq key چیک کریں: پوری copy ہوئی ہے؟ console.groq.com → API Keys میں وہی key موجود اور active ہے؟ نئی key بنا کر ڈالنا All سے آسان حل ہے۔","🔑 The Groq key looks wrong (error 401) — check the Groq key in the AI Studio tab: was it copied in full? Is that same key present and active at console.groq.com → API Keys? Making a fresh key and pasting it is the easiest fix.");
     var wd=sanitize(detail,currentGroqKey());
     if(wd)msg+="\n\n"+T("تکنیکی تفصیل (key چھپا کر): ","Technical detail (key hidden): ")+wd;
   }else if(status==="wbusy"){
@@ -6885,11 +6885,11 @@ $("voShareBtn").addEventListener("click",function(){
   var f=new File([wavBlob],"jadoo-voiceover.wav",{type:"audio/wav"});
   if(navigator.canShare&&navigator.canShare({files:[f]})){
     navigator.share({files:[f]}).catch(function(e){if(e&&e.name!=="AbortError")setV(st,T("Share نہیں ہو سکا — فائل ڈاؤن لوڈ کر کے بھیج دیں۔","Sharing failed — download the file and send it instead."),"err");});
-  }else setV(st,T("اس آلے پر فائل Share کی سہولت نہیں — WAV ڈاؤن لوڈ کر کے WhatsApp میں attach کر دیں۔","File sharing is not supported on this device — download the WAV and attach it in WhatsApp."),"err");
+  }else setV(st,T("اس آلے پر فائل Share کی سہولت نہیں — Download WAV کر کے WhatsApp میں attach کر دیں۔","File sharing is not supported on this device — download the WAV and attach it in WhatsApp."),"err");
 });
 function sendToEditor(inputId,okMsg){
   var st=$("voResultStatus");
-  if(!wavBlob){setV(st,T("پہلے آواز بنائیں۔","Generate the voice first."),"err");return;}
+  if(!wavBlob){setV(st,T("پہلے Generate Voice۔","Generate the voice first."),"err");return;}
   try{
     var inp=$(inputId); if(!inp)throw new Error("input missing");
     var file=new File([wavBlob],"jadoo-voiceover.wav",{type:"audio/wav"});
@@ -6900,7 +6900,7 @@ function sendToEditor(inputId,okMsg){
     if(window.__switchSub)window.__switchSub("trim");
     if(window.__voUseNote)window.__voUseNote(okMsg);
   }catch(e){
-    setV(st,T("اس browser میں خودکار منتقلی نہیں ہو سکی — WAV ڈاؤن لوڈ کر کے Audio ٹیب سے اپ لوڈ کر دیں، وہی نتیجہ ملے گا۔","Automatic transfer failed in this browser — download the WAV and upload it from the Audio tab; the result is the same."),"err");
+    setV(st,T("اس browser میں خودکار منتقلی نہیں ہو سکی — Download WAV کر کے Audio ٹیب سے اپ لوڈ کر دیں، وہی نتیجہ ملے گا۔","Automatic transfer failed in this browser — download the WAV and upload it from the Audio tab; the result is the same."),"err");
   }
 }
 $("voUseReplaceBtn").addEventListener("click",function(){sendToEditor("mergeAudioInput",T("وائس اوور ویڈیو میں لگ گیا — ویڈیو کی اصل آواز بند ہے، اب صرف یہ وائس اوور چلے گا (preview اور export دونوں میں)۔ ٹائم لائن کی Audio لائن میں ٹریک دیکھیں۔","Voice over added to the video — the original video sound is muted, only this voice over will play (in preview and export). See the track in the timeline Audio lane."));});
@@ -7022,7 +7022,7 @@ function capDraw(t){
   x.direction="rtl";x.textAlign="left";x.textBaseline="middle";
   if(!capWords||!capWords.length){
     x.font="700 "+(w*0.062)+"px \"Noto Nastaliq Urdu\", serif";x.fillStyle="#f3e9d2";x.textAlign="center";
-    x.fillText(wavBlob?"لفظ تیار ہو رہے ہیں…":"پہلے اوپر آواز بنائیں",w/2,h*0.45);
+    x.fillText(wavBlob?"لفظ تیار ہو رہے ہیں…":"پہلے اوپر Generate Voice",w/2,h*0.45);
     x.textAlign="left";
   }else{
     var idx=capCurrentIdx(t);
@@ -7234,7 +7234,7 @@ $("capDownloadBtn").addEventListener("click",function(){
   capHideError();$("capResultBox").classList.add("hidden");
   if(!wavBlob){capSetStatus(T("پہلے وائس اوور بنائیں۔","Generate the voice over first."),"err");return;}
   if(!window.MediaRecorder||!capCanvas.captureStream){
-    capShowError(T("اس browser میں ویڈیو ریکارڈنگ (MediaRecorder) کی سہولت نہیں — Chrome آزمائیں۔ آپ کی آواز محفوظ ہے: اوپر سے WAV ڈاؤن لوڈ کر لیں۔","This browser has no video recording (MediaRecorder) support — try Chrome. Your audio is safe: download the WAV above."));
+    capShowError(T("اس browser میں ویڈیو ریکارڈنگ (MediaRecorder) کی سہولت نہیں — Chrome آزمائیں۔ آپ کی آواز محفوظ ہے: اوپر سے Download WAV کر لیں۔","This browser has no video recording (MediaRecorder) support — try Chrome. Your audio is safe: download the WAV above."));
     return;
   }
   capStopPreview();
@@ -7265,7 +7265,7 @@ $("capDownloadBtn").addEventListener("click",function(){
     }).then(function(res){
       capExporting=false;capUpdateAvail();$("capProgWrap").classList.add("hidden");
       if(!res.ver.ok||!res.rec.hadAudio||res.rec.blob.size<8000){
-        capShowError(T("ویڈیو نہیں بن سکی یا اس کی جانچ ناکام رہی — خاموش / خراب ویڈیو کامیاب کہہ کر نہیں دی جائے گی۔ دوبارہ کوشش کریں۔ آپ کی آواز ضائع نہیں ہوئی: اوپر حصہ 4 سے WAV ڈاؤن لوڈ کر لیں۔","The video could not be made or failed verification — a silent or broken video will not be offered as a success. Please try again. Your audio is not lost: download the WAV from section 4 above."));
+        capShowError(T("ویڈیو نہیں بن سکی یا اس کی جانچ ناکام رہی — خاموش / خراب ویڈیو کامیاب کہہ کر نہیں دی جائے گی۔ دوبارہ کوشش کریں۔ آپ کی آواز ضائع نہیں ہوئی: اوپر حصہ 4 سے Download WAV کر لیں۔","The video could not be made or failed verification — a silent or broken video will not be offered as a success. Please try again. Your audio is not lost: download the WAV from section 4 above."));
         return;
       }
       if(capResultUrl)URL.revokeObjectURL(capResultUrl);
@@ -7283,7 +7283,7 @@ $("capDownloadBtn").addEventListener("click",function(){
       capDraw(0);
     }).catch(function(err){
       capExporting=false;capUpdateAvail();$("capProgWrap").classList.add("hidden");
-      capShowError(T("ویڈیو بنانے میں خرابی آئی — دوبارہ کوشش کریں۔ آپ کی آواز محفوظ ہے: اوپر حصہ 4 سے WAV ڈاؤن لوڈ کر لیں۔","Something went wrong while making the video — please try again. Your audio is safe: download the WAV from section 4 above."));
+      capShowError(T("ویڈیو بنانے میں خرابی آئی — دوبارہ کوشش کریں۔ آپ کی آواز محفوظ ہے: اوپر حصہ 4 سے Download WAV کر لیں۔","Something went wrong while making the video — please try again. Your audio is safe: download the WAV from section 4 above."));
     });
   }).catch(function(){capShowError(T("آواز پڑھی نہیں جا سکی — وائس اوور دوبارہ بنا کر کوشش کریں۔","The audio could not be decoded — regenerate the voice over and try again."));});
 });
@@ -7292,8 +7292,8 @@ applyLang();updateCounts();trApplyMethodUI();
 })();
 </script>
 <script>
-/* ===== Preview Size toggle — Chhota / Bara (sirf display; export par koi asar nahi) =====
-   Default: chhoti screen (mobile) par Chhota, desktop par Bara (purana size).
+/* ===== Preview Size toggle — Small / Large (sirf display; export par koi asar nahi) =====
+   Default: chhoti screen (mobile) par Small, desktop par Large (purana size).
    Jo choice aik dafa ho jaye wo localStorage mein save rehti hai — dobara
    kholne par wahi lagti hai. */
 (function(){
