@@ -1359,6 +1359,8 @@ textarea{min-height:64px}
         <div class="divider"></div>
         <h3 style="font-size:13.5px;margin:14px 0 4px">🎬 Scene Video — Images to Video</h3>
         <span class="label">Scene Style — one style for every image</span>
+        <div id="sceneStyleLib" style="display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin:6px 0"></div>
+        <p class="hint" style="margin:2px 0 0">Style chunein — har scene ki dono images isi style mein banengi. Neeche box mein apni marzi se badal bhi sakte hain.</p>
         <textarea id="sceneStyle" rows="3">Cinematic photorealistic wide 16:9 scene, warm golden-hour light, soft haze, muted teal-and-amber palette, gentle film grain, calm and reverent mood, rich detail. No people, no human faces, no text, no calligraphy, no letters, no signs, no logos, no watermark.</textarea>
         <span class="label">Image Source</span>
         <select id="sceneSrcSel"><option value="free">Auto — Free, no key needed</option><option value="api">Gemini API — my keys</option></select>
@@ -1375,6 +1377,7 @@ textarea{min-height:64px}
           <button class="btn gold" id="sceneBuildBtn" type="button">3 · Build Video</button>
           <button class="btn" id="sceneSyncBtn" type="button">4 · Sync to Voice</button>
         </div>
+        <p class="hint" style="margin:8px 0 0">Har scene: 2 images — doosri image same scene, different angle. Image calls dogni hongi.</p>
         <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">
           <span class="label">🚀 Auto Video — sab kuch khud (sirf jab chahiye)</span>
           <p class="subtle" style="margin:4px 0 8px">Script (Voice Over tab) se shuru: Rewrite → Voice → Scenes → Images → Build → Sync → Music → Export → Download. Phone charging par, Chrome samne, screen on rakhein. Timeline ki jagah nayi video le legi. Awaz Voice Over tab ki setting se banegi. Music: koi khaas track chahiye to pehle Music tab se timeline par laga dein — Auto wohi use kare ga; warna Auto pehla Slow Light track khud lagata hai, volume 5% par.</p>
@@ -7456,7 +7459,7 @@ applyLang();updateCounts();trApplyMethodUI();
 /* ===== SCENE VIDEO — Phase 1: script ke jumlon se scene images =====
    Script (currentMatn) ko jumlon mein torta hai, har jumlay ke liye
    Gemini se aik English visual subject banata hai, phir wohi image
-   ladder jo thumbnail mein hai us se har scene ki tasveer banata hai.
+   ladder jo thumbnail mein hai us se har scene ki 2 tasveerein banata hai.
    Aik tasveer ko ⭐ anchor chuno to baqi sab usi ke style par banti
    hain. Editor ke kisi purane hissay ko hath nahi lagta. */
 (function(){
@@ -7479,6 +7482,42 @@ function esc(t){ return String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,
 try{ var sv=localStorage.getItem(STYLE_LS); if(sv) $("sceneStyle").value=sv; }catch(e){}
 try{ var OLD_STYLE="Cinematic photorealistic wide 16:9 scene, serene Islamic architecture and nature, warm golden-hour light, soft haze, muted teal-and-amber palette, gentle film grain, calm and reverent mood, rich detail in stone, tile geometry and water. No people, no human faces, no text, no calligraphy, no letters, no signs, no logos, no watermark."; var NEW_STYLE="Cinematic photorealistic wide 16:9 scene, warm golden-hour light, soft haze, muted teal-and-amber palette, gentle film grain, calm and reverent mood, rich detail. No people, no human faces, no text, no calligraphy, no letters, no signs, no logos, no watermark."; if($("sceneStyle").value===OLD_STYLE){ $("sceneStyle").value=NEW_STYLE; try{ localStorage.setItem(STYLE_LS,NEW_STYLE); }catch(e){} } }catch(e){}
 try{ $("sceneStyle").addEventListener("change",function(){ try{ localStorage.setItem(STYLE_LS,this.value); }catch(e){} }); }catch(e){}
+/* --- Scene Style library: 8 presets, one style for every image --- */
+var SCENE_STYLES=[
+ {id:"cinematic",ur:"Cinematic Realistic",desc:"Film jaisi asal tasveer",text:"Cinematic photorealistic wide 16:9 scene, warm golden-hour light, soft haze, muted teal-and-amber palette, gentle film grain, calm and reverent mood, rich detail. No people, no human faces, no text, no calligraphy, no letters, no signs, no logos, no watermark."},
+ {id:"islamic",ur:"Islamic — Soft Golden Light",desc:"Masjid aur noorani, naram sunheri roshni",text:"Cinematic photorealistic wide 16:9 scene, serene Islamic architecture, mosque domes and minarets, soft golden-hour light, gentle glow, warm amber and teal palette, soft haze, calm and reverent mood, rich detail in tile geometry, arches and water. No people, no human faces, no text, no calligraphy, no letters, no signs, no logos, no watermark."},
+ {id:"cartoon",ur:"Cartoon / Animated",desc:"Bachon jaisa animated, rang-biranga",text:"Vibrant 3D animated film style wide 16:9 scene, smooth rounded shapes, bright cheerful colours, soft studio lighting, playful and warm mood, clean detail. No people, no human faces, no text, no calligraphy, no letters, no signs, no logos, no watermark."},
+ {id:"watercolor",ur:"Watercolor Painting",desc:"Pani-rang painting jaisa naram",text:"Soft watercolour painting wide 16:9 scene, gentle brush strokes, visible paper texture, muted pastel palette, dreamy and calm mood, artistic detail. No people, no human faces, no text, no calligraphy, no letters, no signs, no logos, no watermark."},
+ {id:"vintage",ur:"Vintage Film",desc:"Purani film jaisa, sepia rang",text:"Aged vintage film photograph wide 16:9 scene, warm sepia tones, soft film grain, slightly faded colours, nostalgic and timeless mood, rich detail. No people, no human faces, no text, no calligraphy, no letters, no signs, no logos, no watermark."},
+ {id:"dark",ur:"Dark & Moody",desc:"Gehra aur sanjeeda, halki roshni",text:"Dark moody cinematic wide 16:9 scene, deep shadows, dramatic low-key lighting, deep blue and charcoal palette, mysterious and serious mood, rich detail. No people, no human faces, no text, no calligraphy, no letters, no signs, no logos, no watermark."},
+ {id:"bright",ur:"Bright & Cheerful",desc:"Roshan din, khush rang",text:"Bright cheerful wide 16:9 scene, clear daylight, vivid saturated colours, fresh and joyful mood, crisp clean detail. No people, no human faces, no text, no calligraphy, no letters, no signs, no logos, no watermark."},
+ {id:"nature",ur:"Nature Documentary",desc:"Qudrati manazir, documentary jaisa",text:"Nature documentary photography wide 16:9 scene, crisp natural detail, true-to-life colours, soft natural light, peaceful and majestic mood, rich detail in landscape and wildlife habitat. No people, no human faces, no text, no calligraphy, no letters, no signs, no logos, no watermark."}
+];
+var STYLE_NAME_LS="procut_scene_style";
+function curStyleName(){
+  try{ var n=localStorage.getItem(STYLE_NAME_LS); if(n) return n; }catch(e){}
+  try{ var t=($("sceneStyle")||{}).value||""; for(var i=0;i<SCENE_STYLES.length;i++){ if(SCENE_STYLES[i].text===t) return SCENE_STYLES[i].id; } }catch(e){}
+  return "cinematic";
+}
+function renderStyleLib(){
+  var box=$("sceneStyleLib"); if(!box) return;
+  var cur=curStyleName(); var out="";
+  SCENE_STYLES.forEach(function(s){
+    out+='<button type="button" class="btn small" data-style="'+s.id+'" style="'+(cur===s.id?"border-color:#f5c542;color:#f5c542;":"")+'">'+esc(s.ur)+'<br><span style="font-size:10px;color:var(--muted)">'+esc(s.desc)+'</span></button>';
+  });
+  box.innerHTML=out;
+}
+function applySceneStyle(id){
+  var s=null; SCENE_STYLES.forEach(function(x){ if(x.id===id) s=x; });
+  if(!s) return;
+  var ta=$("sceneStyle");
+  if(ta){ ta.value=s.text; try{ localStorage.setItem(STYLE_LS,s.text); localStorage.setItem(STYLE_NAME_LS,id); }catch(e){} }
+  renderStyleLib();
+  st("Style: "+s.ur+" — har scene ki dono images isi style mein banengi.");
+}
+try{ var _slb=$("sceneStyleLib"); if(_slb) _slb.addEventListener("click",function(ev){ var b=ev.target&&ev.target.closest?ev.target.closest("button[data-style]"):null; if(b) applySceneStyle(b.getAttribute("data-style")); }); }catch(e){}
+try{ $("sceneStyle").addEventListener("input",function(){ try{ localStorage.setItem(STYLE_NAME_LS,"custom"); }catch(e){} renderStyleLib(); }); }catch(e){}
+try{ renderStyleLib(); }catch(e){}
 
 function segScript(text){
   var parts=(String(text||"").match(/[^.!?\u06D4\u061F\n]+[.!?\u06D4\u061F]*/g)||[]).map(function(x){return x.trim();}).filter(function(x){return x.length>=10;});
@@ -7509,20 +7548,28 @@ function segScript(text){
   }
   return out;
 }
+function imgSlot(sc,i,img){
+  var d=img===2?sc.data2:sc.data, m=img===2?sc.mime2:sc.mime, b=img===2?sc.busy2:sc.busy, e=img===2?sc.err2:sc.err;
+  var h="";
+  if(d) h+='<img src="data:'+m+';base64,'+d+'" style="display:block;width:100%;max-width:520px;aspect-ratio:16/9;object-fit:cover;border-radius:8px" alt="Scene '+(i+1)+' image '+img+'">';
+  else h+='<div style="display:block;width:100%;max-width:520px;height:90px;border-radius:8px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)">'+(b?("Image "+img+" ban raha hai…"):("Scene "+(i+1)+" — Image "+img))+'</div>';
+  h+='<div style="font-size:11px;margin-top:2px;color:'+(e?"#f87171":"var(--muted)")+'">'+(b?("Image "+img+" ban raha hai…"):(e?esc(e):(d?("✔ Image "+img+" ready"):("Image "+img+" — Waiting"))))+'</div>';
+  h+='<div style="margin-top:5px;display:flex;gap:5px;flex-wrap:wrap">';
+  h+='<button class="btn small" type="button" data-act="regen" data-i="'+i+'" data-img="'+img+'">🔄 Make '+(img===2?"2":"1")+'</button>';
+  h+='<button class="btn small" type="button" data-act="upload" data-i="'+i+'" data-img="'+img+'">⬆ Upload '+(img===2?"2":"1")+'</button>';
+  h+='</div>';
+  return h;
+}
 function renderScenes(){
   var box=$("sceneList"); if(!box) return;
   if(!scenes.length){ box.innerHTML=""; return; }
   var h="";
   scenes.forEach(function(sc,i){
     h+='<div style="display:block;width:100%;padding:9px 0;border-bottom:1px solid var(--border)">';
-    if(sc.data) h+='<img src="data:'+sc.mime+';base64,'+sc.data+'" style="display:block;width:100%;max-width:520px;aspect-ratio:16/9;object-fit:cover;border-radius:8px" alt="Scene '+(i+1)+'">';
-    else h+='<div style="display:block;width:100%;max-width:520px;height:90px;border-radius:8px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)">'+(sc.busy?"Image ban raha hai…":("Scene "+(i+1)))+'</div>';
+    h+=imgSlot(sc,i,1)+imgSlot(sc,i,2);
     h+='<div style="font-size:12px;margin-top:5px"><b>Scene '+(i+1)+'</b> <span style="color:var(--muted);font-size:11px">— Image Prompt (edit kar sakte hain)</span></div>';
     h+='<textarea rows="2" data-subj="'+i+'" style="width:100%;margin-top:3px;font-size:11.5px;line-height:1.4">'+esc(sc.subject||"")+'</textarea>';
-    h+='<div style="font-size:11px;margin-top:2px;color:'+(sc.err?"#f87171":"var(--muted)")+'">'+(sc.busy?"Image ban raha hai…":(sc.err?esc(sc.err):(sc.data?"✔ Ready":"Waiting")))+'</div>';
     h+='<div style="margin-top:5px;display:flex;gap:5px;flex-wrap:wrap">';
-    h+='<button class="btn small" type="button" data-act="regen" data-i="'+i+'">🔄 Make</button>';
-    h+='<button class="btn small" type="button" data-act="upload" data-i="'+i+'">⬆ Upload</button>';
     h+='<button class="btn small" type="button" data-act="copy" data-i="'+i+'">📋 Prompt</button>';
     if(sc.data) h+='<button class="btn small" type="button" data-act="anchor" data-i="'+i+'" style="'+(anchorIdx===i?"border-color:#f5c542;color:#f5c542":"")+'">⭐ Anchor</button>';
     h+='</div></div>';
@@ -7533,8 +7580,8 @@ try{ $("sceneList").addEventListener("click",function(ev){
   var b=ev.target.closest?ev.target.closest("button[data-act]"):null; if(!b) return;
   var i=parseInt(b.getAttribute("data-i"),10), act=b.getAttribute("data-act");
   if(act==="anchor"){ anchorIdx=(anchorIdx===i?-1:i); renderScenes(); st(anchorIdx>=0?("Scene "+(i+1)+" is now the style anchor — new images will follow its look."):"Anchor removed."); }
-  if(act==="regen"){ if(busy){st("Wait — generation is running.","err");return;} if(scenes[i]) scenes[i].seed=1000+Math.floor(Math.random()*900000); var rf=($("sceneSrcSel")&&$("sceneSrcSel").value==="free")?genFree:genOne; rf(i,function(){ st("Scene "+(i+1)+" remade ✔"); }); }
-  if(act==="upload"){ uploadIdx=i; var fi=$("sceneFileInput"); if(fi){ fi.value=""; fi.click(); } }
+  if(act==="regen"){ if(busy){st("Wait — generation is running.","err");return;} var im=parseInt(b.getAttribute("data-img"),10)||1; if(scenes[i]) scenes[i].seed=1000+Math.floor(Math.random()*900000); genSceneImg(i,im,function(){ st("Scene "+(i+1)+" image "+im+" remade ✔"); }); }
+  if(act==="upload"){ uploadIdx=i; uploadImg=parseInt(b.getAttribute("data-img"),10)||1; var fi=$("sceneFileInput"); if(fi){ fi.value=""; fi.click(); } }
   if(act==="copy"){ var cp=scenePrompt(scenes[i]); if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(cp).then(function(){ st("Scene "+(i+1)+" ka prompt copy ho gaya — Gemini app ya Flow mein paste karein."); },function(){ st("Copy nahi hua.","err"); }); } else st("Is browser mein copy nahi ho raha.","err"); }
 }); }catch(e){}
 try{ $("sceneList").addEventListener("change",function(ev){ var t=ev.target; if(t&&t.getAttribute&&t.getAttribute("data-subj")!=null){ var i=+t.getAttribute("data-subj"); if(scenes[i]) scenes[i].subject=t.value; } }); }catch(e){}
@@ -7557,9 +7604,9 @@ function planScenes(){
   st("Script found ("+matn.src+", "+matn.text.length+" characters) — making scenes…");
   var sents=segScript(matn.text);
   if(!sents.length){ st("The script is too short to split into scenes.","err"); return; }
-  scenes=sents.map(function(t){ return {text:t,subject:"",data:null,mime:"image/png",busy:false,err:""}; });
+  scenes=sents.map(function(t){ return {text:t,subject:"",data:null,mime:"image/png",data2:null,mime2:"image/png",busy:false,err:"",busy2:false,err2:""}; });
   var prevMap={}; prevScenes.forEach(function(x){ if(x&&x.data) prevMap[x.text]=x; });
-  scenes.forEach(function(sc){ var o=prevMap[sc.text]; if(o){ sc.data=o.data; sc.mime=o.mime; } });
+  scenes.forEach(function(sc){ var o=prevMap[sc.text]; if(o){ sc.data=o.data; sc.mime=o.mime; sc.data2=o.data2||null; sc.mime2=o.mime2||"image/png"; } });
   anchorIdx=-1; renderScenes();
   st(scenes.length+" scenes ready — now writing a visual subject for each scene…");
   var msel=($("modelSel")||{}).value||"";
@@ -7585,24 +7632,28 @@ function planScenes(){
   tryCall(poolStart<pool.length?poolStart:0, 0);
   }catch(e){ st("Plan Scenes problem: "+(e&&e.message?e.message:e),"err"); }
 }
-function scenePrompt(sc){
+function scenePrompt(sc, img2){
   var style=$("sceneStyle").value.trim();
   var subj=sc.subject||sc.text;
+  if(img2) subj=subj+" — same scene, different angle and composition";
   return "Create a wide 16:9 cinematic scene image for this narration line: \""+subj+"\"\nIMPORTANT: the image must have NO text, NO letters, NO words, NO writing, NO captions anywhere — pure scenery only, nothing written.\nStyle — follow exactly: "+style;
 }
-function genOne(i, done){
+function genOne(i, done, img){ img=img||1;
+  function setB(v){ if(img===2) sc.busy2=v; else sc.busy=v; }
+  function setE(v){ if(img===2) sc.err2=v; else sc.err=v; }
+  function setD(v,m){ if(img===2){ sc.data2=v; sc.mime2=m; } else { sc.data=v; sc.mime=m; } }
   var sc=scenes[i]; if(!sc){ if(done)done(); return; }
   var pool=keyPool();
-  if(!pool.length){ sc.err="No API key — add a key in AI Studio or the Extra Keys box."; renderScenes(); if(done)done(); return; }
-  sc.busy=true; sc.err=""; renderScenes();
-  var parts=[{text:scenePrompt(sc)}];
+  if(!pool.length){ setE("No API key — add a key in AI Studio or the Extra Keys box."); renderScenes(); if(done)done(); return; }
+  setB(true); setE(""); renderScenes();
+  var parts=[{text:scenePrompt(sc,img===2)}];
   if(anchorIdx>=0 && anchorIdx!==i && scenes[anchorIdx] && scenes[anchorIdx].data){
     parts.push({inlineData:{mimeType:scenes[anchorIdx].mime, data:scenes[anchorIdx].data}});
   }
   var models=["gemini-2.5-flash-image","gemini-nano-banana-2.1","gemini-3.1-flash-lite-image","gemini-3-pro-image"];
   var lastWas429=false; sc._tries=[];
   function tryKey(ki){
-    if(ki>=pool.length){ sc.busy=false; sc.err="Google ka jawab: "+(sc._lastErr||"unknown")+" | tries: "+((sc._tries||[]).join(", "))+" | keys "+pool.length; renderScenes(); if(done)done(lastWas429); return; }
+    if(ki>=pool.length){ setB(false); setE("Google ka jawab: "+(sc._lastErr||"unknown")+" | tries: "+((sc._tries||[]).join(", "))+" | keys "+pool.length); renderScenes(); if(done)done(lastWas429); return; }
     var key=pool[ki];
     function tryModel(mi){
       if(mi>=models.length){ tryKey(ki+1); return; }
@@ -7618,7 +7669,7 @@ function genOne(i, done){
           tryModel(mi+1); return;
         }
         poolStart=ki;
-        sc.data=data; sc.mime=mime; sc.busy=false; renderScenes(); if(done)done();
+        setD(data,mime); setB(false); renderScenes(); if(done)done();
       })
       .catch(function(e){ sc._lastErr="net: "+(e&&e.message?e.message:e); tryModel(mi+1); });
     }
@@ -7626,7 +7677,7 @@ function genOne(i, done){
   }
   tryKey(poolStart<pool.length?poolStart:0);
 }
-var uploadIdx=-1;
+var uploadIdx=-1; var uploadImg=1;
 try{ var ssv=localStorage.getItem("procutSceneSrc"); if(ssv) $("sceneSrcSel").value=ssv; }catch(e){}
 $("sceneSrcSel").addEventListener("change",function(){ try{ localStorage.setItem("procutSceneSrc",this.value); }catch(e){} });
 try{ if(localStorage.getItem("procutSceneSlow")==="1") $("sceneSlow").checked=true; }catch(e){}
@@ -7641,38 +7692,46 @@ $("sceneFileInput").addEventListener("change",function(){
   if(!f||uploadIdx<0||!scenes[uploadIdx]) return;
   var sc=scenes[uploadIdx];
   var rd=new FileReader();
-  rd.onload=function(){ var du=String(rd.result||""); var c=du.indexOf(","); if(c>0){ sc.data=du.slice(c+1); sc.mime=f.type||"image/jpeg"; sc.err=""; renderScenes(); st("Scene "+(uploadIdx+1)+" par tasveer lag gayi ✔"); } };
+  rd.onload=function(){ var du=String(rd.result||""); var c=du.indexOf(","); if(c>0){ if(uploadImg===2){ sc.data2=du.slice(c+1); sc.mime2=f.type||"image/jpeg"; sc.err2=""; } else { sc.data=du.slice(c+1); sc.mime=f.type||"image/jpeg"; sc.err=""; } renderScenes(); st("Scene "+(uploadIdx+1)+" image "+uploadImg+" par tasveer lag gayi ✔"); } };
   rd.readAsDataURL(f);
 });
-function genFree(i, done, attempt){
+function genFree(i, done, attempt, img){ img=img||1;
+  function setB(v){ if(img===2) sc.busy2=v; else sc.busy=v; }
+  function setE(v){ if(img===2) sc.err2=v; else sc.err=v; }
+  function setD(v,m){ if(img===2){ sc.data2=v; sc.mime2=m; } else { sc.data=v; sc.mime=m; } }
   var sc=scenes[i]; if(!sc){ if(done)done(); return; }
   attempt=attempt||0;
   var pks=polKeyPool();
   var pki=0;
-  sc.busy=true; sc.err=""; renderScenes();
+  setB(true); setE(""); renderScenes();
   function go(){
     var pk=pks[pki]||"";
     var base=pk?"https://gen.pollinations.ai/image/":"https://image.pollinations.ai/prompt/";
-    var u=base+encodeURIComponent(scenePrompt(sc))+"?width=1280&height=720&nologo=true"+(pk&&attempt===0?"&model=flux":"")+(attempt===0&&pki===0?("&seed="+(sc.seed||(i+1))):"");
+    var seedN=(sc.seed||(i+1))+(img===2?500:0);
+    var u=base+encodeURIComponent(scenePrompt(sc,img===2))+"?width=1280&height=720&nologo=true"+(pk&&attempt===0?"&model=flux":"")+(attempt===0&&pki===0?("&seed="+seedN):"");
     var ac=null, acTo=null; try{ ac=new AbortController(); acTo=setTimeout(function(){ try{ ac.abort(); }catch(e){} }, 60000); }catch(e){}
     var opts={}; if(pk) opts.headers={Authorization:"Bearer "+pk}; if(ac) opts.signal=ac.signal;
     fetch(u,opts).then(function(r){ if(acTo) clearTimeout(acTo); if(!r.ok) throw new Error("HTTP "+r.status); return r.blob(); })
     .then(function(blob){
       var fr=new FileReader();
-      fr.onload=function(){ var du=String(fr.result||""); var c=du.indexOf(","); sc.data=du.slice(c+1); sc.mime=blob.type||"image/jpeg"; sc.busy=false; renderScenes(); if(done)done(); };
-      fr.onerror=function(){ sc.busy=false; sc.err="Image mili lekin parh nahi saka."; renderScenes(); if(done)done(); };
+      fr.onload=function(){ var du=String(fr.result||""); var c=du.indexOf(","); setD(du.slice(c+1), blob.type||"image/jpeg"); setB(false); renderScenes(); if(done)done(); };
+      fr.onerror=function(){ setB(false); setE("Image mili lekin parh nahi saka."); renderScenes(); if(done)done(); };
       fr.readAsDataURL(blob);
     })
     .catch(function(e){
       if(acTo) clearTimeout(acTo);
       var msg=String(e&&e.message);
       if(msg.indexOf("402")>=0 && pki+1<pks.length){ pki++; attempt=0; go(); return; }
-      if(msg.indexOf("402")>=0){ sc.busy=false; sc.err="Pollen khatam — Quests se free Pollen lein (keyed mode)."; renderScenes(); if(done)done(); return; }
+      if(msg.indexOf("402")>=0){ setB(false); setE("Pollen khatam — Quests se free Pollen lein (keyed mode)."); renderScenes(); if(done)done(); return; }
       if(attempt<2){ var slowM=$("sceneSlow")&&$("sceneSlow").checked; st("Scene "+(i+1)+" — service busy tha, "+(slowM?"1 minute ruk kar ":"dobara ")+"try kar raha hoon…"); attempt++; setTimeout(go, slowM?65000:(pk?5000:8000)); return; }
-      sc.busy=false; sc.err="Free service se jawab nahi aya ("+msg+") — thodi der baad 🔄 Make se dobara try karein, ya Upload se apni tasveer lagayein."; renderScenes(); if(done)done();
+      setB(false); setE("Free service se jawab nahi aya ("+msg+") — thodi der baad 🔄 Make se dobara try karein, ya Upload se apni tasveer lagayein."); renderScenes(); if(done)done();
     });
   }
   go();
+}
+function genSceneImg(i, img, done){
+  var useFree=($("sceneSrcSel")&&$("sceneSrcSel").value==="free");
+  if(useFree) genFree(i, done, 0, img||1); else genOne(i, done, img||1);
 }
 function genAll(){
   if(busy){ if(Date.now()-(busySince||0)>180000){ busy=false; st("Pehli generation atak gayi thi — reset karke dobara shuru kar raha hoon.","err"); } else { st("Generation pehle se chal rahi hai — mukammal hone ka intezar karein.","err"); return; } }
@@ -7680,21 +7739,22 @@ function genAll(){
   if(!useFree && !keyPool().length){ st("Paste your Gemini API key above first.","err"); return; }
   if(!scenes.length){ st("Tap Plan Scenes first.","err"); return; }
   busy=true; busySince=Date.now(); $("scenePlanBtn").disabled=true; $("sceneGenBtn").disabled=true;
-  var todo=[]; scenes.forEach(function(sc,i){ if(!sc.data) todo.push(i); });
+  var todo=[]; scenes.forEach(function(sc,i){ if(!sc.data) todo.push([i,1]); if(!sc.data2) todo.push([i,2]); });
   if(!todo.length){ busy=false; busySince=0; $("scenePlanBtn").disabled=false; $("sceneGenBtn").disabled=false; st("All scene images are already ready ✔","ok"); return; }
   var n=0, stopped=false;
   function next(){
     if(n>=todo.length || stopped){
       busy=false; busySince=0; $("scenePlanBtn").disabled=false; $("sceneGenBtn").disabled=false;
-      var ready=scenes.filter(function(x){return !!x.data;}).length;
-      st("Generation stopped. Ready: "+ready+" / "+scenes.length+" — tap Generate Images again to continue from here.", stopped?"err":"ok");
+      var ready=0; scenes.forEach(function(x){ if(x.data) ready++; if(x.data2) ready++; });
+      st("Generation stopped. Ready: "+ready+" / "+(scenes.length*2)+" images — tap Generate Images again to continue from here.", stopped?"err":"ok");
       return;
     }
-    var i=todo[n]; n++;
-    st("Making image "+n+" of "+todo.length+" (scene "+(i+1)+")… "+((useFree&&$("sceneSlow")&&$("sceneSlow").checked)?"Slow mode: har image ~1 minute — app khula rakhein.":"this takes a while — keep the app open."));
+    var pair=todo[n]; n++; var i=pair[0], im=pair[1];
+    if(im===2 && !scenes[i].data){ setTimeout(next, 100); return; }
+    st("Scene "+(i+1)+" / "+scenes.length+" — image "+im+" of 2 ("+n+" of "+todo.length+")… "+((useFree&&$("sceneSlow")&&$("sceneSlow").checked)?"Slow mode: har image ~1 minute — app khula rakhein.":"this takes a while — keep the app open."));
     var slowM=$("sceneSlow")&&$("sceneSlow").checked;
     var pkAll=polKeyPool().length>0;
-    (useFree?genFree:genOne)(i,function(limitHit){ if(limitHit){ stopped=true; } setTimeout(next, useFree?(slowM?60000:(pkAll?2000:5000)):600); });
+    genSceneImg(i,im,function(limitHit){ if(limitHit){ stopped=true; } setTimeout(next, useFree?(slowM?60000:(pkAll?2000:5000)):600); });
   }
   next();
 }
@@ -7722,11 +7782,12 @@ window.__sceneAnchor=function(){ return anchorIdx; };
 "use strict";
 function $(id){ return document.getElementById(id); }
 function st(m,c){ var el=document.getElementById("sceneStatus"); if(el){ el.textContent=m||""; el.className="status"+(c?" "+c:""); } }
-function b64file(sc,i){
-  var bin=atob(sc.data), len=bin.length, bytes=new Uint8Array(len);
+function b64file(sc,i,img){
+  var d=img===2?sc.data2:sc.data, m=img===2?sc.mime2:sc.mime;
+  var bin=atob(d), len=bin.length, bytes=new Uint8Array(len);
   for(var k=0;k<len;k++) bytes[k]=bin.charCodeAt(k);
-  var blob=new Blob([bytes],{type:sc.mime||"image/png"});
-  try{ return new File([blob],"scene-"+(i+1)+".png",{type:blob.type}); }catch(e){ return blob; }
+  var blob=new Blob([bytes],{type:m||"image/png"});
+  try{ return new File([blob],"scene-"+(i+1)+(img===2?"b":"")+".png",{type:blob.type}); }catch(e){ return blob; }
 }
 function buildVideo(){
   var scenes=(window.__scenes?window.__scenes():[])||[];
@@ -7742,24 +7803,32 @@ function buildVideo(){
   var totW=words.reduce(function(a,b){return a+b;},0);
   var estTotal=totW/2.4;
   var KB=["in","out","left","right","in"];
-  var newClips=ready.map(function(si,k){
+  var newClips=[]; var kbI=0;
+  ready.forEach(function(si,k){
     var sc=scenes[si];
     var dur=estTotal*(words[k]/totW);
     dur=Math.max(3.5,Math.min(11,dur));
     if(k===ready.length-1) dur=Math.max(dur,5);
-    var f=b64file(sc,si);
-    var c={file:f,name:"Scene "+(si+1),size:f.size||0,url:URL.createObjectURL(f),isImage:true,img:null,duration:Math.max(10,Math.ceil(dur)),trimStart:0,trimEnd:Math.round(dur*10)/10,gapBefore:0,kb:KB[k%KB.length],transition:(k===0?0:0.5),speed:null,vol:1,fadeIn:0,fadeOut:0};
-    var img=new Image();
-    img.onload=function(){ c.img=img; ed.renderList(); ed.draw(); };
-    img.src=c.url;
-    return c;
+    var parts=sc.data2?[1,2]:[1];
+    var d1=Math.max(2,Math.round(dur/2*10)/10);
+    var durs=parts.length===2?[d1, Math.max(2,Math.round((dur-d1)*10)/10)]:[dur];
+    parts.forEach(function(im,pi){
+      var d=durs[pi];
+      var f=b64file(sc,si,im);
+      var c={file:f,name:"Scene "+(si+1)+(im===2?"·2":""),size:f.size||0,url:URL.createObjectURL(f),isImage:true,img:null,duration:Math.max(10,Math.ceil(d)),trimStart:0,trimEnd:Math.round(d*10)/10,gapBefore:0,kb:KB[kbI%KB.length],transition:(newClips.length===0?0:0.5),speed:null,vol:1,fadeIn:0,fadeOut:0};
+      kbI++;
+      var img=new Image();
+      img.onload=function(){ c.img=img; ed.renderList(); ed.draw(); };
+      img.src=c.url;
+      newClips.push(c);
+    });
   });
   clips.splice.apply(clips,[0,clips.length].concat(newClips));
   ed.renderList();
   try{ ed.loadClip(0); }catch(e){}
   if(window.__pushHistory) window.__pushHistory();
   var tot=newClips.reduce(function(a,c){return a+(c.trimEnd||0);},0);
-  st("Video tayyar ✔ "+newClips.length+" scenes, kul ~"+Math.round(tot)+" second. Editor tab mein timeline dekhein — har clip ki zoom/duration wahan badli ja sakti hai. Ab Voice Over se awaz lagayein.","ok");
+  st("Video tayyar ✔ "+ready.length+" scenes ("+newClips.length+" images), kul ~"+Math.round(tot)+" second. Editor tab mein timeline dekhein — har clip ki zoom/duration wahan badli ja sakti hai. Ab Voice Over se awaz lagayein.","ok");
   if(window.__switchView) window.__switchView("editor");
 }
 $("sceneBuildBtn").addEventListener("click",buildVideo);
@@ -7811,7 +7880,8 @@ function fitScaleDurs(raw, voDur){
 function syncDurations(scenes, clips, voDur, T){
   var n=clips.length; if(!n || !(voDur>0)) return null;
   var totW=0;
-  var wc=clips.map(function(c){ var m=/^Scene (\d+)$/.exec(c.name||""); var sc=m?scenes[+m[1]-1]:null; var w=sc?wordsOf(sc.text).length:0; totW+=w; return w; });
+  var perScene={};
+  var wc=clips.map(function(c){ var m=/^Scene (\d+)(?:·2)?$/.exec(c.name||""); var sc=m?scenes[+m[1]-1]:null; var w=sc?wordsOf(sc.text).length:0; var key=m?+m[1]:0; var part=(c.name||"").indexOf("·2")>=0?2:1; var seen=(perScene[key]||0)+1; perScene[key]=seen; if(key && seen===2) w=Math.floor(w/2); else if(key && clips.some(function(x){ return x.name===("Scene "+key+"·2"); })) w=Math.ceil(w/2); totW+=w; return w; });
   if(T && T.words && T.words.length && T.dur>0 && totW>0 && T.words.length>=0.9*totW){
     var off=0, starts=[], ok=true;
     for(var i=0;i<n;i++){
@@ -7895,13 +7965,14 @@ function applySync(ed, clips, res, voDur, isScene){
   st("Synced ✔ Video ab ~"+fmt(tot)+" hai, awaz "+fmt(voDur)+" hai — "+(isScene?"har scene apne jumlay ke waqt ke barabar.":"har tasveer ko awaz ke hisab se waqt mil gaya.")+how,"ok");
   if(window.__switchView) window.__switchView("editor");
 }
+function parseSceneName(nm){ var m=/^Scene (\d+)(?:·2)?$/.exec(nm||""); return {n:m?+m[1]:0, p:(nm||"").indexOf("·2")>=0?2:1}; }
 function syncToVoice(){
   var scenes=(window.__scenes?window.__scenes():[])||[];
   var ed=window.__editor; if(!ed){ st("Editor ready nahi.","err"); return; }
   var all=ed.clips();
-  var clips=all.filter(function(c){ return c.isImage && /^Scene \d+$/.test(c.name||""); });
+  var clips=all.filter(function(c){ return c.isImage && /^Scene \d+(?:·2)?$/.test(c.name||""); });
   var isScene=clips.length>0;
-  if(isScene){ clips.sort(function(a,b){ return (+(/\d+/.exec(a.name)[1]))-(+(/\d+/.exec(b.name)[1])); }); }
+  if(isScene){ clips.sort(function(a,b){ var na=parseSceneName(a.name), nb=parseSceneName(b.name); return (na.n-nb.n)||(na.p-nb.p); }); }
   else { clips=all.filter(function(c){ return c.isImage; }); }
   if(!clips.length){ st("Timeline par koi image clip nahi — pehle Slideshow se tasveerein lagayein ya 3 · Build Video dabayein.","err"); return; }
   var tl=null; try{ tl=window.__tlSnapshot?window.__tlSnapshot():null; }catch(e){}
@@ -8081,6 +8152,8 @@ window.__syncToVoice=syncToVoice;
     }catch(e){ return 0; }
   }
   function scenesReady(){ try{ var sc=window.__scenes?window.__scenes():[]; return sc.filter(function(s){ return !!s.data; }).length; }catch(e){ return 0; } }
+  function scenesImagesReady(){ try{ var sc=window.__scenes?window.__scenes():[]; var n=0; sc.forEach(function(s){ if(s.data) n++; if(s.data2) n++; }); return n; }catch(e){ return 0; } }
+  function scenesImagesTotal(){ try{ return (window.__scenes?window.__scenes():[]).length*2; }catch(e){ return 0; } }
   function scenesTotal(){ try{ return (window.__scenes?window.__scenes():[]).length; }catch(e){ return 0; } }
   function lockWake(){ try{ if(navigator.wakeLock && navigator.wakeLock.request){ navigator.wakeLock.request("screen").then(function(l){ lock=l; }).catch(function(){}); } }catch(e){} }
   document.addEventListener("visibilitychange", function(){ if(running && !document.hidden) lockWake(); });
@@ -8191,12 +8264,12 @@ window.__syncToVoice=syncToVoice;
       var ss4=$("sceneStatus"); if(ss4) ss4.textContent="";
       click("sceneGenBtn");
       await waitFor(function(){
-        return txt("sceneStatus").indexOf("Generation stopped")>=0 || (scenesTotal()>0 && scenesReady()>=scenesTotal());
+        return txt("sceneStatus").indexOf("Generation stopped")>=0 || (scenesTotal()>0 && scenesImagesReady()>=scenesImagesTotal());
       }, 60*60*1000);
       if(stopFlag) throw {stopped:true};
-      var ready=scenesReady(), total=scenesTotal();
+      var ready=scenesImagesReady(), total=scenesImagesTotal();
       if(ready<=0){ note("Images",false,"koi image nahi bani"); throw {fatal:true}; }
-      note("Images",true,ready+" / "+total+(ready<total?" (baqi reh gayi)":""));
+      note("Images",true,ready+" / "+total+" images"+(ready<total?" (baqi reh gayi)":""));
       /* 5 · Build Video — status ke sath timeline par Scene clips bhi dekho (status kho jaye to bhi pata chale) */
       st("5/8 · Video ban rahi hai (timeline)…");
       var _cf=window.confirm;
