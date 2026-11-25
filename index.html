@@ -1054,6 +1054,9 @@ textarea{min-height:64px}
           <p class="status" id="exportStatus"></p>
           <button class="btn small hidden" id="exportCancelBtn" type="button">✕ Cancel Export</button>
         </div>
+        <button class="btn gold block" id="ytUploadBtn" type="button" disabled style="margin-top:10px">📤 YouTube par Upload karein</button>
+        <p class="hint" id="ytUploadHint" style="margin-top:4px">Pehle video export karein — phir ye button panel ke zariye YouTube par Private upload karega.</p>
+        <p class="status" id="ytUploadStatus" role="status"></p>
         <p class="status" id="draftStatus" role="status"></p>
         <button class="btn small hidden" id="draftDeleteBtn" type="button">🗑 Delete Draft</button>
 
@@ -2850,6 +2853,10 @@ function runDecSelfTest(file){
 function showDlButton(url,filename,blob){
   try{
     var wrap=$("exportProgressWrap"); if(!wrap)return;
+    /* YouTube upload (25 Nov): aakhri export ka blob yaad rakho + button on karo. */
+    window.__ytLastBlob=blob||null; window.__ytLastName=filename||"procut-video.mp4";
+    var __yb=$("ytUploadBtn"); if(__yb)__yb.disabled=!window.__ytLastBlob;
+    var __yh=$("ytUploadHint"); if(__yh)__yh.textContent=window.__ytLastBlob?"Video tayyar hai — ab YouTube par Private upload kar sakte hain.":"Pehle video export karein.";
     var old=document.getElementById("exportDlBtn"); if(old)old.remove();
     var oldS=document.getElementById("exportShareBtn"); if(oldS)oldS.remove();
     var a=document.createElement("a");
@@ -2873,6 +2880,89 @@ function showDlButton(url,filename,blob){
     }
   }catch(e){}
 }
+/* ============ YouTube Upload — RoznamaAds panel ke zariye (25 Nov) ============
+   ProCut khud YouTube ko call NAHI karta (koi key/token yahan nahi).
+   Exported video Blob + Thumbnail tab ki metadata parent (panel iframe)
+   ko postMessage se bhejta hai; panel apne YouTube endpoints se upload
+   karta hai aur natija 'procut-yt-result' se wapas bhejta hai. */
+var YT_MAX_BYTES=100*1024*1024; /* panel proxy ki had: 100 MB */
+if(typeof window.__ytLastBlob==="undefined"){window.__ytLastBlob=null;window.__ytLastName="";}
+function ytSetStatus(txt,kind){
+  try{
+    var el=$("ytUploadStatus"); if(!el)return;
+    el.textContent=""; el.style.color=kind==="err"?"#f87171":kind==="ok"?"#4ade80":"";
+    el.textContent=txt||"";
+  }catch(e){}
+}
+function ytGetMeta(){
+  var t="",d="",tags="";
+  try{if(typeof lastAiTitle!=="undefined"&&lastAiTitle)t=String(lastAiTitle).trim();}catch(e){}
+  try{if(typeof lastAiDesc!=="undefined"&&lastAiDesc)d=String(lastAiDesc).trim();}catch(e){}
+  try{if(typeof lastAiTags!=="undefined"&&lastAiTags)tags=String(lastAiTags).trim();}catch(e){}
+  if(!t){try{var tt=$("titleText");if(tt&&tt.value.trim())t=tt.value.trim();}catch(e){}}
+  if(!t&&window.__ytLastName)t=String(window.__ytLastName).replace(/\.(mp4|webm)$/i,"");
+  if(!t)t="ProCut Video";
+  if(tags)d=d?d+"\n\nTags: "+tags:"Tags: "+tags;
+  return {title:t.slice(0,100),description:d.slice(0,5000)};
+}
+function ytUploadClick(){
+  var btn=$("ytUploadBtn"); if(!btn)return;
+  if(window.parent===window){
+    ytSetStatus("Ye button sirf RoznamaAds panel ke andar kaam karta hai — panel mein Video Editor tab se kholein.","err");
+    return;
+  }
+  var blob=window.__ytLastBlob;
+  if(!blob){ytSetStatus("Pehle video export karein — phir upload hogi.","err");return;}
+  if(blob.size>YT_MAX_BYTES){
+    ytSetStatus("Video "+(blob.size/1048576).toFixed(1)+" MB ki hai — 100 MB se bari hai, panel upload nahi hoga. Chhoti video banayein (kam clips ya chhoti quality).","err");
+    return;
+  }
+  var meta=ytGetMeta();
+  btn.disabled=true;
+  ytSetStatus("⏳ Panel se YouTube par upload ho rahi hai — page khula rakhein…","");
+  try{
+    window.parent.postMessage({
+      type:"procut-yt-upload",
+      file:blob,
+      fileName:window.__ytLastName||"procut-video.mp4",
+      fileType:blob.type||"video/mp4",
+      title:meta.title,
+      description:meta.description
+    },"https://roznamaads.pk");
+  }catch(e){
+    btn.disabled=false;
+    ytSetStatus("Panel ko video bhejne mein ghalti: "+(e&&e.message?e.message:"na-maloom"),"err");
+  }
+}
+(function(){
+  var btn=$("ytUploadBtn");
+  if(btn)btn.addEventListener("click",ytUploadClick);
+  window.addEventListener("message",function(ev){
+    try{
+      if(ev.origin!=="https://roznamaads.pk")return;
+      if(ev.source!==window.parent)return;
+      var d=ev.data||{};
+      if(d.type!=="procut-yt-result")return;
+      var b2=$("ytUploadBtn"); if(b2)b2.disabled=!window.__ytLastBlob;
+      if(d.ok){
+        var url=d.videoUrl||(d.videoId?("https://youtu.be/"+d.videoId):"");
+        var st=$("ytUploadStatus");
+        if(st&&url){
+          st.textContent="";
+          var a=document.createElement("a");
+          a.href=url;a.target="_blank";a.rel="noopener";
+          a.textContent="✅ YouTube par upload ho gayi (Private) — video dekhein: "+url;
+          a.style.color="#4ade80";
+          st.appendChild(a);
+        }else{
+          ytSetStatus("✅ YouTube par upload ho gayi (Private).","ok");
+        }
+      }else{
+        ytSetStatus("YouTube upload nahi hui: "+(d.error||"panel se koi wajah nahi mili — dobara try karein."),"err");
+      }
+    }catch(e){}
+  });
+})();
 function pickMime(){var c=["video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];for(var i=0;i<c.length;i++){if(window.MediaRecorder&&MediaRecorder.isTypeSupported(c[i]))return c[i];}return "";}
 function dispatchRecorderExport(){
   if(window.__fastFail){
