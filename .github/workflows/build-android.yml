@@ -67,6 +67,10 @@ jobs:
           ls -la ~/.android/
           keytool -list -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey 2>&1 | grep -E "SHA256|Owner|Valid|Alias name|Entry type"
 
+      - name: Show Gradle signing report (diagnostic)
+        working-directory: android
+        run: ./gradlew :app:signingReport --no-daemon
+
       - name: Build debug APK
         working-directory: android
         run: |
