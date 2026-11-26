@@ -69,7 +69,9 @@ jobs:
 
       - name: Show Gradle signing report (diagnostic)
         working-directory: android
-        run: ./gradlew :app:signingReport --no-daemon
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:signingReport --no-daemon
 
       - name: Build debug APK
         working-directory: android
