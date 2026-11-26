@@ -56,22 +56,13 @@ jobs:
       # One fixed debug keystore for every build (repo secret ANDROID_DEBUG_KEYSTORE_B64).
       # Gradle debug signing otherwise generates a fresh keystore per runner and
       # the update fails with "package conflicts with an existing package".
+      # AGP 8.13 reads the debug keystore from ~/.config/.android (alias AndroidDebugKey),
+      # not ~/.android -- restore to BOTH paths so every AGP version finds the same key.
       - name: Restore fixed debug keystore
         run: |
-          mkdir -p ~/.android
+          mkdir -p ~/.android ~/.config/.android
           echo "${{ secrets.ANDROID_DEBUG_KEYSTORE_B64 }}" | base64 -d > ~/.android/debug.keystore
-
-      - name: Verify restored debug keystore
-        run: |
-          echo "HOME=$HOME"
-          ls -la ~/.android/
-          keytool -list -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey 2>&1 | grep -E "SHA256|Owner|Valid|Alias name|Entry type"
-
-      - name: Show Gradle signing report (diagnostic)
-        working-directory: android
-        run: |
-          chmod +x gradlew
-          ./gradlew :app:signingReport --no-daemon
+          echo "${{ secrets.ANDROID_DEBUG_KEYSTORE_B64 }}" | base64 -d > ~/.config/.android/debug.keystore
 
       - name: Build debug APK
         working-directory: android
