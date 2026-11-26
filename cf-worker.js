@@ -8,7 +8,8 @@
 //   3. Worker URL (https://<name>.<subdomain>.workers.dev) copy kar ke ProCut →
 //      Scene Video → "Cloudflare Worker URLs" box mein paste karein (aik line per Worker).
 //
-// FLOW: ProCut POSTs JSON {prompt, refUrl?, seed?}
+// FLOW: ProCut calls GET ?prompt=...&refUrl=...&seed=... (simple request — NO CORS
+//   preflight, is liye phone ke network par bhi chalta hai). POST JSON bhi chalta hai.
 //   - refUrl ho to model = flux-2-klein-4b (reference image = image 0, 1280x720)
 //   - refUrl na ho to model = flux-1-schnell (scenery, sasta — default size)
 // Reply JSON: {ok:true, image:"<base64>", mime:"image/jpeg", model:"..."}
@@ -17,22 +18,35 @@ export default {
   async fetch(request, env, ctx) {
     const cors = {
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
     };
     const json = (obj) =>
       new Response(JSON.stringify(obj), {
-        headers: { ...cors, "Content-Type": "application/json" },
+        headers: { ...cors, "Content-Type": "application/json", "Cache-Control": "no-store" },
       });
     if (request.method === "OPTIONS") return new Response(null, { headers: cors });
-    if (request.method !== "POST") return json({ ok: false, error: "POST only" });
     try {
-      const body = await request.json();
-      const prompt = String(body.prompt || "").slice(0, 2000);
+      let prompt = "", refUrl = "", seed = null;
+      if (request.method === "GET") {
+        const u = new URL(request.url);
+        prompt = u.searchParams.get("prompt") || "";
+        refUrl = u.searchParams.get("refUrl") || "";
+        const s = u.searchParams.get("seed");
+        if (s != null) seed = parseInt(s);
+        if (!prompt) return json({ ok: false, error: "POST only — ya GET ?prompt=... use karein" });
+      } else if (request.method === "POST") {
+        const body = await request.json();
+        prompt = String(body.prompt || "");
+        refUrl = body.refUrl || "";
+        seed = body.seed != null ? parseInt(body.seed) : null;
+      } else {
+        return json({ ok: false, error: "POST only — ya GET ?prompt=... use karein" });
+      }
+      prompt = prompt.slice(0, 2000);
       if (!prompt) throw new Error("prompt missing");
-      const seed =
-        body.seed != null ? parseInt(body.seed) : Math.floor(Math.random() * 1000000);
-      const hasRef = !!body.refUrl;
+      if (seed == null || isNaN(seed)) seed = Math.floor(Math.random() * 1000000);
+      const hasRef = !!refUrl;
       const model = hasRef
         ? "@cf/black-forest-labs/flux-2-klein-4b"
         : "@cf/black-forest-labs/flux-1-schnell";
@@ -53,7 +67,7 @@ export default {
         form.append("width", "1280");
         form.append("height", "720");
         form.append("seed", String(seed));
-        const r = await fetch(body.refUrl, { cf: { cacheTtl: 3600 } });
+        const r = await fetch(refUrl, { cf: { cacheTtl: 3600 } });
         if (!r.ok) throw new Error("ref fetch failed: HTTP " + r.status);
         form.append("input_image_0", await r.blob(), "ref.jpg");
         res = await fetch(url, {
