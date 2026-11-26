@@ -62,14 +62,14 @@ export default {
           body: form,
         });
       } else {
-        // schnell: JSON body, documented fields only (prompt + seed).
+        // schnell: JSON body — prompt ONLY (live test: API rejects seed/steps fields).
         res = await fetch(url, {
           method: "POST",
           headers: {
             Authorization: "Bearer " + env.CF_API_TOKEN,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ prompt, seed }),
+          body: JSON.stringify({ prompt }),
         });
       }
       const data = await res.json();
