@@ -1,0 +1,8 @@
+{
+	"appId": "com.tiwana56.procutstudio",
+	"appName": "ProCut Studio",
+	"server": {
+		"androidScheme": "https"
+	},
+	"webDir": "www"
+}
