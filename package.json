@@ -1,0 +1,1 @@
+{"dependencies":{"@capacitor/android":"^8.6.3","@capacitor/cli":"latest","@capacitor/core":"latest"},"description":"ProCut Studio — video editor (Capacitor Android wrapper around the web editor)","name":"procut-studio","private":true,"scripts":{"sync":"npx cap sync android"},"version":"1.0.0"}
