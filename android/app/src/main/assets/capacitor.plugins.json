@@ -1,1 +1,6 @@
-[]
+[
+	{
+		"pkg": "@otakit/capacitor-updater",
+		"classpath": "com.otakit.updater.UpdaterPlugin"
+	}
+]
