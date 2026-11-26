@@ -86,10 +86,17 @@ jobs:
           artifacts: ProCut-Studio-debug.apk
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # Ship the same web build as an OTA bundle (dormant until the
-      # OTAKIT_TOKEN repo secret exists -- Saif adds it from the OtaKit console).
+      # Ship the same web build as an OTA bundle. Dormant until the
+      # OTAKIT_TOKEN repo secret exists (Saif adds it from the OtaKit
+      # console) -- the step then uploads and releases the bundle.
+      # (No `if: secrets...` here: the secrets context is not allowed in
+      # step `if` expressions -- the shell guard below does the skip.)
       - name: Upload OTA bundle
-        if: ${{ secrets.OTAKIT_TOKEN != '' }}
         env:
           OTAKIT_TOKEN: ${{ secrets.OTAKIT_TOKEN }}
-        run: npx -y @otakit/cli@latest upload --release
+        run: |
+          if [ -z "$OTAKIT_TOKEN" ]; then
+            echo "OTAKIT_TOKEN not set -- skipping OTA upload (add the repo secret to enable it)."
+          else
+            npx -y @otakit/cli@latest upload --release
+          fi
