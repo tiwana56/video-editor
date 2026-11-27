@@ -867,6 +867,51 @@ textarea{min-height:64px}
   input[type="text"],input[type="number"],textarea,select{font-size:16px}
 }
 </style>
+<style>
+/* ===== BUILD 144 — SELECTED STATE, SAB JAGAH AIK JAISA GOLD =====
+   Saif (27 Nov): side bars ke buttons par pata nahi chalta kaun select hai.
+   Audit: (1) zyada tar groups ka selected state halka translucent cyan tha
+   (phone par grey jaisa); (2) Voice/Transcription bars ke buttons (Build 139
+   v8) .jadoo panel se bahar body-level drawers mein move ho jate hain, to
+   .jadoo wale rules bilkul lagte hi nahi — buttons bilkul plain grey rehte
+   thay. Fix: har aria-pressed group ka selected state SOLID GOLD (#f3c94b,
+   app ka primary-button accent) + dark text + bold; aur moved bars ke bare
+   buttons ke liye ancestor-free base styles, taake drawer mein bhi waisi hi
+   dikhein. Koi behaviour nahi badla — sirf rang. */
+.seg button[aria-pressed="true"],
+.seg.purple button[aria-pressed="true"],
+.btn.toggle[aria-pressed="true"],
+.btn[aria-pressed="true"],
+.chip-btn[aria-pressed="true"],
+.nav-btn[aria-pressed="true"],
+.subtab-btn[aria-pressed="true"],
+.frame-btn[aria-pressed="true"],
+.frame-btn[aria-pressed="true"] b,
+.pv-toggle button[aria-pressed="true"],
+.vo-filter button[aria-pressed="true"],
+.jadoo .vo-filter button[aria-pressed="true"],
+.cap-seg button[aria-pressed="true"],
+.jadoo .cap-seg button[aria-pressed="true"],
+#trMethodGemini[aria-pressed="true"],
+#trMethodWhisper[aria-pressed="true"],
+.jadoo #trMethodGemini[aria-pressed="true"],
+.jadoo #trMethodWhisper[aria-pressed="true"],
+#voLangBtn[aria-pressed="true"],
+#sceneStyleLib button[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#231a00;font-weight:800;box-shadow:none}
+#sceneStyleLib button[aria-pressed="true"] span{color:#5c430a}
+html #toolsBar button[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#231a00;font-weight:800;box-shadow:none}
+/* Swatch: rang dikhna chahiye, is liye gold RING (fill nahi) */
+.swatch[aria-pressed="true"]{border-color:var(--gold);box-shadow:0 0 0 2px rgba(243,201,75,.5),0 0 0 4px rgba(243,201,75,.18)}
+/* Caption switch: ON state bhi gold */
+.cap-toggle-wrap input:checked + .cap-track{background:var(--gold)}
+.cap-toggle-wrap input:checked ~ .cap-state{background:var(--gold);color:#231a00;border-color:var(--gold)}
+/* Moved bars (v8 drawers, .jadoo se bahar): bare buttons ke base styles —
+   desktop par .jadoo wale rules jeet te hain (same values), drawer mein ye lagte hain */
+.vo-filter{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 10px}
+.vo-filter button{flex:1 1 96px;min-height:48px;border:1.5px solid var(--border);background:var(--panel2);color:var(--text);border-radius:11px;font-weight:700;font-size:14px;padding:9px 8px;cursor:pointer;line-height:1.4}
+.cap-seg{display:flex;flex-wrap:wrap;gap:7px}
+.cap-seg button{flex:1 1 100px;min-height:54px;border:1.5px solid var(--border);background:var(--panel2);color:var(--text);border-radius:11px;font-weight:700;font-size:14px;padding:10px 8px;line-height:1.45;cursor:pointer}
+</style>
 </head>
 <body>
 
@@ -874,7 +919,7 @@ textarea{min-height:64px}
   <div class="brand">
     <div class="logo" aria-hidden="true"><img src="data:image/png;base64,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" alt="" width="40" height="40" style="width:40px;height:40px;border-radius:9px;display:block"/></div>
     <div>
-      <h1>ProCut <span>Studio</span> <span id="appVer" style="color:#7ee2a8;font-weight:700;font-size:10.5px;letter-spacing:.02em">Build 26-Nov-143</span></h1>
+      <h1>ProCut <span>Studio</span> <span id="appVer" style="color:#7ee2a8;font-weight:700;font-size:10.5px;letter-spacing:.02em">Build 26-Nov-144</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -2770,7 +2815,7 @@ if(filterSepia)filterSepia.addEventListener("click",function(){setFilter(110,98,
 if(filterDrama)filterDrama.addEventListener("click",function(){setFilter(96,126,112,0,0,0);pushHistory();});
 if(filterFade)filterFade.addEventListener("click",function(){setFilter(114,88,94,0,25,0);pushHistory();});
 var templates={tilawat:{t:"خوبصورت تلاوتِ قرآن",s:"دل کو سکون دینے والی آواز"},naat:{t:"دلکش نعتِ رسول ﷺ",s:"عقیدت و محبت کے ساتھ سنیں"},bayan:{t:"ایمان افروز بیان",s:"مکمل بیان کے لیے چینل وزٹ کریں"},dua:{t:"قبولیت کی دعا",s:"آمین لکھ کر شریک ہوں"}};
-document.querySelectorAll("[data-tpl]").forEach(function(btn){btn.addEventListener("click",function(){var tpl=templates[btn.getAttribute("data-tpl")];if(!tpl)return;$("titleText").value=tpl.t;$("subText").value=tpl.s;drawFrame();pushHistory();});});
+document.querySelectorAll("[data-tpl]").forEach(function(btn){btn.addEventListener("click",function(){var tpl=templates[btn.getAttribute("data-tpl")];if(!tpl)return;document.querySelectorAll("[data-tpl]").forEach(function(b){b.setAttribute("aria-pressed",String(b===btn));});$("titleText").value=tpl.t;$("subText").value=tpl.s;drawFrame();pushHistory();});});
 var ytId="";
 /* ===== PHASE 1: WakeLock + quality-wise bitrate + export cancel =====
    Export ke doran screen band ho jaye to canvas ke frames jam jate
@@ -3186,7 +3231,7 @@ function currentMatn(){
   if(vs){var t=vs.value.trim();if(t&&t.indexOf(VO_SAMPLE_HEAD)!==0){var am=$("aiMatn");if(am&&!am.value.trim())am.value=t;return {text:t,src:"Voice Over script"};}}
   return {text:"",src:""};
 }
-$("keyShowBtn").addEventListener("click",function(){var k=$("apiKey");var show=k.type==="password";k.type=show?"text":"password";this.textContent=show?"Hide":"Show";});
+$("keyShowBtn").addEventListener("click",function(){var k=$("apiKey");var show=k.type==="password";k.type=show?"text":"password";this.textContent=show?"Hide":"Show";this.setAttribute("aria-pressed",String(show));});
 $("aiMatnBtn").addEventListener("click",function(){
   var vs=$("voScript"),msg=$("aiMatnMsg");
   var t=vs?vs.value.trim():"";
@@ -5291,7 +5336,7 @@ var GROQ="procut_groq_key",groqEl=$("groqKey");
 var savedGroq=lsGet(GROQ); if(groqEl&&savedGroq)groqEl.value=savedGroq;
 if(groqEl)groqEl.addEventListener("input",function(){lsSet(GROQ,groqEl.value.trim());});
 var groqShow=$("groqKeyShowBtn");
-if(groqShow&&groqEl)groqShow.addEventListener("click",function(){var show=groqEl.type==="password";groqEl.type=show?"text":"password";this.textContent=show?"Hide":"Show";});
+if(groqShow&&groqEl)groqShow.addEventListener("click",function(){var show=groqEl.type==="password";groqEl.type=show?"text":"password";this.textContent=show?"Hide":"Show";this.setAttribute("aria-pressed",String(show));});
 try{var gk=$("groqKeys");if(gk){var gp=localStorage.getItem("procutGroqPool");if(gp)gk.value=gp;gk.addEventListener("change",function(){try{localStorage.setItem("procutGroqPool",this.value);}catch(e){}});}}catch(e){}
 /* Band/shutdown ho chuke purane model naam browser mein save hon to
    khud current model par badal do — warna Title/Tags phir 404 dega. */
@@ -6592,6 +6637,7 @@ function applyLang(){
     if(v!==null)el.textContent=v;
   });
   var lb=$("voLangBtn"); if(lb)lb.textContent=(lang==="ur"?"English":"اردو");
+  if(lb)lb.setAttribute("aria-pressed",lang==="ur"?"true":"false");
   updateCounts();
   if(typeof refreshKeyNote==="function")refreshKeyNote();
 }
@@ -8648,7 +8694,7 @@ function renderStyleLib(){
   var box=$("sceneStyleLib"); if(!box) return;
   var cur=curStyleName(); var out="";
   SCENE_STYLES.forEach(function(s){
-    out+='<button type="button" class="btn small" data-style="'+s.id+'" style="'+(cur===s.id?"border-color:#f5c542;color:#f5c542;":"")+'">'+esc(s.ur)+'<br><span style="font-size:10px;color:var(--muted)">'+esc(s.desc)+'</span></button>';
+    out+='<button type="button" class="btn small" data-style="'+s.id+'" aria-pressed="'+(cur===s.id)+'" style="'+(cur===s.id?"background:#f5c542;border-color:#f5c542;color:#231a00;font-weight:800;":"")+'">'+esc(s.ur)+'<br><span style="font-size:10px;color:'+(cur===s.id?"#5c430a":"var(--muted)")+'">'+esc(s.desc)+'</span></button>';
   });
   box.innerHTML=out;
 }
@@ -9252,7 +9298,7 @@ window.__syncToVoice=syncToVoice;
 (function(){
   function $(id){return document.getElementById(id);}
   function st(m,c){var e=$("musicStatus");if(e){e.textContent=m;e.className="status"+(c?" "+c:"");}}
-  try{var ji=$("jamendoId");if(ji){var sv=localStorage.getItem("procutJamendoId");if(sv)ji.value=sv;ji.addEventListener("change",function(){try{localStorage.setItem("procutJamendoId",this.value.trim());}catch(e){}});}var jb=$("jamendoIdShowBtn");if(jb&&ji)jb.addEventListener("click",function(){var sh=ji.type==="password";ji.type=sh?"text":"password";this.textContent=sh?"Hide":"Show";});}catch(e){}
+  try{var ji=$("jamendoId");if(ji){var sv=localStorage.getItem("procutJamendoId");if(sv)ji.value=sv;ji.addEventListener("change",function(){try{localStorage.setItem("procutJamendoId",this.value.trim());}catch(e){}});}var jb=$("jamendoIdShowBtn");if(jb&&ji)jb.addEventListener("click",function(){var sh=ji.type==="password";ji.type=sh?"text":"password";this.textContent=sh?"Hide":"Show";this.setAttribute("aria-pressed",String(sh));});}catch(e){}
   var curAudio=null,curBtn=null;
   function stopPreview(){if(curAudio){try{curAudio.pause();}catch(e){}curAudio=null;}if(curBtn){curBtn.textContent="▶ Preview";curBtn=null;}}
   function fmtDur(s){s=Math.round(s||0);if(s>1000)s=Math.round(s/1000);return Math.floor(s/60)+":"+("0"+(s%60)).slice(-2);}
@@ -9328,19 +9374,21 @@ window.__syncToVoice=syncToVoice;
       if(window.__switchView)window.__switchView("editor");
     }).catch(function(e){st("Download nahi hua ("+(e.message||"network")+"). Track ka link khol kar download karein, phir Editor mein Add Audio se lagayein.","err");});
   }
-  $("musicSearchBtn").addEventListener("click",function(){var q=$("musicSearch").value.trim()||"ambient";search(q);});
-  $("musicSearch").addEventListener("keydown",function(e){if(e.key==="Enter"){var q=$("musicSearch").value.trim()||"ambient";search(q);}});
+  $("musicSearchBtn").addEventListener("click",function(){musicMark(null);var q=$("musicSearch").value.trim()||"ambient";search(q);});
+  $("musicSearch").addEventListener("keydown",function(e){if(e.key==="Enter"){musicMark(null);var q=$("musicSearch").value.trim()||"ambient";search(q);}});
+  /* Build 144: mood button ka selected state — kaun sa mood chuna hai, gold nazar aaye. */
+  function musicMark(btn){["musicPopularBtn","musicCalmBtn","musicNasheedBtn","musicPianoBtn","musicSlowBtn","musicNovelBtn"].forEach(function(id){var b=$(id);if(b)b.setAttribute("aria-pressed",String(b===btn));});}
   $("musicPopularBtn").addEventListener("click",function(){
-    stopPreview();
+    stopPreview();musicMark(this);
     if(($("musicSrcSel")||{}).value==="jamendo"){searchJamendo("",true);}else{searchOpenverse("ambient");}
   });
-  $("musicCalmBtn").addEventListener("click",function(){stopPreview();if(($("musicSrcSel")||{}).value==="jamendo")searchJamendo("ambient",false,true);else searchOpenverse("calm ambient");});
-  $("musicNasheedBtn").addEventListener("click",function(){stopPreview();if(($("musicSrcSel")||{}).value==="jamendo")searchJamendo("nasheed",false,true);else searchOpenverse("nasheed");});
-  $("musicPianoBtn").addEventListener("click",function(){stopPreview();if(($("musicSrcSel")||{}).value==="jamendo")searchJamendo("piano",false,true);else searchOpenverse("calm piano");});
-  $("musicSlowBtn").addEventListener("click",function(){stopPreview();if(($("musicSrcSel")||{}).value==="jamendo")searchJamendo("ambient",false,true,"low");else searchOpenverse("soft piano background");});
-  $("musicNovelBtn").addEventListener("click",function(){stopPreview();if(($("musicSrcSel")||{}).value==="jamendo")searchJamendo("cinematic",false,true,"low");else searchOpenverse("soft piano strings");});
+  $("musicCalmBtn").addEventListener("click",function(){stopPreview();musicMark(this);if(($("musicSrcSel")||{}).value==="jamendo")searchJamendo("ambient",false,true);else searchOpenverse("calm ambient");});
+  $("musicNasheedBtn").addEventListener("click",function(){stopPreview();musicMark(this);if(($("musicSrcSel")||{}).value==="jamendo")searchJamendo("nasheed",false,true);else searchOpenverse("nasheed");});
+  $("musicPianoBtn").addEventListener("click",function(){stopPreview();musicMark(this);if(($("musicSrcSel")||{}).value==="jamendo")searchJamendo("piano",false,true);else searchOpenverse("calm piano");});
+  $("musicSlowBtn").addEventListener("click",function(){stopPreview();musicMark(this);if(($("musicSrcSel")||{}).value==="jamendo")searchJamendo("ambient",false,true,"low");else searchOpenverse("soft piano background");});
+  $("musicNovelBtn").addEventListener("click",function(){stopPreview();musicMark(this);if(($("musicSrcSel")||{}).value==="jamendo")searchJamendo("cinematic",false,true,"low");else searchOpenverse("soft piano strings");});
   var nb=document.querySelector('[data-view="music"]');
-  if(nb)nb.addEventListener("click",function(){var box=$("musicList");if(box&&!box.children.length)searchOpenverse("ambient");});
+  if(nb)nb.addEventListener("click",function(){var box=$("musicList");if(box&&!box.children.length){searchOpenverse("ambient");musicMark($("musicPopularBtn"));}});
 })();
 </script>
 
@@ -9817,6 +9865,7 @@ try{
     var f=$("libKey"); if(!f) return;
     var show=f.type==="password"; f.type=show?"text":"password";
     this.textContent=show?"Hide":"Show";
+    this.setAttribute("aria-pressed",String(show));
   });
 }catch(e){}
 try{
