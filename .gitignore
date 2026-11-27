@@ -4,3 +4,5 @@ android/build/
 *.keystore
 *.jks
 .DS_Store
+www/
+android/app/src/main/assets/public/
