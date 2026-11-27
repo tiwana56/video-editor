@@ -1,0 +1,144 @@
+# ProCut Studio — CI gate (Phase 1, Task B)
+#
+# Runs on every push and pull request to main. Guards the three things
+# Saif said must never silently change, plus a syntax check of every
+# inline <script> block in index.html:
+#   1. node --check on every inline <script> block
+#   2. MODEL_MIGRATE / model-name lines identical vs previous commit
+#   3. API-key localStorage lines (procut_gemini_key, procut_groq_key)
+#      must not decrease vs previous commit
+#   4. No element id="..." may disappear vs previous commit (added IDs fine)
+#
+# The diff checks compare HEAD~1:index.html with HEAD:index.html.
+# checkout uses fetch-depth: 2 so HEAD~1 exists. If HEAD~1 does not exist
+# (very first commit / shallow history) the diff checks are SKIPPED with a
+# warning and the script check still runs — a gate that blocks the first
+# ever push is worse than no gate. A push that only touches workflow files
+# passes the diff checks trivially (index.html unchanged) while the script
+# check still runs on the current index.html.
+#
+# NOTE: MODEL_MIGRATE comparison is by line CONTENT (sorted, stripped),
+# not by line number — normal edits shift line numbers without changing
+# the mapping, and that must not fail the gate.
+
+name: CI Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (fetch-depth 2 for HEAD~1 diff)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run CI gate
+        run: |
+          python3 - <<'PYEOF'
+          import os, re, subprocess, sys, tempfile
+
+          failures = []
+          warnings = []
+
+          def fail(msg):
+              failures.append(msg)
+              print(f"FAIL: {msg}")
+
+          def warn(msg):
+              warnings.append(msg)
+              print(f"WARN: {msg}")
+
+          # ---------- (1) node --check on every inline <script> block ----------
+          if not os.path.exists("index.html"):
+              fail("index.html missing at HEAD")
+              head = ""
+          else:
+              head = open("index.html", encoding="utf-8", errors="ignore").read()
+              blocks = [(head[:m.start()].count("\n") + 1, m.group(1))
+                        for m in re.finditer(
+                            r'<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>',
+                            head, re.S | re.I)]
+              print(f"Script check: {len(blocks)} inline <script> blocks found")
+              for lineno, code in blocks:
+                  if not code.strip():
+                      continue
+                  with tempfile.NamedTemporaryFile(
+                          "w", suffix=".js", delete=False) as f:
+                      f.write(code)
+                      tmp = f.name
+                  r = subprocess.run(["node", "--check", tmp],
+                                     capture_output=True, text=True)
+                  os.unlink(tmp)
+                  if r.returncode != 0:
+                      fail(f"node --check failed for <script> block at "
+                           f"line {lineno}: {r.stderr.strip()[:300]}")
+              if not any("node --check failed" in f for f in failures):
+                  print("Script check: all inline blocks pass node --check")
+
+          # ---------- Previous-commit copy of index.html ----------
+          prev = None
+          r = subprocess.run(["git", "rev-parse", "--verify", "HEAD~1"],
+                             capture_output=True, text=True)
+          if r.returncode != 0:
+              warn("No HEAD~1 (first commit / shallow history) — "
+                   "diff checks (2)-(4) skipped, script check still ran")
+          else:
+              r = subprocess.run(["git", "show", "HEAD~1:index.html"],
+                                 capture_output=True, text=True)
+              if r.returncode != 0:
+                  warn("index.html did not exist at HEAD~1 — "
+                       "diff checks (2)-(4) skipped, script check still ran")
+              else:
+                  prev = r.stdout
+
+          if prev is not None and head:
+              # ---------- (2) MODEL_MIGRATE lines identical (by content) ----------
+              def model_lines(text):
+                  return sorted(
+                      ln.strip() for ln in text.splitlines()
+                      if "MODEL_MIGRATE" in ln)
+              if model_lines(prev) != model_lines(head):
+                  fail("MODEL_MIGRATE lines differ vs previous commit "
+                       f"(prev {len(model_lines(prev))} lines, "
+                       f"head {len(model_lines(head))} lines)")
+              else:
+                  print(f"Model check: MODEL_MIGRATE lines identical "
+                        f"({len(model_lines(head))} lines)")
+
+              # ---------- (3) API-key localStorage line counts must not drop ----
+              for key in ("procut_gemini_key", "procut_groq_key"):
+                  prev_n = sum(1 for ln in prev.splitlines() if key in ln)
+                  head_n = sum(1 for ln in head.splitlines() if key in ln)
+                  print(f"Key check: {key}: prev={prev_n} head={head_n}")
+                  if head_n < prev_n:
+                      fail(f"{key} line count decreased vs previous "
+                           f"commit ({prev_n} -> {head_n})")
+
+              # ---------- (4) No id="..." may be removed -------------------------
+              def ids(text):
+                  return set(re.findall(r'id="([^"]+)"', text))
+              removed = sorted(ids(prev) - ids(head))
+              added = sorted(ids(head) - ids(prev))
+              print(f"ID check: prev={len(ids(prev))} head={len(ids(head))} "
+                    f"added={added} removed={removed}")
+              if removed:
+                  fail(f"IDs removed vs previous commit: {removed}")
+
+          print(f"Gate summary: {len(failures)} failure(s), "
+                f"{len(warnings)} warning(s)")
+          sys.exit(1 if failures else 0)
+          PYEOF
