@@ -1,0 +1,29 @@
+# ProCut — Supabase daily keep-alive (audit #1 / SB-1)
+# Rozana aik asal DB read: PostgREST select ... limit 1 on heartbeat.
+# Storage-only reads pause nahi rokte — is liye ye DB read lazmi hai.
+# Secret SUPABASE_ANON_KEY = Supabase anon/publishable key (public-safe,
+# phir bhi repo Secret mein rakhi hai — service_role/secret key KABHI nahi).
+name: supabase-keep-alive
+
+on:
+  schedule:
+    # Rozana 03:00 UTC = 08:00 PKT
+    - cron: "0 3 * * *"
+  workflow_dispatch:  # manual test ke liye — Actions tab se "Run workflow"
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: DB read (heartbeat, limit 1)
+        run: |
+          set -e
+          code=$(curl -s -o /tmp/ka.json -w "%{http_code}" \
+            "https://pjaknrnjjabugkrdljjp.supabase.co/rest/v1/heartbeat?select=id,checked_at&limit=1" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Accept: application/json")
+          echo "HTTP $code"
+          cat /tmp/ka.json
+          test "$code" = "200"
+          grep -q '"id":1' /tmp/ka.json
