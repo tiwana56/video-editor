@@ -10,17 +10,13 @@
 //   3. 401 reply: {ok:false, error:"unauthorized"} — app is ko "Worker key
 //      ghalat hai" ke tor par dikhaye ga (Phase 2 app side).
 //
-// ⚠️⚠️⚠️ DEPLOY SE PEHLE LAZMI — PLACEHOLDER BADALNA HAI ⚠️⚠️⚠️
-//   Neeche wali line mein "pc1-6a3e6ec74ab1edd5381877677106d1e0" ki jagah ASAL
-//   secret likhna hai. Wo asal secret app ke constant `CF_WORKER_AUTH` ke
-//   BARABAR hona chahiye (Phase 1, item F — Build 145 mein app mein aaye ga).
-//   Placeholder wali file deploy ki to IMAGE GENERATION DONO PHONES PAR
-//   BAND HO JAYE GI (har request 401). Is liye deploy se pehle Muse se
-//   reconcile karwayein: app constant == is file ki value.
-//   Secret ki value kabhi chat / repo / screenshot mein nahi aani chahiye —
-//   Saif khud dashboard mein paste karein ge, ya Muse ko secure tareeqe se
-//   dein ge. (Behtar tareeqa — Phase 2 mein Workers Secret variable mein
-//   rakhna — is draft mein task ke mutabiq code mein placeholder hai.)
+// ✅ DEPLOY-READY — EXPECTED_AUTH (neeche line 64) mein asal value
+//   pehle se bhari hui hai aur app ke CF_WORKER_AUTH (Build 145+) se
+//   match karti hai — Muse ne verify kar li. Kuch badalna nahi —
+//   bas ye POORI file Worker mein paste karke Deploy dabayein.
+//   (Ye value app ke public code mein bhi hai — casual-abuse rokne
+//   ke liye hai, asal secret nahi; chat/screenshot mein phir bhi
+//   share karne ki zaroorat nahi.)
 //
 // DEPLOY (phone, dashboard) — Phase 2 build mein hoga:
 //   1. dash.cloudflare.com → Workers & Pages → Worker "procut-cf-images"
