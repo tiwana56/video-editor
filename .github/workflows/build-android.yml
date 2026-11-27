@@ -68,7 +68,10 @@ jobs:
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew :app:assembleDebug -PversionCode=${{ github.run_number }} --no-daemon
+          # versionName tracks the app build: appVer in index.html (e.g. 26-Nov-148).
+          APPVER=$(grep -o 'appVer:"[^"]*"' ../index.html | head -1 | cut -d'"' -f2)
+          [ -n "$APPVER" ] || APPVER="1.0"
+          ./gradlew :app:assembleDebug -PversionCode=${{ github.run_number }} -PversionName="$APPVER" --no-daemon
 
       - name: Prepare APK
         run: cp android/app/build/outputs/apk/debug/app-debug.apk ProCut-Studio-debug.apk
