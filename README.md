@@ -1,31 +1,38 @@
-# Video Editor — Deploy Guide (Roman Urdu)
+# ProCut Studio — Video Editor
 
-Ye aap ka personal video editor hai — mobile browser mein chalta hai.
-Muft hai, koi watermark nahi.
+Video editor — web app + Android APK. Source of truth is the repo-root
+`index.html` (plus `sw.js`, `manifest.json`, icons).
 
-## Deploy karne ke steps (phone se)
+## Site aur APK
 
-1. **GitHub account** banao: github.com par Sign up karo (naya account).
-2. **New repository** banao: naam `video-editor`, Public rakho, Create.
-3. **File upload karo**: repo mein "Add file" -> "Upload files" -> is ZIP ko
-   unzip kar ke `index.html` upload karo -> "Commit changes" dabao.
-4. **Vercel account** banao: vercel.com par "Continue with GitHub" se
-   GitHub connect karo.
-5. **Project import karo**: Vercel dashboard -> "Add New..." -> "Project" ->
-   `video-editor` repo select karo -> "Deploy" dabao.
-6. **URL mil jayega**, jaise: https://video-editor-xxxx.vercel.app
-   Usay phone ke browser mein kholo, home screen par add kar lo.
+- **Site:** https://tiwana56.github.io/video-editor/
+- **APK (latest):** https://github.com/tiwana56/video-editor/releases/download/latest/ProCut-Studio-debug.apk
+  - Phone par install karne ke liye browser ko "Install unknown apps" allow karein.
 
-## Update kaise karein
+## Build kaise hota hai
 
-Jab editor ka naya version mile to nayi `index.html` ko repo mein dobara
-upload karo (purani file replace ho jayegi) — Vercel khud redeploy kar dega,
-URL wohi rahega.
+- `main` par push hote hi GitHub Actions (`build-android.yml`) debug APK
+  banata hai aur rolling `latest` release par publish karta hai.
+- Har build mein root files ko `www/` mein copy karke `npx cap sync android`
+  chalaya jata hai — is liye `www/` aur
+  `android/app/src/main/assets/public/` repo mein committed nahi hote;
+  ye build artifacts hain, haath se edit na karein.
+- `versionCode` GitHub run number se aur `versionName` `index.html` ke
+  `appVer` (jaise `26-Nov-148`) se aata hai.
+- GitHub Pages site ko `main` se serve karta hai; CI Gate har push par
+  `index.html` ke inline scripts check karta hai.
 
-## Features
+## OTA, licence, Library
 
-- Trim, multi-clip join, Urdu title/subtitle (Nastaliq), Bismillah overlay
-- Filters, speed, rotate/flip/zoom, 9:16 / 16:9 / 1:1, 480p/720p export
-- Thumbnail Studio (Gemini AI ya video frame se, 1280x720 JPG)
-- Audio alag karna (WAV download)
-- Gemini se Urdu title / description / tags (apni muft API key page par dalni hai)
+- **OTA:** OtaKit — `OTAKIT_TOKEN` repo secret lagne par build ke sath OTA
+  bundle upload hota hai (secret na ho to step skip ho jata hai).
+- **Licence lock:** Cloudflare Worker (`cf-license-worker.js`) + KV —
+  key ek dafa per phone, phir 30 din offline.
+- **Library / character refs:** Supabase bucket `procut-refs` — portrait
+  pehle Library mein naam se upload karein, script mein wahi naam likhein.
+- **Images:** Cloudflare Workers AI main route (`cf-worker.js`),
+  Pollinations backup.
+
+## Repo
+
+- https://github.com/tiwana56/video-editor
