@@ -1,0 +1,117 @@
+# ProCut Studio — nightly health check (Phase 1, Task C)
+#
+# Pings the five live endpoints ProCut depends on. On ANY failure it opens
+# a GitHub Issue listing every check result.
+#
+# ISSUE CREATION USES THE WORKFLOW'S BUILT-IN GITHUB_TOKEN ONLY.
+# The Muse-side PAT (custom.github-alt credential) is NOT available inside
+# GitHub Actions and must NEVER be pasted into this file or any secret for
+# this purpose — GITHUB_TOKEN is issued by GitHub to each run, is scoped to
+# this repo, and expires when the run ends. That is the correct mechanism.
+# `permissions: issues: write` below is what authorises it.
+#
+# Endpoints (all must answer HTTP 200; curl -f fails the check otherwise):
+#   Pages          https://tiwana56.github.io/video-editor/
+#   APK (latest)   https://github.com/tiwana56/video-editor/releases/download/latest/ProCut-Studio-debug.apk
+#   Licence Worker https://orange-disk-ff22.saiftiwana56.workers.dev
+#                  (GET answers {"ok":true,"service":"procut-license",...})
+#   Image Worker   https://procut-cf-images.saiftiwana56.workers.dev
+#   Image Worker   https://procut-cf-images.roznamaads.workers.dev
+#                  (GET answers {"ok":false,"error":"POST only"} — that
+#                  200 response still proves the Worker is alive.)
+
+name: Nightly Health Check
+
+on:
+  schedule:
+    - cron: "0 2 * * *" # 02:00 UTC nightly
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check all endpoints
+        id: checks
+        run: |
+          set +e
+          RESULTS="health-results.md"
+          FAILED=""
+          : > "$RESULTS"
+          {
+            echo "# ProCut health check — $(date -u '+%F %T UTC')"
+            echo
+            echo "| Check | URL | Result |"
+            echo "|---|---|---|"
+          } >> "$RESULTS"
+
+          check() {
+            local name="$1" url="$2" binary="${3:-}"
+            local code body
+            body="$(mktemp)"
+            code="$(curl -fsS -L --max-time 60 -o "$body" -w '%{http_code}' "$url" 2>/dev/null || echo "000")"
+            local snippet=""
+            if [ -z "$binary" ]; then
+              snippet="$(head -c 120 "$body" | tr '\n' ' ')"
+            fi
+            rm -f "$body"
+            if [ "$code" = "200" ]; then
+              echo "PASS: $name ($url) -> HTTP $code ${snippet}"
+              echo "| $name | $url | PASS (HTTP $code) |" >> "$RESULTS"
+            else
+              echo "FAIL: $name ($url) -> HTTP $code ${snippet}"
+              echo "| $name | $url | FAIL (HTTP $code) |" >> "$RESULTS"
+              FAILED="$FAILED $name"
+            fi
+          }
+
+          check "Pages" "https://tiwana56.github.io/video-editor/"
+          check "APK-latest" "https://github.com/tiwana56/video-editor/releases/download/latest/ProCut-Studio-debug.apk" binary
+          check "Licence-Worker" "https://orange-disk-ff22.saiftiwana56.workers.dev"
+          check "Image-Worker-saiftiwana56" "https://procut-cf-images.saiftiwana56.workers.dev"
+          check "Image-Worker-roznamaads" "https://procut-cf-images.roznamaads.workers.dev"
+
+          {
+            echo
+            echo "Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "Expected: every check HTTP 200. Image Workers answer \"POST only\" on GET — that 200 still proves them alive."
+          } >> "$RESULTS"
+
+          FAILED="$(echo "$FAILED" | xargs)"
+          echo "failed=$FAILED" >> "$GITHUB_OUTPUT"
+          if [ -n "$FAILED" ]; then
+            echo "Health check FAILED: $FAILED"
+            cat "$RESULTS"
+            exit 1
+          fi
+          echo "Health check: all endpoints OK"
+          cat "$RESULTS"
+
+      - name: Publish results summary
+        if: always()
+        run: cat health-results.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open issue on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FAILED: ${{ steps.checks.outputs.failed }}
+        run: |
+          set +e
+          TODAY="$(date -u +%F)"
+          TITLE="Health check failed — $TODAY — $FAILED"
+          # Label may not exist yet; creating it is best-effort only.
+          gh label create health-check --description "Nightly ProCut health-check failure" --color B60205 2>/dev/null || true
+          # Do not spam a duplicate issue if today's failure was already filed.
+          if gh issue list --state open --label health-check --limit 10 --json title --jq ".[].title" 2>/dev/null | grep -Fq "$TODAY"; then
+            echo "An open health-check issue for $TODAY already exists — skipping duplicate."
+            exit 0
+          fi
+          if ! gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body-file health-results.md --label health-check; then
+            echo "Issue create with label failed — retrying without label."
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body-file health-results.md
+          fi
