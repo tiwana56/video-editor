@@ -33,9 +33,28 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
+
+        <!-- Phase A: background export foreground service.
+             exported=false: only this app can start it. The
+             foregroundServiceType MUST match the type passed to
+             startForeground() in ExportForegroundService.java. -->
+        <service
+            android:name=".ExportForegroundService"
+            android:foregroundServiceType="mediaProcessing"
+            android:exported="false" />
     </application>
 
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Foreground service itself (Android 9+ requires this for any FGS). -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- mediaProcessing type (Android 14+ / targetSdk 34+ requires the
+         matching type permission, or startForeground() throws). -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROCESSING" />
+    <!-- Partial wake lock, so the CPU keeps running with the screen off. -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Notification permission declaration; the runtime grant is asked
+         from JS at export start on Android 13+ (see README). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 </manifest>
